@@ -4,18 +4,22 @@
 
 **Pruébalo en [andres-developer-23.github.io/desdecero](https://andres-developer-23.github.io/desdecero/)**
 
-Curso interactivo para aprender **Python desde cero, en español**. Son 20 lecciones cortas, del primer `print()` a un juego completo. Cada lección explica una idea, trae ejemplos que se ejecutan con un clic y termina con un ejercicio que se corrige solo.
+Rutas interactivas para aprender **Python desde cero, en español**. Cada ruta se divide en módulos y lecciones cortas: cada lección explica una idea, trae ejemplos que se ejecutan con un clic y termina con un ejercicio que se corrige solo.
 
 Todo funciona en el navegador. No hace falta instalar Python ni crear una cuenta.
 
 ## Qué incluye
 
-- **Panel**: tu progreso, la siguiente lección, tu racha de días seguidos y la actividad de las últimas cuatro semanas.
-- **Ruta**: 7 módulos y 20 lecciones (unas 6 horas en total).
+- **Panel**: tu progreso en cada ruta, la siguiente lección, tu racha de días seguidos y la actividad de las últimas cuatro semanas.
+- **Rutas**: cada una con su página de módulos y lecciones, y su propio progreso.
 - **Lecciones**: teoría breve, ejemplos ejecutables y un ejercicio con editor, consola, pista, solución y comprobación automática. Si el código falla, la consola explica el error en español y marca la línea en el editor.
 - **Playground**: un editor libre para experimentar, con `input()` interactivo.
 
 El progreso y el código que escribes se guardan en el navegador.
+
+### Ruta «Python desde cero»
+
+7 módulos y 20 lecciones (unas 6 horas), del primer `print()` a un juego completo.
 
 | Módulo                          | Lecciones                                                                         |
 | ------------------------------- | --------------------------------------------------------------------------------- |
@@ -75,15 +79,17 @@ Dependabot propone una vez al mes un pull request con las dependencias de npm y 
 ## Estructura del proyecto
 
 ```
-content/                      contenido del curso, una carpeta por lección
-  00-primeros-pasos/
-    module.json               título y descripción del módulo
-    01-hola-mundo/
-      lesson.md               metadatos, teoría, enunciado y pista
-      starter.py              código con el que empieza el editor
-      solution.py             solución de referencia
-      checks.json             cómo se comprueba el ejercicio
-      test.py                 asserts extra (opcional)
+content/                      contenido del curso: rutas, módulos y lecciones
+  01-python/
+    route.json                título, descripción, nivel y motor de la ruta
+    00-primeros-pasos/
+      module.json             título y descripción del módulo
+      01-hola-mundo/
+        lesson.md             metadatos, teoría, enunciado y pista
+        starter.py            código con el que empieza el editor
+        solution.py           solución de referencia
+        checks.json           cómo se comprueba el ejercicio
+        test.py               asserts extra (opcional)
 src/
   index.html                  estructura de la página
   styles/                     estilos: variables, componentes, layout y vistas
@@ -95,24 +101,39 @@ scripts/
 
 ### Código de la aplicación (`src/js/`)
 
-| Carpeta / archivo | Responsabilidad                                                                 |
-| ----------------- | ------------------------------------------------------------------------------- |
-| `main.js`         | Punto de entrada: crea el curso, el progreso y las vistas, y los conecta.       |
-| `config.js`       | Versiones, URLs de CDN, límites de tiempo y claves de guardado.                 |
-| `router.js`       | Navegación por el hash de la URL (`#panel`, `#l-<lección>`, `#playground`).     |
-| `lib/`            | Utilidades sin estado: DOM, fechas, eventos, `localStorage` y carga de scripts. |
-| `course/`         | Modelo del curso: numeración y navegación entre lecciones.                      |
-| `progress/`       | Lecciones completadas, racha y sincronización opcional con la cuenta.           |
-| `python/`         | Carga de Skulpt y CodeMirror, ejecución de Python y explicación de errores.     |
-| `exercises/`      | Comprobación automática de los ejercicios.                                      |
-| `ui/`             | Piezas de interfaz: terminal, editor, Markdown, ejemplos y cabecera.            |
-| `views/`          | Las tres pantallas: panel, lección y playground.                                |
+| Carpeta / archivo | Responsabilidad                                                                          |
+| ----------------- | ---------------------------------------------------------------------------------------- |
+| `main.js`         | Punto de entrada: crea el curso, el progreso y las vistas, y los conecta.                |
+| `config.js`       | Versiones, URLs de CDN, límites de tiempo y claves de guardado.                          |
+| `router.js`       | Cambia de vista según el hash de la URL.                                                 |
+| `hash-routes.js`  | Traduce el hash a una vista: `#panel`, `#rutas`, `#ruta-<id>`, `#l-<id>`, `#playground`. |
+| `lib/`            | Utilidades sin estado: DOM, fechas, eventos, `localStorage` y carga de scripts.          |
+| `course/`         | Modelo del curso: rutas, módulos, numeración y navegación entre lecciones.               |
+| `progress/`       | Lecciones completadas, racha y sincronización opcional con la cuenta.                    |
+| `python/`         | Carga de Skulpt y CodeMirror, ejecución de Python y explicación de errores.              |
+| `exercises/`      | Comprobación automática de los ejercicios.                                               |
+| `ui/`             | Piezas de interfaz: terminal, editor, Markdown, ejemplos y cabecera.                     |
+| `views/`          | Las pantallas: panel, ruta, lección y playground.                                        |
 
 Las dependencias van en un solo sentido: `views` usa `ui`, `exercises`, `python`, `progress` y `course`, y todos ellos pueden usar `lib` y `config`. Ningún módulo de `python/` o `progress/` toca el DOM.
 
 ## Escribir lecciones
 
-Cada lección es una carpeta `NN-id` dentro de su módulo. El número da el orden y el resto es el identificador que aparece en la URL (`#l-hola-mundo`). El build se detiene con un mensaje claro si falta un archivo o algo no es válido.
+El contenido se organiza en tres niveles de carpetas `NN-id`: rutas, módulos y lecciones. El número da el orden y el resto es el identificador. El de la ruta aparece en su URL (`#ruta-python`) y el de la lección en la suya (`#l-hola-mundo`); los identificadores de lección no se pueden repetir, tampoco entre rutas. El build se detiene con un mensaje claro si falta un archivo o algo no es válido.
+
+### `route.json`
+
+```json
+{
+  "title": "Python desde cero",
+  "description": "Una o dos frases sobre lo que se aprende.",
+  "level": "Principiante",
+  "runtime": "python",
+  "requires": "otra-ruta"
+}
+```
+
+`runtime` indica con qué se ejecutan los ejercicios de la ruta. `requires` es opcional: el identificador de una ruta que conviene terminar antes, y aparece como recomendación en el panel.
 
 ### `lesson.md`
 
