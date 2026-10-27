@@ -94,6 +94,7 @@ src/
   index.html                  estructura de la página
   styles/                     estilos: variables, componentes, layout y vistas
   js/                         código de la aplicación (ver abajo)
+  python/                     módulos de Python que corren en el navegador: el simulador de Flet
 scripts/
   build.js                    valida el contenido y genera dist/index.html
   lib/load-course.js          lee y valida content/
@@ -112,10 +113,21 @@ scripts/
 | `progress/`       | Lecciones completadas, racha y sincronización opcional con la cuenta.                    |
 | `python/`         | Carga de Skulpt y CodeMirror, ejecución de Python y explicación de errores.              |
 | `exercises/`      | Comprobación automática de los ejercicios.                                               |
+| `flet/`           | Simulador de Flet: sesiones y eventos, dibujo de la vista previa y colores de Material.  |
 | `ui/`             | Piezas de interfaz: terminal, editor, Markdown, ejemplos y cabecera.                     |
 | `views/`          | Las pantallas: panel, ruta, lección y playground.                                        |
 
-Las dependencias van en un solo sentido: `views` usa `ui`, `exercises`, `python`, `progress` y `course`, y todos ellos pueden usar `lib` y `config`. Ningún módulo de `python/` o `progress/` toca el DOM.
+Las dependencias van en un solo sentido: `views` usa `ui`, `exercises`, `flet`, `python`, `progress` y `course`, y todos ellos pueden usar `lib` y `config`. Ningún módulo de `python/` o `progress/` toca el DOM.
+
+### Simulador de Flet
+
+[Flet](https://flet.dev) dibuja la interfaz con Flutter, demasiado pesado para cargarlo en la página. Por eso los ejercicios de Flet se ejecutan con un simulador:
+
+1. `src/python/flet/` es un módulo `flet` escrito en Python con la API de Flet 1.0: `ft.run(main)`, `page.add(...)`, controles (`Text`, `Icon`, `Button` y variantes, `IconButton`, `FloatingActionButton`, `TextField`, `Checkbox`, `Switch`, `Slider`, `ProgressBar`, `Row`, `Column`, `Container`, `ListView`, `Card`, `ListTile`, `Divider`, `SafeArea`, `AppBar`), valores (`Colors`, `Icons`, `Padding`, `Margin`, `Border`, `BorderRadius`, `Alignment`…) y controles propios con `@ft.control` y `dataclasses.field`.
+2. Skulpt lo ejecuta junto al código del alumno. Al terminar `main()` y cada manejador de eventos, el simulador describe el árbol de controles y lo envía a la página por el módulo `_flet_bridge` (como Flet 1.0, la interfaz se actualiza sola).
+3. `src/js/flet/renderer.js` lo dibuja con aspecto de Material 3 y devuelve los eventos (clic, escribir, Enter, marcar) a Python.
+
+Lo que no está implementado da un error claro en español, y los nombres que Flet 1.0 eliminó (`ft.app`, `ft.ElevatedButton`, `ft.padding.all`, `ft.alignment.center`…) explican cómo se escriben ahora. Fuera del alcance del simulador quedan la navegación entre vistas, los diálogos, las imágenes y el empaquetado.
 
 ## Escribir lecciones
 
@@ -183,6 +195,28 @@ Código que se añade al final del código del alumno en la última ejecución. 
 assert total == 13700, "total debería valer 13700"
 ```
 
+En las rutas de Flet, `test.py` usa el módulo `fletsim` para manejar la app como lo haría una persona:
+
+```python
+from fletsim import *
+
+campo = find_one(ft.TextField)
+type_text(campo, "Ana")          # escribir en un campo
+click("Saludar")                 # clic en el botón con ese texto
+assert "Hola, Ana" in texts(), "Al pulsar Saludar debería aparecer «Hola, Ana»"
+```
+
+| Función                     | Qué hace                                                                     |
+| --------------------------- | ---------------------------------------------------------------------------- |
+| `page()`                    | La página de la app (falla si el programa no llamó a `ft.run(main)`).        |
+| `find(tipo, **props)`       | Controles visibles de un tipo cuyas propiedades coinciden.                   |
+| `find_one(tipo, **props)`   | El primero, o un error que explica qué falta.                                |
+| `texts()` / `screen_text()` | Los `ft.Text` visibles / todo el texto visible (textos, botones, casillas…). |
+| `click(control_o_texto)`    | Clic en un control o en el botón con ese texto.                              |
+| `type_text(campo, texto)`   | Escribe en un `TextField` (lanza `on_change`).                               |
+| `submit(campo)`             | Pulsa Enter en un `TextField` (lanza `on_submit`).                           |
+| `toggle(casilla)`           | Marca o desmarca un `Checkbox` o un `Switch`.                                |
+
 ## Contribuir
 
 Cada cambio empieza con un issue, se hace en su propia rama y entra en `main` con un pull request que pasa la CI. Los commits se escriben en español y las versiones siguen el versionado semántico. Todo el proceso está en [CONTRIBUTING.md](CONTRIBUTING.md) y la lista de cambios por versión en [CHANGELOG.md](CHANGELOG.md).
@@ -191,7 +225,8 @@ Cada cambio empieza con un issue, se hace en su propia rama y entra en `main` co
 
 - [Skulpt](https://skulpt.org) 1.2 ejecuta Python 3 dentro del navegador, sin servidor.
 - [CodeMirror](https://codemirror.net/5/) 5 es el editor con resaltado de sintaxis.
+- La vista previa de Flet usa Roboto y Material Icons de Google Fonts.
 - [esbuild](https://esbuild.github.io) empaqueta el JavaScript y los estilos.
 - Tipografías de Google Fonts: Martian Mono, IBM Plex Sans y JetBrains Mono.
 
-Skulpt implementa la mayor parte de Python 3, pero no todo. Por ejemplo, no admite `match` / `case`.
+Skulpt implementa la mayor parte de Python 3, pero no todo. Por ejemplo, no admite `match` / `case`, `nonlocal` ni `eval`, y no trae los módulos `json`, `typing` ni `dataclasses` (los dos últimos los aporta el simulador de Flet en una versión mínima).
