@@ -1,0 +1,202 @@
+/* Vista de una ruta: cabecera con el progreso y la lista de módulos y lecciones. */
+
+.route-header {
+  margin-bottom: 28px;
+}
+
+.route-header__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  margin-top: 16px;
+  color: var(--color-text-muted);
+  font-family: var(--font-code);
+  font-size: 12.5px;
+}
+
+.route-header__meta a {
+  color: var(--color-text-soft);
+}
+
+.route-header__meta a:hover {
+  color: var(--color-accent);
+}
+
+.route-header__progress {
+  margin: 14px 0 0;
+  color: var(--color-text-soft);
+  font-family: var(--font-code);
+  font-size: 13px;
+}
+
+.route-header .hero__actions {
+  margin-top: 20px;
+}
+
+.route-header .hero__actions:empty {
+  display: none;
+}
+
+/* ---- Módulos ---- */
+
+.module-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.module {
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-raised);
+}
+
+.module__head {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 6px 14px;
+  padding: 16px 18px 12px;
+}
+
+.module__number {
+  color: var(--color-text-muted);
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+}
+
+.module--done .module__number {
+  color: var(--color-accent);
+}
+
+.module__title {
+  min-width: 0;
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.02rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.module__progress {
+  font-family: var(--font-code);
+  font-size: 12.5px;
+}
+
+.module__count {
+  margin-left: 8px;
+  color: var(--color-text-soft);
+}
+
+.module__description {
+  grid-column: 2 / -1;
+  margin: 0;
+  color: var(--color-text-soft);
+  font-size: 0.94rem;
+}
+
+.module__lessons {
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--color-border);
+  list-style: none;
+}
+
+.module__lessons li + li {
+  border-top: 1px solid var(--color-border);
+}
+
+/* ---- Fila de lección ---- */
+
+.lesson-link {
+  display: grid;
+  grid-template-columns: auto auto minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 4px 12px;
+  padding: 11px 18px;
+  text-decoration: none;
+}
+
+.lesson-link:hover {
+  background: var(--color-bg-overlay);
+}
+
+.lesson-link__mark {
+  color: var(--color-text-muted);
+  font-family: var(--font-code);
+  font-size: 13px;
+  white-space: pre;
+}
+
+.lesson-link__number {
+  color: var(--color-text-muted);
+  font-family: var(--font-code);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.lesson-link__title {
+  min-width: 0;
+  font-weight: 500;
+}
+
+.lesson-link__minutes {
+  color: var(--color-text-muted);
+  font-family: var(--font-code);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.lesson-link__summary {
+  grid-column: 3 / 5;
+  color: var(--color-text-muted);
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+
+.lesson-link--done .lesson-link__mark {
+  color: var(--color-accent);
+}
+
+.lesson-link--next {
+  background: color-mix(in srgb, var(--color-highlight) 6%, transparent);
+}
+
+.lesson-link--next .lesson-link__mark {
+  color: var(--color-highlight);
+}
+
+.lesson-link--next .lesson-link__title::after {
+  content: "  ← siguiente";
+  color: var(--color-highlight);
+  font-family: var(--font-code);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .module__head {
+    grid-template-columns: auto minmax(0, 1fr);
+    padding-inline: 14px;
+  }
+
+  .module__progress {
+    grid-column: 2;
+    grid-row: 3;
+  }
+
+  .lesson-link {
+    grid-template-columns: auto auto minmax(0, 1fr);
+    padding-inline: 14px;
+  }
+
+  .lesson-link__summary {
+    grid-column: 3;
+  }
+
+  .lesson-link__minutes {
+    grid-column: 3;
+    grid-row: 3;
+  }
+}

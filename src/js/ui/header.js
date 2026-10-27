@@ -30,7 +30,7 @@ export function createHeader() {
       syncLabel.textContent = SYNC_TEXT[status].label;
     },
 
-    /** Marca como actual el enlace de la sección indicada (panel, ruta o playground). */
+    /** Marca como actual el enlace de la sección indicada (panel, rutas o playground). */
     setActiveNav(name) {
       $$("[data-nav]").forEach((link) => {
         if (link.dataset.nav === name) link.setAttribute("aria-current", "page");

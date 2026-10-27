@@ -44,11 +44,12 @@ async function build() {
   mkdirSync(OUT_DIR, { recursive: true });
   writeFileSync(path.join(OUT_DIR, "index.html"), html);
 
-  const lessons = course.modules.reduce((sum, module) => sum + module.lessons.length, 0);
   const size = (Buffer.byteLength(html) / 1024).toFixed(0);
-  console.log(
-    `dist/index.html · ${course.modules.length} módulos · ${lessons} lecciones · ${size} KB`,
-  );
+  console.log(`dist/index.html · ${size} KB`);
+  for (const route of course.routes) {
+    const lessons = route.modules.reduce((sum, module) => sum + module.lessons.length, 0);
+    console.log(`  ${route.id}: ${route.modules.length} módulos · ${lessons} lecciones`);
+  }
 }
 
 /** Empaqueta un punto de entrada con esbuild y devuelve el código resultante. */

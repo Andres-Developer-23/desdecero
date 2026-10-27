@@ -23,5 +23,6 @@
 @import "./layout/footer.css";
 
 @import "./views/panel.css";
+@import "./views/route.css";
 @import "./views/lesson.css";
 @import "./views/playground.css";

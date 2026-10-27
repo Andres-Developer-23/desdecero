@@ -27,7 +27,7 @@
         </a>
         <nav class="main-nav" aria-label="Principal">
           <a class="main-nav__link" href="#panel" data-nav="panel">panel</a>
-          <a class="main-nav__link" href="#ruta" data-nav="ruta">ruta</a>
+          <a class="main-nav__link" href="#rutas" data-nav="rutas">rutas</a>
           <a class="main-nav__link" href="#playground" data-nav="playground">playground</a>
         </nav>
         <div class="site-header__status">
@@ -53,10 +53,10 @@
                 Python desde cero<span class="hero__accent">.</span>
               </h1>
               <p class="lede">
-                Una ruta de 20 lecciones cortas, de tu primer
-                <code class="inline-code">print()</code> a un juego completo. Lees una idea, la
-                pruebas en el editor y resuelves un ejercicio que se corrige al instante. Todo corre
-                en tu navegador: no hay nada que instalar.
+                Rutas de lecciones cortas en español, desde tu primer
+                <code class="inline-code">print()</code>. Lees una idea, la pruebas en el editor y
+                resuelves un ejercicio que se corrige al instante. Todo corre en tu navegador: no
+                hay nada que instalar.
               </p>
               <div class="hero__actions" id="panel-actions"></div>
             </div>
@@ -69,15 +69,15 @@
           <div class="stats" id="panel-stats"></div>
 
           <div class="board">
-            <div class="board__main" id="ruta">
-              <p class="eyebrow"><span class="eyebrow__mark">$</span> ls ./ruta</p>
-              <h2 class="section-title">La ruta completa</h2>
+            <div class="board__main" id="rutas">
+              <p class="eyebrow"><span class="eyebrow__mark">$</span> ls ./rutas</p>
+              <h2 class="section-title">Elige tu ruta</h2>
               <p class="section-intro">
-                Siete módulos en orden. Cada lección tiene teoría breve, ejemplos que puedes
-                ejecutar y un ejercicio con comprobación automática. Al superarlo, la lección se
-                marca sola.
+                Cada ruta se divide en módulos y lecciones cortas, con teoría breve, ejemplos que
+                puedes ejecutar y un ejercicio con comprobación automática. Al superarlo, la lección
+                se marca sola.
               </p>
-              <div class="module-list" id="panel-modules"></div>
+              <div class="route-list" id="panel-routes"></div>
             </div>
 
             <aside class="board__side" aria-label="Actividad y ayuda">
@@ -131,10 +131,9 @@
               <div class="card" id="panel-finished" hidden>
                 <h3 class="card__title">// ¿y ahora qué?</h3>
                 <p class="card__text">
-                  Completaste la ruta. Buenos siguientes pasos: instalar Python en tu ordenador y
-                  repetir el juego allí, aprender a leer y escribir archivos, y probar librerías
-                  como
-                  <code class="inline-code">pandas</code> para analizar datos.
+                  Completaste todas las rutas. Buenos siguientes pasos: instalar Python en tu
+                  ordenador y repetir los proyectos allí, aprender a leer y escribir archivos, y
+                  probar librerías como <code class="inline-code">pandas</code> para analizar datos.
                 </p>
               </div>
             </aside>
@@ -142,11 +141,31 @@
         </div>
       </section>
 
+      <!-- Vista: ruta -->
+      <section class="view" id="view-route" hidden aria-labelledby="route-title">
+        <div class="container">
+          <nav class="breadcrumbs" aria-label="Ubicación">
+            <a href="#rutas">← rutas</a>
+          </nav>
+          <header class="route-header">
+            <p class="eyebrow">
+              <span class="eyebrow__mark">$</span> <span id="route-command">ls ./rutas</span>
+            </p>
+            <h1 class="display display--page" id="route-title"></h1>
+            <p class="lede" id="route-description"></p>
+            <div class="route-header__meta" id="route-meta"></div>
+            <p class="route-header__progress" id="route-progress"></p>
+            <div class="hero__actions" id="route-actions"></div>
+          </header>
+          <div class="module-list" id="route-modules"></div>
+        </div>
+      </section>
+
       <!-- Vista: lección -->
       <section class="view" id="view-lesson" hidden>
         <div class="container">
           <nav class="breadcrumbs" aria-label="Ubicación">
-            <a href="#ruta">← ruta</a>
+            <a id="lesson-back" href="#rutas">← rutas</a>
             <span class="breadcrumbs__path" id="lesson-path"></span>
           </nav>
 
