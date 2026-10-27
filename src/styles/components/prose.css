@@ -40,7 +40,9 @@
   color: var(--syntax-builtin);
   font-family: var(--font-code);
   font-size: 0.86em;
-  white-space: nowrap;
+  /* El código largo se parte en lugar de desbordar la columna en pantallas estrechas. */
+  overflow-wrap: anywhere;
+  box-decoration-break: clone;
 }
 
 /* Bloque de texto fijo, por ejemplo la salida esperada de un ejercicio. */

@@ -107,9 +107,27 @@ test("detener corta un bucle infinito", async ({ page }) => {
   await expect(stop).toBeHidden();
 });
 
-test("la página no se desborda a lo ancho", async ({ page }) => {
-  for (const hash of ["#panel", "#ruta-python", "#l-for-range", "#playground"]) {
-    await openApp(page, hash);
+test("ninguna página se desborda a lo ancho", async ({ page }) => {
+  await openApp(page);
+  const lessons = await page.evaluate(() =>
+    window.__desdecero.course.routes.flatMap((route) =>
+      route.modules.flatMap((module) => module.lessons.map((lesson) => lesson.id)),
+    ),
+  );
+  const routes = await page.evaluate(() =>
+    window.__desdecero.course.routes.map((route) => route.id),
+  );
+  const hashes = [
+    "#panel",
+    "#playground",
+    ...routes.map((id) => `#ruta-${id}`),
+    ...lessons.map((id) => `#l-${id}`),
+  ];
+  for (const hash of hashes) {
+    await page.evaluate((target) => {
+      location.hash = target;
+    }, hash);
+    await expect(page).toHaveURL(new RegExp(`${hash}$`));
     const overflow = await page.evaluate(
       () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
     );
