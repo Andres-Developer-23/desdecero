@@ -1,0 +1,23 @@
+{
+  "requires": [
+    {
+      "pattern": "\\*",
+      "message": "Calcula los minutos multiplicando con *."
+    },
+    {
+      "pattern": "//",
+      "message": "Usa la división entera // para las semanas."
+    }
+  ],
+  "forbids": [
+    {
+      "pattern": "10080",
+      "message": "No escribas 10080 a mano: deja que Python haga la cuenta."
+    }
+  ],
+  "runs": [
+    {
+      "output": "10080\n14"
+    }
+  ]
+}

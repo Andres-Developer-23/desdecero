@@ -1,0 +1,13 @@
+{
+  "forbids": [
+    {
+      "pattern": "2550",
+      "message": "No escribas 2550 a mano: calcúlalo con el bucle."
+    }
+  ],
+  "runs": [
+    {
+      "output": "Suma de pares: 2550\nMúltiplos de 7: 14"
+    }
+  ]
+}

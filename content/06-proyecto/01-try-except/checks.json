@@ -1,0 +1,12 @@
+{
+  "requires": [
+    {
+      "pattern": "\\btry\\b",
+      "message": "Usa try / except para capturar el error."
+    },
+    {
+      "pattern": "\\bexcept\\b",
+      "message": "Falta el bloque except."
+    }
+  ]
+}

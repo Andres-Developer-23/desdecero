@@ -1,0 +1,12 @@
+{
+  "runs": [
+    {
+      "inputs": ["7", "5"],
+      "output": "La suma es 12"
+    },
+    {
+      "inputs": ["100", "-30"],
+      "output": "La suma es 70"
+    }
+  ]
+}

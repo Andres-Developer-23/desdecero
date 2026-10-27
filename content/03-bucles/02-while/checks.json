@@ -1,0 +1,18 @@
+{
+  "requires": [
+    {
+      "pattern": "\\bwhile\\b",
+      "message": "Usa un bucle while."
+    }
+  ],
+  "runs": [
+    {
+      "inputs": ["3"],
+      "output": "3\n2\n1\n¡Despegue!"
+    },
+    {
+      "inputs": ["5"],
+      "output": "5\n4\n3\n2\n1\n¡Despegue!"
+    }
+  ]
+}

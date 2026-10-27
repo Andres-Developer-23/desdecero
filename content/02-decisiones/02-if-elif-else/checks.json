@@ -1,0 +1,24 @@
+{
+  "runs": [
+    {
+      "inputs": ["5"],
+      "output": "Hace frío"
+    },
+    {
+      "inputs": ["10"],
+      "output": "Está templado"
+    },
+    {
+      "inputs": ["18.5"],
+      "output": "Está templado"
+    },
+    {
+      "inputs": ["25"],
+      "output": "Hace calor"
+    },
+    {
+      "inputs": ["33"],
+      "output": "Hace calor"
+    }
+  ]
+}

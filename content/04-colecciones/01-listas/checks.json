@@ -1,0 +1,13 @@
+{
+  "requires": [
+    {
+      "pattern": "\\bfor\\b",
+      "message": "Cuenta los días calurosos con un bucle for."
+    }
+  ],
+  "runs": [
+    {
+      "output": "Promedio: 24.43\nMáxima: 29\nDías de más de 25°: 3"
+    }
+  ]
+}
