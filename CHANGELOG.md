@@ -4,6 +4,8 @@ Todos los cambios importantes del proyecto se anotan aquí. El formato sigue [Ke
 
 ## [Sin publicar]
 
+## [1.1.0] - 2026-10-27
+
 ### Cambiado
 
 - El contenido del curso pasa de un único archivo de texto a una carpeta por lección en `content/`, con el código Python en archivos `.py`.
@@ -36,5 +38,6 @@ Todos los cambios importantes del proyecto se anotan aquí. El formato sigue [Ke
 - Consola con `input()` interactivo y errores explicados en español.
 - Playground libre y progreso guardado en el navegador.
 
-[Sin publicar]: https://github.com/Andres-Developer-23/desdecero/compare/v1.0.0...HEAD
+[Sin publicar]: https://github.com/Andres-Developer-23/desdecero/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/Andres-Developer-23/desdecero/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/Andres-Developer-23/desdecero/releases/tag/v1.0.0
