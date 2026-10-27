@@ -1,0 +1,117 @@
+/*
+ * Editor de código: tema propio para CodeMirror y el área de texto de
+ * respaldo que se usa si CodeMirror no llega a cargar.
+ */
+
+.editor {
+  position: relative;
+  min-height: 0;
+  height: 300px;
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-bg);
+}
+
+.editor > .CodeMirror,
+.editor > .editor__textarea {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+}
+
+.editor__textarea {
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: 12px 14px;
+  overflow: auto;
+  border: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-code);
+  font-size: 14px;
+  line-height: 1.6;
+  white-space: pre;
+  tab-size: 4;
+  resize: none;
+}
+
+.editor__textarea:focus {
+  outline: none;
+  box-shadow: inset 0 0 0 1px var(--color-border-strong);
+}
+
+/* ---- Tema "pdc" para CodeMirror ---- */
+
+.CodeMirror {
+  height: 100%;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-code);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.cm-s-pdc .CodeMirror-gutters {
+  border-right: 1px solid var(--color-border);
+  background: var(--color-bg);
+}
+
+.cm-s-pdc .CodeMirror-linenumber {
+  padding: 0 10px 0 6px;
+  color: var(--syntax-line-number);
+}
+
+.cm-s-pdc .CodeMirror-cursor {
+  border-left: 2px solid var(--color-highlight);
+}
+
+.cm-s-pdc .CodeMirror-selected {
+  background: var(--syntax-selection);
+}
+
+.cm-s-pdc.CodeMirror-focused .CodeMirror-selected {
+  background: var(--syntax-selection-focused);
+}
+
+.cm-s-pdc .CodeMirror-matchingbracket {
+  color: var(--color-highlight) !important;
+  text-decoration: underline;
+}
+
+/* Línea donde ocurrió el último error */
+.cm-s-pdc .editor__error-line {
+  background: var(--color-danger-soft);
+}
+
+.cm-s-pdc .cm-keyword {
+  color: var(--syntax-keyword);
+}
+.cm-s-pdc .cm-builtin {
+  color: var(--syntax-builtin);
+}
+.cm-s-pdc .cm-def {
+  color: var(--syntax-def);
+}
+.cm-s-pdc .cm-variable-2,
+.cm-s-pdc .cm-property {
+  color: var(--syntax-variable);
+}
+.cm-s-pdc .cm-string {
+  color: var(--syntax-string);
+}
+.cm-s-pdc .cm-number {
+  color: var(--syntax-number);
+}
+.cm-s-pdc .cm-comment {
+  color: var(--syntax-comment);
+  font-style: italic;
+}
+.cm-s-pdc .cm-operator {
+  color: var(--color-text-soft);
+}
+.cm-s-pdc .cm-meta {
+  color: var(--color-highlight);
+}
+.cm-s-pdc .cm-error {
+  color: var(--color-danger);
+}

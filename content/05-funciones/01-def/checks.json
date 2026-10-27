@@ -1,0 +1,8 @@
+{
+  "requires": [
+    {
+      "pattern": "\\breturn\\b",
+      "message": "La función tiene que devolver el resultado con return."
+    }
+  ]
+}

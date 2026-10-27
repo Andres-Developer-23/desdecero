@@ -1,0 +1,13 @@
+{
+  "requires": [
+    {
+      "pattern": "set\\(|\\{",
+      "message": "Usa conjuntos (set) para resolverlo."
+    }
+  ],
+  "runs": [
+    {
+      "output": "En ambos cursos: ['luis', 'marta']\nPersonas distintas: 6"
+    }
+  ]
+}

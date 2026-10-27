@@ -1,0 +1,44 @@
+/* Vista del playground: editor libre y consola lado a lado. */
+
+.playground__grid {
+  display: grid;
+  gap: 16px;
+  margin-top: 22px;
+}
+
+.pane {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-raised);
+}
+
+.pane .editor {
+  height: 360px;
+}
+
+.pane .console__output {
+  height: auto;
+  min-height: 200px;
+  max-height: 420px;
+}
+
+@media (min-width: 960px) {
+  .playground__grid {
+    grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  }
+
+  .pane .editor {
+    height: 58vh;
+    min-height: 320px;
+  }
+
+  .pane .console__output {
+    height: 58vh;
+    min-height: 240px;
+    max-height: none;
+  }
+}

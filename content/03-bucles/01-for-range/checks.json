@@ -1,0 +1,18 @@
+{
+  "requires": [
+    {
+      "pattern": "\\bfor\\b",
+      "message": "Usa un bucle for."
+    }
+  ],
+  "runs": [
+    {
+      "inputs": ["7"],
+      "output": "7 x 1 = 7\n7 x 2 = 14\n7 x 3 = 21\n7 x 4 = 28\n7 x 5 = 35\n7 x 6 = 42\n7 x 7 = 49\n7 x 8 = 56\n7 x 9 = 63\n7 x 10 = 70"
+    },
+    {
+      "inputs": ["3"],
+      "output": "3 x 1 = 3\n3 x 2 = 6\n3 x 3 = 9\n3 x 4 = 12\n3 x 5 = 15\n3 x 6 = 18\n3 x 7 = 21\n3 x 8 = 24\n3 x 9 = 27\n3 x 10 = 30"
+    }
+  ]
+}

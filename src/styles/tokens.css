@@ -1,0 +1,60 @@
+/*
+ * Variables de diseño: colores, tipografías y medidas compartidas.
+ * El sitio tiene un único tema oscuro inspirado en una terminal.
+ */
+:root {
+  color-scheme: dark;
+
+  /* Fondos, de más oscuro a más claro */
+  --color-bg: #0b0f0c;
+  --color-bg-raised: #0f1511;
+  --color-bg-overlay: #141c16;
+  --color-bg-strong: #1a241d;
+
+  /* Bordes */
+  --color-border: #213026;
+  --color-border-strong: #2d3e32;
+
+  /* Texto */
+  --color-text: #dce6dd;
+  --color-text-soft: #aebcb1;
+  --color-text-muted: #7a8b7e;
+  --color-text-strong: #ffffff;
+
+  /* Acentos y estados */
+  --color-accent: #68dc91;
+  --color-accent-hover: #86e8a8;
+  --color-accent-ink: #06210f;
+  --color-accent-soft: #1c3b27;
+  --color-highlight: #f1c85c;
+  --color-danger: #ff8b7e;
+  --color-danger-soft: #3a1d1a;
+
+  /* Resaltado de sintaxis */
+  --syntax-keyword: #f2a971;
+  --syntax-builtin: #7dd4de;
+  --syntax-def: #86bfff;
+  --syntax-string: #a8e3a8;
+  --syntax-number: var(--color-highlight);
+  --syntax-comment: #6f8274;
+  --syntax-variable: #c7d6ca;
+  --syntax-line-number: #4c5b50;
+  --syntax-selection: #24352a;
+  --syntax-selection-focused: #2a4232;
+
+  /* Tipografías */
+  --font-display: "Martian Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --font-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-code:
+    "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+
+  /* Medidas */
+  --header-height: 56px;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --gutter-left: max(16px, env(safe-area-inset-left, 0px));
+  --gutter-right: max(16px, env(safe-area-inset-right, 0px));
+}

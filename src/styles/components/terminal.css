@@ -1,0 +1,56 @@
+/* Terminal decorativa del panel, con el resumen del progreso. */
+
+.terminal {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-raised);
+  font-family: var(--font-code);
+  font-size: 13.5px;
+  line-height: 1.75;
+}
+
+.terminal__body {
+  padding: 16px 18px 18px;
+  overflow-x: auto;
+  white-space: pre;
+}
+
+.terminal__prompt,
+.terminal__ok {
+  color: var(--color-accent);
+}
+
+.terminal__muted {
+  color: var(--color-text-muted);
+}
+
+.terminal__next {
+  color: var(--color-highlight);
+}
+
+/* Barra de progreso dibujada con caracteres: ████░░░░ */
+.ascii-bar {
+  color: var(--color-accent);
+  white-space: nowrap;
+}
+
+.ascii-bar__empty {
+  color: var(--color-border-strong);
+}
+
+.caret {
+  display: inline-block;
+  width: 0.6em;
+  height: 1.1em;
+  background: var(--color-accent);
+  vertical-align: -3px;
+  animation: caret-blink 1.1s steps(1) infinite;
+}
+
+@keyframes caret-blink {
+  50% {
+    opacity: 0;
+  }
+}

@@ -1,0 +1,27 @@
+/*
+ * Punto de entrada de los estilos. El build (esbuild) resuelve estos
+ * @import y genera una sola hoja de estilos dentro de dist/index.html.
+ * El orden importa: primero lo general y al final las vistas.
+ */
+
+/* Estructura base de CodeMirror (el tema propio está en components/editor.css) */
+@import "codemirror/lib/codemirror.css";
+
+@import "./tokens.css";
+@import "./base.css";
+
+@import "./components/bar.css";
+@import "./components/buttons.css";
+@import "./components/badges.css";
+@import "./components/terminal.css";
+@import "./components/card.css";
+@import "./components/prose.css";
+@import "./components/console.css";
+@import "./components/editor.css";
+
+@import "./layout/header.css";
+@import "./layout/footer.css";
+
+@import "./views/panel.css";
+@import "./views/lesson.css";
+@import "./views/playground.css";

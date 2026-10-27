@@ -1,0 +1,15 @@
+{
+  "ignore": "^jugar\\(.*$",
+  "runs": [
+    {
+      "inputs": ["50", "25", "hola", "42"],
+      "test": "_r = jugar(42)\nassert _r == 3, 'jugar(42) debería devolver 3: el texto que no es número no cuenta como intento'",
+      "output": "Más bajo\nMás alto\nEscribe un número entero\n¡Correcto! Intentos: 3"
+    },
+    {
+      "inputs": ["7"],
+      "test": "assert jugar(7) == 1, 'Si acierta a la primera, jugar() debería devolver 1'",
+      "output": "¡Correcto! Intentos: 1"
+    }
+  ]
+}

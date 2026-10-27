@@ -1,0 +1,13 @@
+{
+  "requires": [
+    {
+      "pattern": "len\\(",
+      "message": "Calcula los caracteres con len()."
+    }
+  ],
+  "runs": [
+    {
+      "output": "Hola, María González. Tu nombre tiene 14 caracteres."
+    }
+  ]
+}

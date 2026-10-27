@@ -1,0 +1,7 @@
+{
+  "runs": [
+    {
+      "output": "Hola, mundo\nMi primer programa en Python"
+    }
+  ]
+}

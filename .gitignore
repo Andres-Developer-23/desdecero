@@ -1,4 +1,12 @@
+# Dependencias
 node_modules/
-__pycache__/
-*.pyc
+
+# Página generada por el build
+dist/
+
+# Resultados de las pruebas
+test-results/
+playwright-report/
+
+# Sistema
 .DS_Store

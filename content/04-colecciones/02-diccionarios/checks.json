@@ -1,0 +1,19 @@
+{
+  "requires": [
+    {
+      "pattern": "\\bfor\\b",
+      "message": "Recorre el carrito con un bucle for."
+    }
+  ],
+  "forbids": [
+    {
+      "pattern": "13700",
+      "message": "Calcula el total con el bucle, no lo escribas a mano."
+    }
+  ],
+  "runs": [
+    {
+      "output": "Total: 13700"
+    }
+  ]
+}

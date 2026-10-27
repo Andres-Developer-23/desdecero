@@ -11,104 +11,124 @@ Todo funciona en el navegador. No hace falta instalar Python ni crear una cuenta
 - **Lecciones**: teoría breve, ejemplos ejecutables y un ejercicio con editor, consola, pista, solución y comprobación automática. Si el código falla, la consola explica el error en español y marca la línea en el editor.
 - **Playground**: un editor libre para experimentar, con `input()` interactivo.
 
-El progreso y el código que escribes se guardan en el navegador (`localStorage`).
+El progreso y el código que escribes se guardan en el navegador.
 
-| Módulo | Lecciones |
-| --- | --- |
-| 00 · Primeros pasos | Tu primer programa · Python como calculadora · Leer los errores sin miedo |
+| Módulo                          | Lecciones                                                                         |
+| ------------------------------- | --------------------------------------------------------------------------------- |
+| 00 · Primeros pasos             | Tu primer programa · Python como calculadora · Leer los errores sin miedo         |
 | 01 · Variables y tipos de datos | Variables · Tipos y conversiones · Trabajar con texto · Pedir datos con `input()` |
-| 02 · Tomar decisiones | Comparaciones y lógica · `if`, `elif` y `else` |
-| 03 · Repetir con bucles | `for` y `range()` · `while` · Acumular y contar |
-| 04 · Listas y diccionarios | Listas · Diccionarios · Tuplas y conjuntos |
-| 05 · Funciones | Crear funciones · Parámetros por defecto y alcance · Funciones con listas |
-| 06 · Errores y proyecto final | `try` / `except` · Proyecto: adivina el número |
+| 02 · Tomar decisiones           | Comparaciones y lógica · `if`, `elif` y `else`                                    |
+| 03 · Repetir con bucles         | `for` y `range()` · `while` · Acumular y contar                                   |
+| 04 · Listas y diccionarios      | Listas · Diccionarios · Tuplas y conjuntos                                        |
+| 05 · Funciones                  | Crear funciones · Parámetros por defecto y alcance · Funciones con listas         |
+| 06 · Errores y proyecto final   | `try` / `except` · Proyecto: adivina el número                                    |
 
-## Usarlo
+## Desarrollo local
 
-Abre `index.html` en el navegador. Necesita conexión a internet la primera vez para cargar el motor de Python y el editor desde un CDN.
-
-### Publicarlo con GitHub Pages
-
-1. En el repositorio, ve a **Settings → Pages**.
-2. En **Source**, elige **Deploy from a branch**, la rama `main` y la carpeta `/ (root)`.
-3. Guarda. En uno o dos minutos la página estará en `https://<tu-usuario>.github.io/<repositorio>/`.
-
-En una cuenta gratuita, GitHub Pages solo funciona con repositorios públicos.
-
-## Estructura
-
-```
-index.html            página final (se genera con build.py; es la que se publica)
-build.py              junta la plantilla, el curso y los estilos del editor en index.html
-src/curso.txt         todo el contenido: módulos, lecciones, ejercicios y comprobaciones
-src/template.html     diseño, estilos y lógica de la página
-vendor/               hoja de estilos base de CodeMirror y su licencia
-tests/verificar.py    comprueba en un navegador que cada ejercicio se puede resolver
-```
-
-Para cambiar el contenido, edita `src/curso.txt` o `src/template.html` y vuelve a generar la página:
+Necesitas [Node.js](https://nodejs.org) 20 o superior.
 
 ```bash
-python3 build.py
+npm install      # instala las dependencias de desarrollo
+npm run build    # genera dist/index.html
 ```
+
+`dist/index.html` es la página completa en un solo archivo: puedes abrirla directamente en el navegador o subirla a cualquier hosting estático. La primera vez necesita conexión para descargar el motor de Python y el editor.
+
+## Estructura del proyecto
+
+```
+content/                      contenido del curso, una carpeta por lección
+  00-primeros-pasos/
+    module.json               título y descripción del módulo
+    01-hola-mundo/
+      lesson.md               metadatos, teoría, enunciado y pista
+      starter.py              código con el que empieza el editor
+      solution.py             solución de referencia
+      checks.json             cómo se comprueba el ejercicio
+      test.py                 asserts extra (opcional)
+src/
+  index.html                  estructura de la página
+  styles/                     estilos: variables, componentes, layout y vistas
+  js/                         código de la aplicación (ver abajo)
+scripts/
+  build.js                    valida el contenido y genera dist/index.html
+  lib/load-course.js          lee y valida content/
+```
+
+### Código de la aplicación (`src/js/`)
+
+| Carpeta / archivo | Responsabilidad                                                                 |
+| ----------------- | ------------------------------------------------------------------------------- |
+| `main.js`         | Punto de entrada: crea el curso, el progreso y las vistas, y los conecta.       |
+| `config.js`       | Versiones, URLs de CDN, límites de tiempo y claves de guardado.                 |
+| `router.js`       | Navegación por el hash de la URL (`#panel`, `#l-<lección>`, `#playground`).     |
+| `lib/`            | Utilidades sin estado: DOM, fechas, eventos, `localStorage` y carga de scripts. |
+| `course/`         | Modelo del curso: numeración y navegación entre lecciones.                      |
+| `progress/`       | Lecciones completadas, racha y sincronización opcional con la cuenta.           |
+| `python/`         | Carga de Skulpt y CodeMirror, ejecución de Python y explicación de errores.     |
+| `exercises/`      | Comprobación automática de los ejercicios.                                      |
+| `ui/`             | Piezas de interfaz: terminal, editor, Markdown, ejemplos y cabecera.            |
+| `views/`          | Las tres pantallas: panel, lección y playground.                                |
+
+Las dependencias van en un solo sentido: `views` usa `ui`, `exercises`, `python`, `progress` y `course`, y todos ellos pueden usar `lib` y `config`. Ningún módulo de `python/` o `progress/` toca el DOM.
 
 ## Escribir lecciones
 
-Todo el curso está en `src/curso.txt`, en un formato de texto sencillo:
+Cada lección es una carpeta `NN-id` dentro de su módulo. El número da el orden y el resto es el identificador que aparece en la URL (`#l-hola-mundo`). El build se detiene con un mensaje claro si falta un archivo o algo no es válido.
 
-```
-=== modulo: bucles
-titulo: Repetir con bucles
-desc: Una frase que describe el módulo.
+### `lesson.md`
 
---- leccion: while
-titulo: El bucle while
-min: 15
-resumen: Una línea que aparece en la ruta.
-@@teoria
-Texto de la lección.
-@@ejercicio
+```markdown
+---
+title: El bucle while
+minutes: 15
+summary: Repetir mientras se cumpla una condición.
+---
+
+Teoría de la lección.
+
+## Ejercicio
+
 Enunciado del ejercicio.
-@@inicio
-código con el que empieza el editor
-@@solucion
-código que resuelve el ejercicio
-@@pista
+
+## Pista
+
 Una pista corta.
-@@comprobar
-{"runs":[{"inputs":["3"],"out":"3\n2\n1\n¡Despegue!"}]}
-@@test
-assert alguna_variable == 42, "Mensaje que verá quien hace el ejercicio"
 ```
 
-En `@@teoria` y `@@ejercicio` se puede usar un Markdown reducido: párrafos, listas con `- ` o `1. `, `**negrita**`, `*cursiva*`, `` `código` `` y bloques de código. Un bloque ` ```py ` se muestra con botón de ejecutar; un bloque ` ```txt ` se muestra como texto fijo, por ejemplo la salida esperada.
+Se admite un Markdown reducido: párrafos, listas con `- ` o `1. `, `**negrita**`, `*cursiva*`, `` `código` `` y bloques de código. Un bloque ` ```py ` se muestra con botón de ejecutar; ` ```txt ` se muestra como texto fijo, por ejemplo la salida esperada.
 
-`@@comprobar` es un objeto JSON. Todas las claves son opcionales:
+### `checks.json`
 
-| Clave | Qué hace |
-| --- | --- |
-| `runs` | Lista de ejecuciones. Cada una puede tener `inputs` (respuestas para `input()`), `out` (salida exacta esperada), `contains` (textos que deben aparecer) y `test` (código Python extra que se ejecuta después). |
-| `requiere` | Lista de `{"re": "...", "msg": "..."}`. Expresiones regulares que el código tiene que contener (sin contar los comentarios). |
-| `prohibe` | Igual que `requiere`, pero el código no puede contenerlas. Sirve, por ejemplo, para evitar que se escriba el resultado a mano. |
-| `omitir` | Expresión regular de líneas que se quitan antes de comprobar, como la llamada final que lanza un juego. |
+Todas las claves son opcionales:
 
-El código de `@@test` se añade al final del código del alumno en la última ejecución. Lo normal es usar `assert` con un mensaje claro.
+| Clave      | Qué hace                                                                                                                                                                                                          |
+| ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `runs`     | Lista de ejecuciones. Cada una puede tener `inputs` (respuestas para `input()`), `output` (salida exacta esperada), `contains` (textos que deben aparecer) y `test` (código Python extra que se ejecuta después). |
+| `requires` | Lista de `{ "pattern": "...", "message": "..." }`: expresiones regulares que el código tiene que contener, sin contar los comentarios.                                                                            |
+| `forbids`  | Igual que `requires`, pero el código no puede contenerlas. Sirve, por ejemplo, para evitar que se escriba el resultado a mano.                                                                                    |
+| `ignore`   | Expresión regular de líneas que se quitan antes de comprobar, como la llamada final que lanza un juego.                                                                                                           |
 
-## Pruebas
+```json
+{
+  "requires": [{ "pattern": "\\bwhile\\b", "message": "Usa un bucle while." }],
+  "runs": [{ "inputs": ["3"], "output": "3\n2\n1\n¡Despegue!" }]
+}
+```
 
-`tests/verificar.py` abre la página en un navegador sin interfaz y comprueba que, en cada lección, la solución supera el ejercicio y el código de partida no.
+### `test.py`
 
-```bash
-pip install playwright
-python3 -m playwright install chromium
-npm install        # Skulpt y CodeMirror, para probar sin depender del CDN
-npm test           # genera index.html y ejecuta la verificación
+Código que se añade al final del código del alumno en la última ejecución. Lo normal es usar `assert` con un mensaje claro, que es lo que verá el alumno si falla:
+
+```python
+assert total == 13700, "total debería valer 13700"
 ```
 
 ## Tecnología
 
-- [Skulpt](https://skulpt.org) 1.2.0 ejecuta Python 3 dentro del navegador, sin servidor.
-- [CodeMirror](https://codemirror.net/5/) 5.65.16 es el editor con resaltado de sintaxis.
+- [Skulpt](https://skulpt.org) 1.2 ejecuta Python 3 dentro del navegador, sin servidor.
+- [CodeMirror](https://codemirror.net/5/) 5 es el editor con resaltado de sintaxis.
+- [esbuild](https://esbuild.github.io) empaqueta el JavaScript y los estilos.
 - Tipografías de Google Fonts: Martian Mono, IBM Plex Sans y JetBrains Mono.
 
-Skulpt implementa la mayor parte de Python 3, pero no todo. Por ejemplo, no admite `match` / `case`. Las 20 lecciones están probadas con él.
+Skulpt implementa la mayor parte de Python 3, pero no todo. Por ejemplo, no admite `match` / `case`.

@@ -1,0 +1,5 @@
+assert a_numero("42") == 42.0, "a_numero('42') debería devolver 42.0"
+assert a_numero("3,5") == 3.5, "a_numero('3,5') debería devolver 3.5: cambia la coma por un punto"
+assert a_numero("-0.25") == -0.25, "a_numero('-0.25') debería devolver -0.25"
+assert a_numero("hola") is None, "a_numero('hola') debería devolver None"
+assert a_numero("") is None, "a_numero('') debería devolver None"
