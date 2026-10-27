@@ -49,3 +49,16 @@ export function parseSkulptError(error) {
 
 export const isSyntaxError = (error) =>
   error.type === "SyntaxError" || error.type === "IndentationError";
+
+/** Mensajes de error que ya se explican solos (los escribe el simulador de Flet en español). */
+const SELF_EXPLANATORY =
+  /Flet 1\.0|simulador del curso|necesita content o icon|solo acepta controles|todavía no está en la página|no llamó a ft\.run/;
+
+/** Explicación para principiantes de un error, o null si el mensaje ya basta. */
+export function explainError(error) {
+  if (SELF_EXPLANATORY.test(error.message)) return null;
+  if (/module 'flet' has no attribute/.test(error.message)) {
+    return "Ese nombre no existe en Flet 1.0 o el simulador del curso no lo incluye. Revisa las mayúsculas: los controles empiezan por mayúscula (ft.Text, ft.Button) y las constantes van en mayúsculas (ft.Colors.BLUE).";
+  }
+  return ERROR_EXPLANATIONS[error.type] ?? null;
+}

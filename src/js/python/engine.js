@@ -130,8 +130,42 @@ function setRunning(value) {
   emitter.emit("running", value);
 }
 
+/** Módulos extra (por ejemplo el simulador de Flet), por ruta dentro de Skulpt. */
+const extraFiles = new Map();
+
+/** Añade módulos de Python propios: {"src/lib/nombre.py": "código"}. */
+export function registerPythonFiles(files) {
+  for (const [path, source] of Object.entries(files)) extraFiles.set(path, source);
+}
+
 function readBuiltinFile(path) {
+  if (extraFiles.has(path)) return extraFiles.get(path);
   const files = window.Sk.builtinFiles?.files;
   if (!files || files[path] === undefined) throw new Error(`File not found: '${path}'`);
   return files[path];
+}
+
+let handlingEvent = false;
+
+/**
+ * Llama a una función de Python ya definida (por ejemplo, un manejador de
+ * eventos de una app de Flet) cuando el programa principal ya terminó.
+ * @returns {Promise<{status: "ok" | "error" | "busy", error?: ReturnType<typeof parseSkulptError>}>}
+ */
+export async function callPython(fn, args, { onOutput, timeLimitMs } = {}) {
+  if (running || handlingEvent) return { status: "busy" };
+  const Sk = window.Sk;
+  handlingEvent = true;
+  Sk.output = (text) => onOutput?.(text);
+  Sk.execLimit = timeLimitMs ?? TIME_LIMIT_MS.lesson;
+  Sk.execStart = Date.now();
+  try {
+    const pyArgs = args.map((value) => Sk.ffi.remapToPy(value));
+    await Sk.misceval.asyncToPromise(() => Sk.misceval.callsimOrSuspendArray(fn, pyArgs));
+    return { status: "ok" };
+  } catch (error) {
+    return { status: "error", error: parseSkulptError(error) };
+  } finally {
+    handlingEvent = false;
+  }
 }
