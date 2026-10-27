@@ -1,0 +1,8 @@
+{
+  "requires": [
+    {
+      "pattern": "ft\\.run\\(",
+      "message": "Arranca la app con ft.run(main) al final."
+    }
+  ]
+}

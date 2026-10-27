@@ -4,9 +4,12 @@ import { expect, openApp, test } from "./fixtures.js";
 
 test("el panel muestra las rutas y el siguiente paso", async ({ page }) => {
   await openApp(page);
-  const python = page.locator(".route-card", { hasText: "Python desde cero" });
+  const python = page.getByRole("article", { name: "Python desde cero" });
   await expect(python).toBeVisible();
   await expect(python).toContainText("0/20");
+  const flet = page.getByRole("article", { name: "Apps con Flet" });
+  await expect(flet).toContainText("0/12");
+  await expect(flet).toContainText("Antes conviene terminar «Python desde cero»");
   await expect(page.locator("#panel-actions .cta--primary")).toContainText(
     "empezar: Tu primer programa",
   );
@@ -19,6 +22,14 @@ test("la página de una ruta muestra sus módulos y lecciones", async ({ page })
   await expect(page.locator(".lesson-link")).toHaveCount(20);
   await expect(page.locator(".lesson-link--next")).toContainText("Tu primer programa");
   await expect(page.locator("[data-nav='rutas']")).toHaveAttribute("aria-current", "page");
+});
+
+test("la ruta de Flet tiene sus propios módulos y su numeración", async ({ page }) => {
+  await openApp(page, "#ruta-flet");
+  await expect(page.locator("#route-title")).toHaveText("Apps con Flet");
+  await expect(page.locator(".module")).toHaveCount(5);
+  await expect(page.locator(".lesson-link")).toHaveCount(12);
+  await expect(page.locator(".lesson-link").first()).toContainText("Hola, Flet");
 });
 
 test("los enlaces de la versión 1.x siguen funcionando", async ({ page }) => {
@@ -96,9 +107,27 @@ test("detener corta un bucle infinito", async ({ page }) => {
   await expect(stop).toBeHidden();
 });
 
-test("la página no se desborda a lo ancho", async ({ page }) => {
-  for (const hash of ["#panel", "#ruta-python", "#l-for-range", "#playground"]) {
-    await openApp(page, hash);
+test("ninguna página se desborda a lo ancho", async ({ page }) => {
+  await openApp(page);
+  const lessons = await page.evaluate(() =>
+    window.__desdecero.course.routes.flatMap((route) =>
+      route.modules.flatMap((module) => module.lessons.map((lesson) => lesson.id)),
+    ),
+  );
+  const routes = await page.evaluate(() =>
+    window.__desdecero.course.routes.map((route) => route.id),
+  );
+  const hashes = [
+    "#panel",
+    "#playground",
+    ...routes.map((id) => `#ruta-${id}`),
+    ...lessons.map((id) => `#l-${id}`),
+  ];
+  for (const hash of hashes) {
+    await page.evaluate((target) => {
+      location.hash = target;
+    }, hash);
+    await expect(page).toHaveURL(new RegExp(`${hash}$`));
     const overflow = await page.evaluate(
       () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
     );

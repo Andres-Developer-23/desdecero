@@ -141,6 +141,10 @@
   flex: none;
   align-items: center;
   justify-content: center;
+  /* Si la fuente de iconos no carga, el nombre del icono no invade a sus vecinos. */
+  width: 1em;
+  height: 1em;
+  overflow: hidden;
   font-size: 24px;
   line-height: 1;
 }
