@@ -1,0 +1,172 @@
+/* Estilos globales: reinicio, tipografía base y utilidades. */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+:root {
+  padding-top: var(--safe-top);
+  padding-bottom: var(--safe-bottom);
+}
+
+html,
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Tapa la franja de la zona segura superior en móviles. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0 0 auto;
+  height: var(--safe-top);
+  z-index: 30;
+  background: var(--color-bg);
+}
+
+img {
+  max-width: 100%;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+a {
+  color: inherit;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-highlight);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+::selection {
+  background: var(--color-accent-soft);
+  color: var(--color-text);
+}
+
+main {
+  padding-block: 28px 64px;
+}
+
+/* ---- Utilidades ---- */
+
+.container {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding-left: var(--gutter-left);
+  padding-right: var(--gutter-right);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 8px;
+  z-index: 50;
+  padding: 6px 10px;
+  background: var(--color-highlight);
+  color: #111;
+  font-family: var(--font-code);
+}
+
+.skip-link:focus {
+  left: 16px;
+}
+
+/* ---- Tipografía compartida ---- */
+
+.eyebrow {
+  margin: 0 0 10px;
+  font-family: var(--font-code);
+  font-size: 13px;
+  color: var(--color-text-muted);
+  letter-spacing: 0.01em;
+}
+
+.eyebrow__mark {
+  color: var(--color-accent);
+}
+
+.display {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.08;
+}
+
+.display--page {
+  font-size: clamp(1.7rem, 3.6vw, 2.35rem);
+}
+
+.lede {
+  max-width: 56ch;
+  margin: 18px 0 0;
+  font-size: 1.125rem;
+  color: var(--color-text-soft);
+}
+
+.inline-code {
+  padding: 0.05em 0.35em;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-overlay);
+  color: var(--syntax-builtin);
+  font-family: var(--font-code);
+  font-size: 0.88em;
+}
+
+.section-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.section-intro {
+  max-width: 60ch;
+  margin: 8px 0 22px;
+  color: var(--color-text-soft);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    scroll-behavior: auto !important;
+    animation: none !important;
+  }
+}

@@ -1,0 +1,238 @@
+/* Vista de lección: teoría a la izquierda y banco de trabajo del ejercicio a la derecha. */
+
+.breadcrumbs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 14px;
+  min-width: 0;
+  margin-bottom: 22px;
+  color: var(--color-text-muted);
+  font-family: var(--font-code);
+  font-size: 13px;
+}
+
+.breadcrumbs a {
+  color: var(--color-text-soft);
+  text-decoration: none;
+}
+
+.breadcrumbs a:hover {
+  color: var(--color-accent);
+}
+
+.breadcrumbs__path {
+  overflow-wrap: anywhere;
+}
+
+.breadcrumbs__path b {
+  color: var(--color-text-soft);
+  font-weight: 500;
+}
+
+.lesson-layout {
+  display: grid;
+  gap: 32px;
+}
+
+/* ---- Artículo ---- */
+
+.lesson {
+  min-width: 0;
+}
+
+.lesson__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin-bottom: 12px;
+  color: var(--color-text-muted);
+  font-family: var(--font-code);
+  font-size: 12.5px;
+}
+
+.lesson__done {
+  color: var(--color-accent);
+}
+
+.lesson__summary {
+  margin-top: 12px;
+  font-size: 1.06rem;
+}
+
+.lesson__body {
+  margin-top: 26px;
+}
+
+.lesson__footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-top: 34px;
+  padding-top: 22px;
+  border-top: 1px solid var(--color-border);
+}
+
+.lesson__note {
+  margin: 0;
+}
+
+.pager {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.pager__link {
+  display: block;
+  min-width: 0;
+  padding: 12px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-raised);
+  text-decoration: none;
+}
+
+.pager__link:hover {
+  border-color: var(--color-border-strong);
+  background: var(--color-bg-overlay);
+}
+
+.pager__link--next {
+  grid-column: 2;
+  text-align: right;
+}
+
+.pager__label {
+  color: var(--color-text-muted);
+  font-family: var(--font-code);
+  font-size: 12px;
+}
+
+.pager__title {
+  display: block;
+  overflow: hidden;
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ---- Banco de trabajo del ejercicio ---- */
+
+.workbench {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-raised);
+}
+
+.workbench__task {
+  flex: 0 1 auto;
+  max-width: none;
+  padding: 14px 16px 4px;
+  overflow: auto;
+  border-bottom: 1px solid var(--color-border);
+  font-size: 0.95rem;
+}
+
+.workbench__task .output-block {
+  margin-bottom: 12px;
+}
+
+.workbench__heading {
+  margin: 0 0 8px;
+  color: var(--color-accent);
+  font-family: var(--font-code);
+  font-size: 12.5px;
+  font-weight: 500;
+}
+
+.workbench__hint {
+  margin: 0;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--color-border);
+  background: color-mix(in srgb, var(--color-highlight) 8%, var(--color-bg-raised));
+  color: var(--color-text);
+  font-size: 0.92rem;
+}
+
+.workbench__hint-label {
+  margin-right: 6px;
+  color: var(--color-highlight);
+  font-family: var(--font-code);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.workbench__success {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 16px;
+  padding: 12px 16px;
+  border-top: 1px solid var(--color-accent);
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+  font-family: var(--font-code);
+  font-size: 13px;
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-bg-raised);
+}
+
+.toolbar__spacer {
+  flex: 1;
+}
+
+/* En pantallas anchas el banco de trabajo queda fijo junto al texto. */
+@media (min-width: 1100px) {
+  .lesson-layout {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.04fr);
+    align-items: start;
+    gap: 44px;
+  }
+
+  .workbench {
+    position: sticky;
+    top: calc(var(--header-height) + var(--safe-top) + 16px);
+    height: calc(100vh - var(--header-height) - var(--safe-top) - var(--safe-bottom) - 32px);
+    height: calc(100dvh - var(--header-height) - var(--safe-top) - var(--safe-bottom) - 32px);
+    min-height: 560px;
+  }
+
+  .workbench__task {
+    max-height: 34%;
+  }
+
+  .workbench .editor {
+    flex: 1 1 auto;
+    height: auto;
+    min-height: 150px;
+  }
+
+  .workbench .console {
+    flex: 0 1 31%;
+    min-height: 110px;
+  }
+
+  .workbench .console__output {
+    min-height: 0;
+    max-height: none;
+  }
+
+  .workbench__success {
+    flex: none;
+  }
+}

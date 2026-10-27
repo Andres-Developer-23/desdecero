@@ -1,0 +1,72 @@
+/* Consola donde aparece la salida de los programas y donde se responde a input(). */
+
+.console {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: var(--color-bg);
+}
+
+.console__output {
+  flex: 1 1 auto;
+  min-height: 150px;
+  max-height: 360px;
+  margin: 0;
+  padding: 12px 14px;
+  overflow: auto;
+  color: var(--color-text);
+  font-family: var(--font-code);
+  font-size: 13px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* Campo que aparece cuando el programa llama a input() */
+.console__stdin {
+  display: inline-flex;
+  align-items: baseline;
+  max-width: 100%;
+}
+
+.console__stdin input {
+  width: 22ch;
+  min-width: 10ch;
+  max-width: 100%;
+  padding: 1px 6px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 3px;
+  background: var(--color-bg-overlay);
+  color: var(--color-highlight);
+  font: inherit;
+}
+
+.console__stdin input:focus {
+  border-color: var(--color-highlight);
+  outline: 1px solid var(--color-highlight);
+}
+
+/* Tipos de línea en la salida */
+.out--system {
+  color: var(--color-text-muted);
+}
+.out--input {
+  color: var(--color-highlight);
+}
+.out--error {
+  color: var(--color-danger);
+}
+.out--explanation {
+  color: var(--color-text-soft);
+}
+.out--ok {
+  color: var(--color-accent);
+}
+.out--pass {
+  color: var(--color-accent);
+  font-weight: 700;
+}
+.out--fail {
+  color: var(--color-danger);
+  font-weight: 700;
+}

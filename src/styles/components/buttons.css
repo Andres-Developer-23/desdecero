@@ -1,0 +1,124 @@
+/* Botones de la interfaz: acciones del editor, llamadas a la acción y enlaces de texto. */
+
+.button {
+  padding: 7px 12px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-overlay);
+  color: var(--color-text);
+  font-family: var(--font-code);
+  font-size: 13px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.button:hover {
+  border-color: var(--color-text-muted);
+}
+
+.button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.button--run {
+  border-color: var(--color-accent);
+  background: var(--color-accent);
+  color: var(--color-accent-ink);
+  font-weight: 700;
+}
+
+.button--run:hover:not(:disabled) {
+  background: var(--color-accent-hover);
+}
+
+.button--check {
+  border-color: var(--color-accent);
+  background: transparent;
+  color: var(--color-accent);
+}
+
+.button--check:hover:not(:disabled) {
+  background: var(--color-accent-soft);
+}
+
+.button--stop {
+  border-color: var(--color-danger);
+  background: transparent;
+  color: var(--color-danger);
+}
+
+.button--ghost {
+  padding-inline: 8px;
+  border-color: transparent;
+  background: transparent;
+  color: var(--color-text-soft);
+}
+
+.button--ghost:hover {
+  border-color: var(--color-border-strong);
+  color: var(--color-text);
+}
+
+/* Estado de confirmación, por ejemplo antes de mostrar la solución. */
+.button--armed {
+  border-color: var(--color-highlight);
+  color: var(--color-highlight);
+}
+
+/* Llamadas a la acción con aspecto de comando: [empezar] */
+.cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  max-width: 100%;
+  padding: 11px 16px;
+  border: 1px solid var(--color-accent);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-accent);
+  font-family: var(--font-code);
+  font-size: 14.5px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.cta:hover {
+  background: var(--color-accent-soft);
+}
+
+.cta--primary {
+  background: var(--color-accent);
+  color: var(--color-accent-ink);
+  font-weight: 700;
+}
+
+.cta--primary:hover {
+  background: var(--color-accent-hover);
+}
+
+.cta--small {
+  padding: 7px 12px;
+  font-size: 13px;
+}
+
+.cta__label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.text-button {
+  padding: 2px 4px;
+  border: 0;
+  background: none;
+  color: var(--color-text-muted);
+  font-family: var(--font-code);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.text-button:hover {
+  color: var(--color-text);
+}
