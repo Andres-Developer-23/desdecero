@@ -109,7 +109,6 @@ export function createPlaygroundView({ progress }) {
 
   return {
     root,
-    nav: "playground",
     title: "Playground · Python desde Cero",
     show,
     hide: () => {

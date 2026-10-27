@@ -31,6 +31,7 @@ export function createLessonView({ course, progress }) {
     body: $("#lesson-body"),
     toggleDone: $("#lesson-toggle-done"),
     note: $("#lesson-note"),
+    back: $("#lesson-back"),
     previous: $("#lesson-previous"),
     next: $("#lesson-next"),
     badge: $("#exercise-badge"),
@@ -82,7 +83,9 @@ export function createLessonView({ course, progress }) {
     const previous = course.previous(lesson);
     const next = course.next(lesson);
 
-    elements.path.innerHTML = `~/ruta/<b>${escapeHtml(lessonPath(lesson))}</b>`;
+    elements.back.href = `#ruta-${lesson.route.id}`;
+    elements.back.textContent = `← ${lesson.route.title}`;
+    elements.path.innerHTML = `~/rutas/<b>${escapeHtml(lessonPath(lesson))}</b>`;
     elements.title.textContent = lesson.title;
     elements.summary.textContent = lesson.summary;
     elements.body.innerHTML = renderMarkdown(lesson.theory);
@@ -100,7 +103,7 @@ export function createLessonView({ course, progress }) {
     const done = progress.isDone(lesson.id);
 
     elements.meta.innerHTML = [
-      `<span>lección ${lesson.number} de ${course.total}</span>`,
+      `<span>lección ${lesson.number} de ${lesson.route.total}</span>`,
       `<span>módulo ${pad2(lesson.module.index)} · ${escapeHtml(lesson.module.title)}</span>`,
       `<span>~${lesson.minutes} min</span>`,
       done ? '<span class="lesson__done">[x] completada</span>' : "",
@@ -154,17 +157,19 @@ export function createLessonView({ course, progress }) {
 
     terminal.line("✓ ¡Ejercicio superado!", "pass");
     progress.setDone(current.id, true);
-    showSuccess(course.next(current));
-    if (!course.firstPending(progress.isDone)) {
-      terminal.line("Has completado toda la ruta. ¡Enhorabuena!", "ok");
+    showSuccess(current);
+    if (!course.firstPending(current.route, progress.isDone)) {
+      terminal.line(`Has completado la ruta «${current.route.title}». ¡Enhorabuena!`, "ok");
     }
   }
 
-  function showSuccess(next) {
-    elements.successLink.href = next ? `#l-${next.id}` : "#panel";
+  /** Enlaza con la siguiente lección de la ruta o, al terminarla, con la página de la ruta. */
+  function showSuccess(current) {
+    const next = course.next(current);
+    elements.successLink.href = next ? `#l-${next.id}` : `#ruta-${current.route.id}`;
     elements.successLink.querySelector(".cta__label").textContent = next
       ? `siguiente: ${next.title} →`
-      : "ver mi panel →";
+      : "ver la ruta completa →";
     elements.success.hidden = false;
   }
 
@@ -229,7 +234,6 @@ export function createLessonView({ course, progress }) {
 
   return {
     root,
-    nav: "ruta",
     get title() {
       return lesson ? `${lesson.title} · Python desde Cero` : "Python desde Cero";
     },

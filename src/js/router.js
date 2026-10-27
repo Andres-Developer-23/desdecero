@@ -1,37 +1,22 @@
 /*
- * Enrutado por el hash de la URL:
- *   #panel (o vacío)  panel
- *   #ruta             panel, desplazado hasta la ruta
- *   #l-<id>           lección
- *   #playground       playground
+ * Navegación entre vistas según el hash de la URL (ver hash-routes.js).
  */
 
+import { parseHash } from "./hash-routes.js";
 import { stopPython } from "./python/engine.js";
-
-/** Traduce un hash a una vista y sus parámetros. Función pura. */
-export function parseRoute(hash, course) {
-  const name = decodeURIComponent(hash.replace(/^#/, ""));
-  if (name.startsWith("l-")) {
-    const lesson = course.get(name.slice(2));
-    if (lesson) return { view: "lesson", params: { lesson } };
-  }
-  if (name === "playground") return { view: "playground", params: {} };
-  if (name === "ruta") return { view: "panel", params: { section: "route" } };
-  return { view: "panel", params: {} };
-}
 
 /**
  * @param {object} options
  * @param {object} options.course
- * @param {Record<string, {root: HTMLElement, nav: string, title: string, show: Function, hide?: Function, refresh?: Function}>} options.views
- * @param {(view: object) => void} [options.onChange]
+ * @param {Record<string, {root: HTMLElement, title: string, show: Function, hide?: Function, refresh?: Function}>} options.views
+ * @param {(route: ReturnType<typeof parseHash>) => void} [options.onChange]
  */
 export function createRouter({ course, views, onChange }) {
   let active = null;
   let pendingParams = null;
 
   function render() {
-    const route = parseRoute(window.location.hash, course);
+    const route = parseHash(window.location.hash, course);
     const view = views[route.view];
     const params = { ...route.params, ...pendingParams };
     pendingParams = null;
@@ -43,7 +28,7 @@ export function createRouter({ course, views, onChange }) {
 
     view.show(params);
     document.title = view.title;
-    onChange?.(view);
+    onChange?.(route);
   }
 
   window.addEventListener("hashchange", render);

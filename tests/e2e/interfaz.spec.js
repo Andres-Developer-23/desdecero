@@ -2,12 +2,28 @@
 
 import { expect, openApp, test } from "./fixtures.js";
 
-test("el panel muestra la ruta completa y el siguiente paso", async ({ page }) => {
+test("el panel muestra las rutas y el siguiente paso", async ({ page }) => {
   await openApp(page);
+  const python = page.locator(".route-card", { hasText: "Python desde cero" });
+  await expect(python).toBeVisible();
+  await expect(python).toContainText("0/20");
+  await expect(page.locator("#panel-actions .cta--primary")).toContainText(
+    "empezar: Tu primer programa",
+  );
+});
+
+test("la página de una ruta muestra sus módulos y lecciones", async ({ page }) => {
+  await openApp(page, "#ruta-python");
+  await expect(page.locator("#route-title")).toHaveText("Python desde cero");
   await expect(page.locator(".module")).toHaveCount(7);
   await expect(page.locator(".lesson-link")).toHaveCount(20);
   await expect(page.locator(".lesson-link--next")).toContainText("Tu primer programa");
-  await expect(page.locator("#panel-actions .cta--primary")).toContainText("empezar");
+  await expect(page.locator("[data-nav='rutas']")).toHaveAttribute("aria-current", "page");
+});
+
+test("los enlaces de la versión 1.x siguen funcionando", async ({ page }) => {
+  await openApp(page, "#ruta");
+  await expect(page.locator("#route-title")).toHaveText("Python desde cero");
 });
 
 test("ejecutar un programa con input() muestra la salida en la consola", async ({ page }) => {
@@ -37,7 +53,11 @@ test("superar un ejercicio completa la lección y actualiza el panel", async ({ 
 
   await page.goto("/#panel");
   await expect(page.locator(".stat").first()).toContainText("1");
+  await expect(page.locator(".route-card").first()).toContainText("1/20");
+
+  await page.goto("/#ruta-python");
   await expect(page.locator(".lesson-link--done")).toHaveCount(1);
+  await expect(page.locator(".lesson-link--next")).toContainText("Python como calculadora");
 });
 
 test("un error de sintaxis se explica y marca la línea", async ({ page }) => {
@@ -77,7 +97,7 @@ test("detener corta un bucle infinito", async ({ page }) => {
 });
 
 test("la página no se desborda a lo ancho", async ({ page }) => {
-  for (const hash of ["#panel", "#l-for-range", "#playground"]) {
+  for (const hash of ["#panel", "#ruta-python", "#l-for-range", "#playground"]) {
     await openApp(page, hash);
     const overflow = await page.evaluate(
       () => document.documentElement.scrollWidth - document.documentElement.clientWidth,

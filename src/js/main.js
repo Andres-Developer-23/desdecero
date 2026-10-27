@@ -16,6 +16,7 @@ import { createTerminal } from "./ui/terminal.js";
 import { createLessonView } from "./views/lesson.js";
 import { createPanelView } from "./views/panel.js";
 import { createPlaygroundView } from "./views/playground.js";
+import { createRouteView } from "./views/route.js";
 
 const course = createCourse(readCourseData($("#course-data")));
 const progress = createProgress(course.lessons.map((lesson) => lesson.id));
@@ -24,6 +25,7 @@ let syncStatus = "local";
 
 const views = {
   panel: createPanelView({ course, progress, getSyncStatus: () => syncStatus }),
+  route: createRouteView({ course, progress }),
   lesson: createLessonView({ course, progress }),
   playground: createPlaygroundView({ progress }),
 };
@@ -31,7 +33,7 @@ const views = {
 const router = createRouter({
   course,
   views,
-  onChange: (view) => header.setActiveNav(view.nav),
+  onChange: (route) => header.setActiveNav(route.nav),
 });
 
 setupExamples({

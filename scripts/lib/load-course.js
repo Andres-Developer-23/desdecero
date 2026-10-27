@@ -1,12 +1,14 @@
 /*
  * Lee el curso desde content/ y comprueba que esté completo.
  *
- *   content/NN-modulo/module.json
- *   content/NN-modulo/NN-leccion/lesson.md
- *                               /starter.py
- *                               /solution.py
- *                               /checks.json
- *                               /test.py      (opcional)
+ *   content/NN-ruta/route.json                 título, descripción, nivel y motor
+ *   content/NN-ruta/NN-modulo/module.json      título y descripción del módulo
+ *   content/NN-ruta/NN-modulo/NN-leccion/
+ *     lesson.md      metadatos, teoría, ## Ejercicio y ## Pista
+ *     starter.py     código con el que empieza el editor
+ *     solution.py    solución de referencia
+ *     checks.json    cómo se comprueba el ejercicio
+ *     test.py        asserts extra (opcional)
  *
  * Cualquier problema se acumula y se informa de una vez, con la ruta del
  * archivo, para que sea fácil de corregir.
@@ -20,6 +22,8 @@ const NUMBERED_DIR = /^(\d{2})-([a-z0-9]+(?:-[a-z0-9]+)*)$/;
 const LESSON_SECTIONS = { Ejercicio: "exercise", Pista: "hint" };
 const CHECK_KEYS = new Set(["requires", "forbids", "ignore", "runs"]);
 const RUN_KEYS = new Set(["inputs", "output", "contains", "test"]);
+/** Motores con los que se ejecutan los ejercicios de una ruta. */
+export const RUNTIMES = new Set(["python", "flet"]);
 
 export class CourseError extends Error {
   constructor(problems) {
@@ -30,30 +34,70 @@ export class CourseError extends Error {
   }
 }
 
-/** Devuelve { modules: [...] } listo para incrustar en la página. */
+/** Devuelve { routes: [...] } listo para incrustar en la página. */
 export function loadCourse(contentDir) {
   const problems = [];
-  const seenIds = new Map();
+  const seenLessonIds = new Map();
 
-  const modules = numberedDirs(contentDir, problems).map(({ dir, slug }) => {
-    const meta = readJson(path.join(dir, "module.json"), problems) ?? {};
-    requireStrings(meta, ["title", "description"], path.join(dir, "module.json"), problems);
+  const routes = numberedDirs(contentDir, problems).map(({ dir, slug }) =>
+    loadRoute(dir, slug, { problems, seenLessonIds }),
+  );
 
-    const lessons = numberedDirs(dir, problems).map(({ dir: lessonDir, slug: id }) => {
-      if (seenIds.has(id)) {
-        problems.push(`${rel(lessonDir)}: el id "${id}" ya se usa en ${rel(seenIds.get(id))}`);
-      }
-      seenIds.set(id, lessonDir);
-      return loadLesson(lessonDir, id, problems);
-    });
+  if (!routes.length) problems.push(`${rel(contentDir)}: no hay rutas`);
+  const routeIds = new Set(routes.map((route) => route.id));
+  for (const route of routes) {
+    if (route.requires && !routeIds.has(route.requires)) {
+      problems.push(`${rel(route.dir)}/route.json: "requires" apunta a una ruta que no existe`);
+    }
+    delete route.dir;
+  }
 
-    if (!lessons.length) problems.push(`${rel(dir)}: el módulo no tiene lecciones`);
-    return { id: slug, title: meta.title, description: meta.description, lessons };
+  if (problems.length) throw new CourseError(problems);
+  return { routes };
+}
+
+function loadRoute(dir, id, context) {
+  const { problems } = context;
+  const file = path.join(dir, "route.json");
+  const meta = readJson(file, problems) ?? {};
+  requireStrings(meta, ["title", "description", "level"], file, problems);
+  if (!RUNTIMES.has(meta.runtime)) {
+    problems.push(`${rel(file)}: "runtime" debe ser uno de: ${[...RUNTIMES].join(", ")}`);
+  }
+
+  const modules = numberedDirs(dir, problems).map(({ dir: moduleDir, slug }) =>
+    loadModule(moduleDir, slug, context),
+  );
+  if (!modules.length) problems.push(`${rel(dir)}: la ruta no tiene módulos`);
+
+  return {
+    id,
+    dir,
+    title: meta.title,
+    description: meta.description,
+    level: meta.level,
+    runtime: meta.runtime,
+    requires: meta.requires ?? null,
+    modules,
+  };
+}
+
+function loadModule(dir, id, { problems, seenLessonIds }) {
+  const meta = readJson(path.join(dir, "module.json"), problems) ?? {};
+  requireStrings(meta, ["title", "description"], path.join(dir, "module.json"), problems);
+
+  const lessons = numberedDirs(dir, problems).map(({ dir: lessonDir, slug: lessonId }) => {
+    if (seenLessonIds.has(lessonId)) {
+      problems.push(
+        `${rel(lessonDir)}: el id "${lessonId}" ya se usa en ${rel(seenLessonIds.get(lessonId))}`,
+      );
+    }
+    seenLessonIds.set(lessonId, lessonDir);
+    return loadLesson(lessonDir, lessonId, problems);
   });
 
-  if (!modules.length) problems.push(`${rel(contentDir)}: no hay módulos`);
-  if (problems.length) throw new CourseError(problems);
-  return { modules };
+  if (!lessons.length) problems.push(`${rel(dir)}: el módulo no tiene lecciones`);
+  return { id, title: meta.title, description: meta.description, lessons };
 }
 
 function loadLesson(dir, id, problems) {

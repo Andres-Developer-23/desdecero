@@ -18,11 +18,16 @@ const VALID_LESSON = {
   "checks.json": '{ "runs": [{ "output": "hola" }] }\n',
 };
 
-/** Crea un curso de prueba con un módulo y las lecciones indicadas. */
-function makeCourse(name, lessons) {
+const ROUTE_JSON =
+  '{ "title": "Ruta", "description": "De prueba", "level": "Inicial", "runtime": "python" }';
+
+/** Crea un curso de prueba con una ruta, un módulo y las lecciones indicadas. */
+function makeCourse(name, lessons, routeJson = ROUTE_JSON) {
   const dir = path.join(temp, name);
-  const moduleDir = path.join(dir, "00-basico");
+  const routeDir = path.join(dir, "01-ruta");
+  const moduleDir = path.join(routeDir, "00-basico");
   mkdirSync(moduleDir, { recursive: true });
+  writeFileSync(path.join(routeDir, "route.json"), routeJson);
   writeFileSync(
     path.join(moduleDir, "module.json"),
     '{ "title": "Básico", "description": "Lo primero" }',
@@ -39,8 +44,10 @@ function makeCourse(name, lessons) {
 describe("carga del contenido", () => {
   test("el curso real se carga completo", () => {
     const course = loadCourse(path.join(ROOT, "content"));
-    const lessons = course.modules.flatMap((module) => module.lessons);
-    assert.equal(course.modules.length, 7);
+    const python = course.routes.find((route) => route.id === "python");
+    const lessons = python.modules.flatMap((module) => module.lessons);
+    assert.equal(python.runtime, "python");
+    assert.equal(python.modules.length, 7);
     assert.equal(lessons.length, 20);
     assert.equal(lessons[0].id, "hola-mundo");
     assert.equal(lessons.at(-1).id, "adivina");
@@ -48,7 +55,12 @@ describe("carga del contenido", () => {
 
   test("lee metadatos, secciones, código y comprobaciones de una lección", () => {
     const course = loadCourse(makeCourse("valido", { "01-hola": VALID_LESSON }));
-    const [lesson] = course.modules[0].lessons;
+    const [route] = course.routes;
+    assert.deepEqual(
+      { id: route.id, level: route.level, runtime: route.runtime, requires: route.requires },
+      { id: "ruta", level: "Inicial", runtime: "python", requires: null },
+    );
+    const [lesson] = route.modules[0].lessons;
     assert.deepEqual(
       { ...lesson },
       {
@@ -86,6 +98,23 @@ describe("carga del contenido", () => {
         assert.match(text, /02-hola: el id "hola" ya se usa/);
         assert.match(text, /02-hola\/solution\.py: falta el archivo/);
         assert.match(text, /03-sin-pista\/lesson\.md: falta contenido en la sección "## Pista"/);
+        return true;
+      },
+    );
+  });
+
+  test("valida route.json: motor conocido y requisitos que existan", () => {
+    const dir = makeCourse(
+      "ruta-rota",
+      { "01-hola": VALID_LESSON },
+      '{ "title": "Ruta", "description": "x", "level": "x", "runtime": "java", "requires": "nada" }',
+    );
+    assert.throws(
+      () => loadCourse(dir),
+      (error) => {
+        const text = error.problems.join("\n");
+        assert.match(text, /route\.json: "runtime" debe ser uno de: python, flet/);
+        assert.match(text, /route\.json: "requires" apunta a una ruta que no existe/);
         return true;
       },
     );

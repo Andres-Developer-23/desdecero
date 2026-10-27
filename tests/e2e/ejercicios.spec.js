@@ -10,14 +10,14 @@ import { expect, openApp, servePage, test } from "./fixtures.js";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const course = loadCourse(path.join(ROOT, "content"));
-const lessons = course.modules.flatMap((module) => module.lessons);
+const lessons = course.routes.flatMap((route) => route.modules.flatMap((module) => module.lessons));
 
 /** Ejecuta el comprobador dentro de la página con el código indicado. */
 async function check(page, lessonId, field) {
   return page.evaluate(
     async ({ id, field }) => {
       const { course, checkExercise, createTerminal } = window.__desdecero;
-      const lesson = course.get(id);
+      const lesson = course.getLesson(id);
       const output = document.createElement("pre");
       const result = await checkExercise(lesson, lesson[field], createTerminal(output));
       return { ...result, log: output.textContent };
