@@ -1,0 +1,1238 @@
+=== modulo: primeros-pasos
+titulo: Primeros pasos
+desc: Escribe tus primeras líneas, usa Python como calculadora y aprende a leer los errores sin miedo.
+
+--- leccion: hola-mundo
+titulo: Tu primer programa
+min: 10
+resumen: print(), texto entre comillas y el orden en que Python ejecuta las líneas.
+@@teoria
+Un programa es una lista de instrucciones que el ordenador sigue en orden, de arriba abajo, una línea cada vez. En Python, la instrucción más básica es `print()`: muestra en pantalla lo que pongas entre los paréntesis.
+
+```py
+print("Hola, mundo")
+print("Estoy aprendiendo Python")
+```
+
+Pulsa **ejecutar** en el ejemplo. Verás las dos líneas en el mismo orden en que están escritas.
+
+El texto va entre comillas. Python acepta comillas dobles `"..."` o simples `'...'`, pero tienen que coincidir al abrir y al cerrar. A un texto entre comillas se le llama **string** (cadena de texto).
+
+`print()` también acepta varios valores separados por comas. Los muestra en la misma línea, separados por un espacio. Y un `print()` vacío deja una línea en blanco:
+
+```py
+print("Tengo", 3, "gatos")
+print()
+print("La línea de arriba quedó vacía")
+```
+
+Tres detalles que conviene saber desde ya:
+
+- Python distingue mayúsculas y minúsculas: `Print("hola")` da error.
+- Cada `print()` termina con un salto de línea.
+- Las líneas que empiezan con `#` son **comentarios**: Python las ignora. Sirven para explicar tu código a otras personas y a tu yo del futuro.
+
+```py
+# Esto es un comentario: no se ejecuta
+print("Esto sí se ejecuta")  # también puedes comentar al final de una línea
+```
+@@ejercicio
+Escribe un programa que imprima exactamente estas dos líneas:
+
+```txt
+Hola, mundo
+Mi primer programa en Python
+```
+@@inicio
+# Escribe tu código debajo de esta línea
+
+@@solucion
+print("Hola, mundo")
+print("Mi primer programa en Python")
+@@pista
+Necesitas dos print(), uno por línea. Copia el texto tal cual, con la coma y la mayúscula de "Hola".
+@@comprobar
+{"runs":[{"out":"Hola, mundo\nMi primer programa en Python"}]}
+
+--- leccion: calculadora
+titulo: Python como calculadora
+min: 15
+resumen: Operadores aritméticos, el orden de las operaciones y la diferencia entre / y //.
+@@teoria
+Python sabe hacer cuentas. Escribe una operación dentro de `print()` y te muestra el resultado:
+
+```py
+print(7 + 3)
+print(7 - 3)
+print(7 * 3)
+print(7 / 2)
+```
+
+Estos son los operadores que vas a usar todo el tiempo:
+
+- `+` suma, `-` resta, `*` multiplicación
+- `/` división: siempre devuelve un número con decimales (`7 / 2` da `3.5`)
+- `//` división entera: descarta los decimales (`7 // 2` da `3`)
+- `%` módulo: el resto de la división (`7 % 2` da `1`). Sirve, por ejemplo, para saber si un número es par: si `n % 2` da `0`, es par.
+- `**` potencia: `2 ** 10` da `1024`
+
+Las operaciones siguen el mismo orden que en matemáticas: primero potencias, luego multiplicaciones y divisiones, y por último sumas y restas. Usa paréntesis cuando quieras cambiar ese orden o simplemente dejarlo claro:
+
+```py
+print(2 + 3 * 4)        # 14: primero la multiplicación
+print((2 + 3) * 4)      # 20: primero el paréntesis
+print(17 // 5, 17 % 5)  # 3 cajas completas y sobran 2
+```
+
+Los decimales se escriben con punto, no con coma: `3.5`, no `3,5`. Con coma, Python entiende que son dos números distintos.
+@@ejercicio
+Una semana tiene 7 días, cada día 24 horas y cada hora 60 minutos. Imprime **cuántos minutos tiene una semana** calculándolo con una operación (no escribas el resultado a mano).
+
+En la línea siguiente, imprime cuántas **semanas completas** caben en 100 días usando la división entera.
+@@inicio
+# Minutos en una semana
+print()
+
+# Semanas completas en 100 días
+print()
+@@solucion
+# Minutos en una semana
+print(7 * 24 * 60)
+
+# Semanas completas en 100 días
+print(100 // 7)
+@@pista
+Multiplica los tres números en una sola expresión: 7 * 24 * 60. Para las semanas, divide 100 entre 7 con // y te quedas solo con la parte entera.
+@@comprobar
+{"runs":[{"out":"10080\n14"}],"requiere":[{"re":"\\*","msg":"Calcula los minutos multiplicando con *."},{"re":"//","msg":"Usa la división entera // para las semanas."}],"prohibe":[{"re":"10080","msg":"No escribas 10080 a mano: deja que Python haga la cuenta."}]}
+
+--- leccion: errores
+titulo: Leer los errores sin miedo
+min: 15
+resumen: Qué dice un mensaje de error, cómo encontrar la línea y los tres errores más comunes.
+@@teoria
+Un error no significa que lo estés haciendo mal: es la forma que tiene Python de decirte exactamente qué no entendió. Programar es, en buena parte, leer errores y corregirlos.
+
+Un mensaje de error tiene dos partes que importan: **el tipo de error** y **la línea** donde ocurrió. Ejecuta este ejemplo:
+
+```py
+print("Esta línea funciona")
+print(mensaje)
+```
+
+Python ejecuta la primera línea y se detiene en la segunda con un `NameError`: está usando un nombre, `mensaje`, que nadie ha definido. La primera línea sí llegó a imprimirse.
+
+Los tres errores que más vas a ver al empezar:
+
+- `SyntaxError`: el código está mal escrito y Python no puede leerlo. Suele ser una comilla o un paréntesis sin cerrar, o que faltan los dos puntos `:` al final de un `if` o un `for`. Con este error no se ejecuta ninguna línea.
+- `NameError`: usas un nombre que no existe. Casi siempre es una errata (`pritn` en lugar de `print`) o una variable que todavía no has creado.
+- `TypeError`: mezclas tipos de datos que no encajan, como sumar un texto y un número.
+
+```py
+print("Tengo " + 30 + " años")
+```
+
+Cuando veas un error, sigue siempre los mismos pasos: lee el tipo, ve a la línea indicada (el editor la marca en rojo) y revisa también la línea anterior, porque muchas veces el problema empieza ahí.
+@@ejercicio
+Este programa tiene **tres errores**, uno en cada línea. Corrígelos para que imprima:
+
+```txt
+Bienvenida al curso
+Lecciones: 20
+Python 3
+```
+@@inicio
+print("Bienvenida al curso)
+pritn("Lecciones:", 20)
+print("Python " + 3)
+@@solucion
+print("Bienvenida al curso")
+print("Lecciones:", 20)
+print("Python " + "3")
+@@pista
+Línea 1: falta cerrar una comilla. Línea 2: revisa cómo está escrito print. Línea 3: no se puede sumar texto y número; pon el 3 entre comillas o usa una coma en lugar de +.
+@@comprobar
+{"runs":[{"out":"Bienvenida al curso\nLecciones: 20\nPython 3"}]}
+
+=== modulo: variables
+titulo: Variables y tipos de datos
+desc: Guarda información con nombre, conoce los tipos básicos y trabaja con texto y con lo que escribe el usuario.
+
+--- leccion: variables
+titulo: Variables: guardar datos con nombre
+min: 15
+resumen: Asignar con =, elegir buenos nombres y cambiar el valor de una variable.
+@@teoria
+Una **variable** es un nombre que apunta a un valor. Se crea con el signo `=`: a la izquierda va el nombre y a la derecha el valor.
+
+```py
+nombre = "Lucía"
+edad = 28
+print(nombre)
+print(edad)
+```
+
+En programación, `=` no significa "es igual a": significa **asigna**. `edad = 28` se lee "guarda 28 en edad". Por eso puedes cambiar el valor más adelante, incluso a partir del valor anterior:
+
+```py
+puntos = 10
+puntos = puntos + 5
+print(puntos)   # 15
+puntos += 5     # forma corta de puntos = puntos + 5
+print(puntos)   # 20
+```
+
+Reglas para los nombres:
+
+- Pueden tener letras, números y guiones bajos, pero no pueden empezar por un número.
+- Sin espacios: usa `precio_total`, no `precio total`. Este estilo con guiones bajos se llama *snake_case* y es el habitual en Python.
+- Mayúsculas y minúsculas cuentan: `Edad` y `edad` son variables distintas.
+- Elige nombres que expliquen qué guardan: `precio` dice mucho más que `x`.
+
+Las variables se combinan en operaciones igual que los números:
+
+```py
+precio = 12.5
+cantidad = 4
+total = precio * cantidad
+print("Total:", total)
+```
+@@ejercicio
+Crea tres variables:
+
+- `producto` con el texto `"Cuaderno"`
+- `precio` con el valor `3.5`
+- `unidades` con el valor `6`
+
+Después crea `total`, que sea el precio por las unidades. La última línea ya imprime el resultado: `Cuaderno x 6 = 21.0`.
+@@inicio
+producto =
+precio =
+unidades =
+
+total =
+
+print(producto, "x", unidades, "=", total)
+@@solucion
+producto = "Cuaderno"
+precio = 3.5
+unidades = 6
+
+total = precio * unidades
+
+print(producto, "x", unidades, "=", total)
+@@pista
+El texto va entre comillas y los números sin ellas. total se calcula con precio * unidades.
+@@comprobar
+{"runs":[{"out":"Cuaderno x 6 = 21.0"}]}
+@@test
+assert producto == "Cuaderno", "producto debería ser el texto 'Cuaderno'"
+assert precio == 3.5, "precio debería valer 3.5"
+assert unidades == 6, "unidades debería valer 6"
+assert total == precio * unidades, "total debería calcularse como precio * unidades"
+
+--- leccion: tipos
+titulo: Tipos de datos y conversiones
+min: 15
+resumen: int, float, str y bool; type() para preguntar el tipo; int(), float() y str() para convertir.
+@@teoria
+Cada valor en Python tiene un **tipo**, y el tipo decide qué puedes hacer con él. Los cuatro básicos:
+
+- `int`: números enteros, como `42` o `-7`
+- `float`: números con decimales, como `3.14` o `2.0`
+- `str`: texto, siempre entre comillas, como `"hola"` o `"42"`
+- `bool`: verdadero o falso; solo existen dos valores, `True` y `False`
+
+La función `type()` te dice el tipo de cualquier valor:
+
+```py
+print(type(42))
+print(type(3.14))
+print(type("42"))
+print(type(True))
+```
+
+Ojo con el tercero: `"42"` entre comillas es texto, no un número. Parece lo mismo, pero se comporta distinto:
+
+```py
+print(42 + 8)       # 50
+print("42" + "8")   # 428: con textos, + los une
+```
+
+Para pasar de un tipo a otro se usan funciones con el nombre del tipo:
+
+```py
+texto = "25"
+numero = int(texto)       # de texto a entero
+print(numero + 5)         # 30
+print(float("2.5") * 2)   # 5.0
+print("Tengo " + str(30) + " años")   # de número a texto
+```
+
+`int()` solo funciona con textos que parecen un entero. `int("hola")` o `int("2.5")` producen un `ValueError`.
+@@ejercicio
+Tienes dos medidas que llegaron como texto: `ancho = "12"` y `alto = "3.5"`. Conviértelas al tipo numérico adecuado, guarda el área (`ancho * alto`) en una variable `area` y deja que la última línea imprima `Área: 42.0`.
+@@inicio
+ancho = "12"
+alto = "3.5"
+
+# Convierte y calcula el área
+area =
+
+print("Área:", area)
+@@solucion
+ancho = "12"
+alto = "3.5"
+
+# Convierte y calcula el área
+area = int(ancho) * float(alto)
+
+print("Área:", area)
+@@pista
+ancho es un entero, así que usa int(ancho). alto tiene decimales, así que necesita float(alto). Multiplica los dos.
+@@comprobar
+{"runs":[{"out":"Área: 42.0"}]}
+@@test
+assert isinstance(area, float), "area debería ser un número con decimales (float), no un texto"
+assert area == 42.0, "area debería valer 42.0"
+
+--- leccion: textos
+titulo: Trabajar con texto
+min: 20
+resumen: f-strings, métodos de texto, len() y posiciones de cada carácter.
+@@teoria
+Los textos son de lo que más vas a manejar. La forma más cómoda de mezclar texto y variables es la **f-string**: pon una `f` delante de las comillas y escribe las variables entre llaves.
+
+```py
+nombre = "Andrés"
+edad = 25
+print(f"Me llamo {nombre} y tengo {edad} años")
+print(f"El año que viene tendré {edad + 1}")
+```
+
+Dentro de las llaves cabe cualquier expresión. Para limitar los decimales, añade `:.2f` (dos decimales):
+
+```py
+precio = 19.999
+print(f"Precio: {precio:.2f}")
+```
+
+Los textos tienen **métodos**: funciones que se llaman con un punto detrás del texto. Los más útiles:
+
+```py
+frase = "  Aprender Python  "
+print(frase.strip())       # quita los espacios del principio y del final
+print(frase.upper())       # MAYÚSCULAS
+print(frase.lower())       # minúsculas
+print(frase.replace("Python", "a programar"))
+print(len(frase))          # cuántos caracteres tiene, espacios incluidos
+```
+
+Cada carácter tiene una posición que empieza en **0**. Con corchetes sacas un carácter o un trozo:
+
+```py
+lenguaje = "Python"
+print(lenguaje[0])     # P
+print(lenguaje[-1])    # n: los negativos cuentan desde el final
+print(lenguaje[0:3])   # Pyt: desde la posición 0 hasta la 3, sin incluirla
+```
+
+Los métodos no cambian el texto original: devuelven uno nuevo. Si quieres conservar el cambio, guárdalo: `nombre = nombre.strip()`.
+@@ejercicio
+La variable `entrada` contiene un nombre mal escrito: `"   mARÍA gonzález  "`.
+
+1. Quítale los espacios con `strip()` y pon en mayúscula la primera letra de cada palabra con `.title()`. Guarda el resultado en `nombre`.
+2. Imprime con una f-string: `Hola, María González. Tu nombre tiene 14 caracteres.` Calcula los caracteres con `len()`.
+@@inicio
+entrada = "   mARÍA gonzález  "
+
+nombre =
+
+print()
+@@solucion
+entrada = "   mARÍA gonzález  "
+
+nombre = entrada.strip().title()
+
+print(f"Hola, {nombre}. Tu nombre tiene {len(nombre)} caracteres.")
+@@pista
+Puedes encadenar métodos: entrada.strip().title(). En la f-string pon {nombre} y {len(nombre)} entre llaves.
+@@comprobar
+{"runs":[{"out":"Hola, María González. Tu nombre tiene 14 caracteres."}],"requiere":[{"re":"len\\(","msg":"Calcula los caracteres con len()."}]}
+@@test
+assert nombre == "María González", "nombre debería quedar como 'María González', sin espacios extra"
+
+--- leccion: input
+titulo: Pedir datos con input()
+min: 15
+resumen: Programas interactivos y por qué siempre hay que convertir lo que escribe el usuario.
+@@teoria
+Hasta ahora tus programas hacían siempre lo mismo. Con `input()` el programa se detiene, espera a que el usuario escriba algo y pulse Enter, y te devuelve lo que escribió.
+
+```py
+nombre = input("¿Cómo te llamas? ")
+print(f"Encantado, {nombre}")
+```
+
+Al ejecutar el ejemplo aparece un campo en la consola para que escribas tu respuesta. El texto entre paréntesis es el mensaje que ve el usuario; deja un espacio al final para que no quede pegado a la respuesta.
+
+Lo más importante de `input()`: **siempre devuelve texto**, aunque el usuario escriba un número. Si quieres hacer cuentas, conviértelo:
+
+```py
+anio = int(input("¿En qué año naciste? "))
+print(f"En 2030 cumplirás {2030 - anio} años")
+```
+
+Si olvidas el `int()`, Python intentará restar un número y un texto y obtendrás un `TypeError`. Es uno de los errores más frecuentes al empezar, así que conviene reconocerlo a la primera.
+@@ejercicio
+Escribe un programa que pida **dos números enteros** con `input()` y muestre su suma con este formato exacto (si el usuario escribe 7 y 5):
+
+```txt
+La suma es 12
+```
+
+El comprobador lo probará con varios pares de números distintos. El código de partida tiene un error típico: ejecútalo con 7 y 5 para verlo.
+@@inicio
+a = input("Primer número: ")
+b = input("Segundo número: ")
+
+print(f"La suma es {a + b}")
+@@solucion
+a = int(input("Primer número: "))
+b = int(input("Segundo número: "))
+
+print(f"La suma es {a + b}")
+@@pista
+Ahora mismo a y b son textos, por eso "7" + "5" da "75". Envuelve cada input() en int().
+@@comprobar
+{"runs":[{"inputs":["7","5"],"out":"La suma es 12"},{"inputs":["100","-30"],"out":"La suma es 70"}]}
+
+=== modulo: decisiones
+titulo: Tomar decisiones
+desc: Compara valores, combina condiciones y haz que tu programa elija qué camino seguir.
+
+--- leccion: booleanos
+titulo: Comparaciones y lógica
+min: 15
+resumen: ==, !=, <, >, and, or y not: preguntas que se responden con True o False.
+@@teoria
+Para tomar decisiones, un programa necesita hacerse preguntas de sí o no. En Python esas preguntas son **comparaciones**, y su respuesta es un `bool`: `True` o `False`.
+
+```py
+edad = 17
+print(edad >= 18)        # False
+print(edad == 17)        # True
+print(edad != 17)        # False
+print("hola" == "Hola")  # False: las mayúsculas cuentan
+```
+
+Los operadores de comparación:
+
+- `==` igual a (dos signos; uno solo es asignar)
+- `!=` distinto de
+- `<` menor, `>` mayor, `<=` menor o igual, `>=` mayor o igual
+
+Para combinar varias preguntas se usan tres palabras:
+
+- `and`: es True solo si **las dos** partes son True
+- `or`: es True si **al menos una** parte es True
+- `not`: invierte el resultado
+
+```py
+edad = 25
+tiene_entrada = True
+print(edad >= 18 and tiene_entrada)   # True
+print(edad < 12 or edad > 65)         # False
+print(not tiene_entrada)              # False
+```
+
+El resultado de una comparación se puede guardar en una variable, como cualquier otro valor. Así el código se lee casi como una frase: `puede_entrar = edad >= 18 and tiene_entrada`.
+@@ejercicio
+Un parque de atracciones deja subir a la montaña rusa a quien mide **al menos 140 cm** y tiene **al menos 10 años**, o a quien vaya **acompañado de un adulto** y mida **al menos 120 cm**.
+
+Completa `puede_subir` con una sola expresión que use `altura`, `edad` y `con_adulto`. El comprobador probará cinco visitantes distintos.
+@@inicio
+altura = int(input("Altura en cm: "))
+edad = int(input("Edad: "))
+con_adulto = input("¿Va con un adulto? (s/n): ") == "s"
+
+puede_subir =
+
+print(f"¿Puede subir? {puede_subir}")
+@@solucion
+altura = int(input("Altura en cm: "))
+edad = int(input("Edad: "))
+con_adulto = input("¿Va con un adulto? (s/n): ") == "s"
+
+puede_subir = (altura >= 140 and edad >= 10) or (con_adulto and altura >= 120)
+
+print(f"¿Puede subir? {puede_subir}")
+@@pista
+Escribe las dos condiciones entre paréntesis y únelas con or: (altura >= 140 and edad >= 10) or (con_adulto and altura >= 120).
+@@comprobar
+{"runs":[{"inputs":["150","12","n"],"out":"¿Puede subir? True"},{"inputs":["150","8","n"],"out":"¿Puede subir? False"},{"inputs":["125","6","s"],"out":"¿Puede subir? True"},{"inputs":["115","6","s"],"out":"¿Puede subir? False"},{"inputs":["135","11","n"],"out":"¿Puede subir? False"}]}
+
+--- leccion: if-elif-else
+titulo: if, elif y else
+min: 20
+resumen: Ejecutar código solo cuando se cumple una condición, y la sangría que marca cada bloque.
+@@teoria
+`if` ejecuta un bloque de código solo si la condición es verdadera. La sintaxis tiene dos detalles que no se pueden olvidar: los **dos puntos** al final de la línea del `if` y la **sangría** (4 espacios) de las líneas que dependen de él.
+
+```py
+temperatura = 31
+if temperatura > 30:
+    print("Hace calor")
+    print("Bebe agua")
+print("Esta línea se ejecuta siempre")
+```
+
+La sangría es la forma que tiene Python de saber qué líneas están dentro del `if`. En el editor, al pulsar Enter después de los dos puntos, la sangría se añade sola.
+
+Con `else` indicas qué hacer cuando la condición es falsa, y con `elif` (abreviatura de *else if*) encadenas más casos. Python comprueba las condiciones de arriba abajo y ejecuta **solo el primer bloque** que se cumple:
+
+```py
+nota = 4.2
+if nota >= 4.5:
+    print("Excelente")
+elif nota >= 4.0:
+    print("Muy bien")
+elif nota >= 3.0:
+    print("Aprobado")
+else:
+    print("Reprobado")
+```
+
+Con `nota = 4.2` también se cumple `nota >= 3.0`, pero da igual: Python ya entró en el bloque de "Muy bien" y se salta el resto. Por eso el orden importa: ve de la condición más exigente a la menos exigente.
+@@ejercicio
+Escribe un programa que pida una temperatura (puede tener decimales) y muestre un mensaje según el valor:
+
+- menos de 10: `Hace frío`
+- de 10 a menos de 25: `Está templado`
+- 25 o más: `Hace calor`
+
+El comprobador probará con 5, 10, 18.5, 25 y 33.
+@@inicio
+temperatura = float(input("Temperatura en °C: "))
+
+# Escribe aquí tu if / elif / else
+@@solucion
+temperatura = float(input("Temperatura en °C: "))
+
+if temperatura < 10:
+    print("Hace frío")
+elif temperatura < 25:
+    print("Está templado")
+else:
+    print("Hace calor")
+@@pista
+Empieza con if temperatura < 10:, sigue con elif temperatura < 25: y termina con else:. No olvides los dos puntos ni los 4 espacios de sangría.
+@@comprobar
+{"runs":[{"inputs":["5"],"out":"Hace frío"},{"inputs":["10"],"out":"Está templado"},{"inputs":["18.5"],"out":"Está templado"},{"inputs":["25"],"out":"Hace calor"},{"inputs":["33"],"out":"Hace calor"}]}
+
+=== modulo: bucles
+titulo: Repetir con bucles
+desc: Haz que el ordenador repita el trabajo por ti con for y while, y acumula resultados.
+
+--- leccion: for-range
+titulo: El bucle for y range()
+min: 20
+resumen: Repetir un bloque un número de veces y recorrer secuencias.
+@@teoria
+Un **bucle** repite un bloque de código. El bucle `for` recorre los elementos de una secuencia, uno por uno, y en cada vuelta guarda el elemento actual en una variable:
+
+```py
+for letra in "Hola":
+    print(letra)
+```
+
+Para repetir algo un número concreto de veces se usa `range()`, que genera una secuencia de números:
+
+```py
+for i in range(5):
+    print("Vuelta", i)
+```
+
+`range(5)` va de 0 a 4: empieza en 0 y **no incluye** el número final. `range()` admite hasta tres valores:
+
+- `range(fin)`: de 0 hasta fin - 1
+- `range(inicio, fin)`: de inicio hasta fin - 1
+- `range(inicio, fin, paso)`: avanza de paso en paso, también hacia atrás si el paso es negativo
+
+```py
+for n in range(1, 11, 2):
+    print(n)          # 1, 3, 5, 7, 9
+for n in range(10, 0, -3):
+    print(n)          # 10, 7, 4, 1
+```
+
+Igual que con `if`, la línea del bucle termina en dos puntos y el bloque lleva sangría. Todo lo sangrado se repite; lo que viene después sin sangría se ejecuta una sola vez, al terminar el bucle.
+@@ejercicio
+Pide un número con `input()` e imprime su **tabla de multiplicar del 1 al 10** con este formato:
+
+```txt
+7 x 1 = 7
+7 x 2 = 14
+...
+7 x 10 = 70
+```
+
+Usa un bucle `for`, nada de diez `print` seguidos.
+@@inicio
+numero = int(input("¿Qué tabla quieres? "))
+@@solucion
+numero = int(input("¿Qué tabla quieres? "))
+
+for i in range(1, 11):
+    print(f"{numero} x {i} = {numero * i}")
+@@pista
+range(1, 11) va del 1 al 10. Dentro del bucle imprime con una f-string: f"{numero} x {i} = {numero * i}".
+@@comprobar
+{"runs":[{"inputs":["7"],"out":"7 x 1 = 7\n7 x 2 = 14\n7 x 3 = 21\n7 x 4 = 28\n7 x 5 = 35\n7 x 6 = 42\n7 x 7 = 49\n7 x 8 = 56\n7 x 9 = 63\n7 x 10 = 70"},{"inputs":["3"],"out":"3 x 1 = 3\n3 x 2 = 6\n3 x 3 = 9\n3 x 4 = 12\n3 x 5 = 15\n3 x 6 = 18\n3 x 7 = 21\n3 x 8 = 24\n3 x 9 = 27\n3 x 10 = 30"}],"requiere":[{"re":"\\bfor\\b","msg":"Usa un bucle for."}]}
+
+--- leccion: while
+titulo: El bucle while
+min: 15
+resumen: Repetir mientras se cumpla una condición, y cómo evitar los bucles infinitos.
+@@teoria
+`while` repite un bloque **mientras** una condición sea verdadera. Se usa cuando no sabes de antemano cuántas vueltas harán falta.
+
+```py
+saldo = 100
+mes = 0
+while saldo > 0:
+    saldo = saldo - 30
+    mes = mes + 1
+print(f"El dinero se acaba en el mes {mes}")
+```
+
+En cada vuelta Python vuelve a comprobar la condición. Si nunca deja de cumplirse, el bucle no termina: es un **bucle infinito**. Para evitarlo, asegúrate de que algo dentro del bucle acerque la condición a `False` (aquí, restar del saldo). Si te pasa en este editor, no pasa nada: el programa se detiene solo a los pocos segundos, o puedes pulsar **detener**.
+
+Un uso típico de `while` es repetir una pregunta hasta que la respuesta sea válida:
+
+```py
+clave = ""
+while clave != "python":
+    clave = input("Contraseña: ")
+print("Acceso concedido")
+```
+
+Dos instrucciones funcionan en cualquier bucle, `for` o `while`:
+
+- `break` sale del bucle inmediatamente.
+- `continue` salta al principio de la vuelta siguiente.
+@@ejercicio
+Pide un número entero positivo y haz una **cuenta atrás** con `while` hasta 1. Al final imprime `¡Despegue!`. Con 3, la salida debe ser:
+
+```txt
+3
+2
+1
+¡Despegue!
+```
+@@inicio
+n = int(input("¿Desde qué número? "))
+@@solucion
+n = int(input("¿Desde qué número? "))
+
+while n > 0:
+    print(n)
+    n -= 1
+
+print("¡Despegue!")
+@@pista
+La condición es while n > 0:. Dentro, imprime n y réstale 1 (n -= 1). El print del despegue va fuera del bucle, sin sangría.
+@@comprobar
+{"runs":[{"inputs":["3"],"out":"3\n2\n1\n¡Despegue!"},{"inputs":["5"],"out":"5\n4\n3\n2\n1\n¡Despegue!"}],"requiere":[{"re":"\\bwhile\\b","msg":"Usa un bucle while."}]}
+
+--- leccion: acumuladores
+titulo: Acumular y contar
+min: 20
+resumen: El patrón acumulador, los contadores y cuándo cortar un bucle con break.
+@@teoria
+Muchos problemas se resuelven con la misma receta: crear una variable **antes** del bucle y actualizarla en cada vuelta. Se llama patrón **acumulador**.
+
+```py
+total = 0
+for n in range(1, 6):
+    total += n
+    print(f"Sumo {n}: el total va en {total}")
+print("Total:", total)
+```
+
+Un **contador** es lo mismo, pero suma 1 solo cuando se cumple algo:
+
+```py
+frase = "programar en python es divertido"
+vocales = 0
+for letra in frase:
+    if letra in "aeiou":
+        vocales += 1
+print("Vocales:", vocales)
+```
+
+El operador `in` comprueba si algo está dentro de otra cosa: `"a" in "aeiou"` es `True`.
+
+Y `break` corta el bucle en cuanto encuentras lo que buscabas, sin dar vueltas de más:
+
+```py
+for n in range(1, 100):
+    if n * n > 50:
+        print(f"{n} es el primer número cuyo cuadrado pasa de 50")
+        break
+```
+@@ejercicio
+Recorre los números del **1 al 100** y calcula dos cosas:
+
+- `suma_pares`: la suma de todos los números pares
+- `multiplos_7`: cuántos números son múltiplos de 7
+
+Las dos últimas líneas ya imprimen los resultados. Recuerda que `n % 2 == 0` indica que n es par. La palabra `pass` no hace nada: está ahí para que el bucle no quede vacío, reemplázala por tu código.
+@@inicio
+suma_pares = 0
+multiplos_7 = 0
+
+for n in range(1, 101):
+    pass  # reemplaza esta línea
+
+print(f"Suma de pares: {suma_pares}")
+print(f"Múltiplos de 7: {multiplos_7}")
+@@solucion
+suma_pares = 0
+multiplos_7 = 0
+
+for n in range(1, 101):
+    if n % 2 == 0:
+        suma_pares += n
+    if n % 7 == 0:
+        multiplos_7 += 1
+
+print(f"Suma de pares: {suma_pares}")
+print(f"Múltiplos de 7: {multiplos_7}")
+@@pista
+Dentro del for necesitas dos if independientes (no elif, porque un número puede ser par y múltiplo de 7 a la vez). Uno suma n a suma_pares; el otro suma 1 a multiplos_7.
+@@comprobar
+{"runs":[{"out":"Suma de pares: 2550\nMúltiplos de 7: 14"}],"prohibe":[{"re":"2550","msg":"No escribas 2550 a mano: calcúlalo con el bucle."}]}
+@@test
+assert suma_pares == 2550, "suma_pares debería valer 2550"
+assert multiplos_7 == 14, "multiplos_7 debería valer 14"
+
+=== modulo: colecciones
+titulo: Listas y diccionarios
+desc: Guarda muchos datos en una sola variable y recórrelos: listas, diccionarios, tuplas y conjuntos.
+
+--- leccion: listas
+titulo: Listas
+min: 20
+resumen: Crear listas, acceder por posición, añadir, ordenar y recorrerlas.
+@@teoria
+Una **lista** guarda varios valores en orden, entre corchetes y separados por comas:
+
+```py
+frutas = ["manzana", "pera", "mango"]
+print(frutas)
+print(frutas[0])     # manzana: las posiciones empiezan en 0
+print(frutas[-1])    # mango: el último
+print(len(frutas))   # 3
+```
+
+A diferencia de los textos, las listas se pueden **modificar**:
+
+```py
+frutas = ["manzana", "pera", "mango"]
+frutas.append("uva")        # añade al final
+frutas[1] = "kiwi"          # reemplaza la posición 1
+frutas.remove("manzana")    # quita un elemento por su valor
+print(frutas)
+frutas.sort()               # ordena: alfabéticamente o de menor a mayor
+print(frutas)
+```
+
+Con un `for` recorres todos los elementos, y hay funciones que trabajan directamente con listas de números:
+
+```py
+notas = [4.5, 3.0, 4.8, 2.9]
+for nota in notas:
+    print(f"Nota: {nota}")
+print("Suma:", sum(notas))
+print("Máxima:", max(notas), "Mínima:", min(notas))
+print("Promedio:", sum(notas) / len(notas))
+```
+
+Para saber si un valor está en una lista, usa `in`: `"pera" in frutas` da `True` o `False`.
+@@ejercicio
+Tienes las temperaturas máximas de una semana en la lista `temps`. Imprime exactamente:
+
+```txt
+Promedio: 24.43
+Máxima: 29
+Días de más de 25°: 3
+```
+
+El promedio va con **dos decimales** (`:.2f`). Para el último dato, recorre la lista con un `for` y cuenta.
+@@inicio
+temps = [22, 25, 27, 19, 29, 26, 23]
+@@solucion
+temps = [22, 25, 27, 19, 29, 26, 23]
+
+promedio = sum(temps) / len(temps)
+calurosos = 0
+for t in temps:
+    if t > 25:
+        calurosos += 1
+
+print(f"Promedio: {promedio:.2f}")
+print(f"Máxima: {max(temps)}")
+print(f"Días de más de 25°: {calurosos}")
+@@pista
+El promedio es sum(temps) / len(temps). Para contar, crea calurosos = 0 antes del for y súmale 1 cuando t > 25.
+@@comprobar
+{"runs":[{"out":"Promedio: 24.43\nMáxima: 29\nDías de más de 25°: 3"}],"requiere":[{"re":"\\bfor\\b","msg":"Cuenta los días calurosos con un bucle for."}]}
+
+--- leccion: diccionarios
+titulo: Diccionarios
+min: 20
+resumen: Pares clave-valor para buscar datos por nombre en lugar de por posición.
+@@teoria
+Una lista te da los datos por posición. Un **diccionario** te los da por **nombre**: guarda pares `clave: valor` entre llaves.
+
+```py
+persona = {"nombre": "Camila", "edad": 31, "ciudad": "Bogotá"}
+print(persona["nombre"])
+persona["edad"] = 32                    # cambia un valor
+persona["profesion"] = "analista"       # añade una clave nueva
+print(persona)
+```
+
+Si pides con corchetes una clave que no existe, obtienes un `KeyError`. El método `.get()` es más seguro: devuelve un valor por defecto en lugar de fallar.
+
+```py
+precios = {"café": 4500, "pan": 1200}
+print(precios.get("té", 0))   # 0: no existe
+print("café" in precios)      # True: in busca entre las claves
+```
+
+Para recorrer un diccionario, `.items()` te da cada clave junto con su valor:
+
+```py
+inventario = {"lápices": 12, "cuadernos": 5, "borradores": 0}
+for producto, cantidad in inventario.items():
+    if cantidad == 0:
+        print(f"{producto}: agotado")
+    else:
+        print(f"{producto}: {cantidad} unidades")
+```
+
+Un patrón muy común es usar un diccionario para **contar**: la clave es lo que cuentas y el valor, cuántas veces apareció.
+@@ejercicio
+Tienes un diccionario `precios` y una lista `carrito` con lo que compró un cliente (un producto puede repetirse). Calcula `total` recorriendo el carrito y buscando el precio de cada producto en el diccionario. La salida debe ser `Total: 13700`.
+@@inicio
+precios = {"café": 4500, "pan": 1200, "leche": 3800, "huevos": 600}
+carrito = ["café", "pan", "pan", "leche", "huevos", "huevos", "huevos", "pan"]
+
+total = 0
+
+print(f"Total: {total}")
+@@solucion
+precios = {"café": 4500, "pan": 1200, "leche": 3800, "huevos": 600}
+carrito = ["café", "pan", "pan", "leche", "huevos", "huevos", "huevos", "pan"]
+
+total = 0
+for producto in carrito:
+    total += precios[producto]
+
+print(f"Total: {total}")
+@@pista
+Escribe un for producto in carrito: y, dentro, suma a total el valor precios[producto].
+@@comprobar
+{"runs":[{"out":"Total: 13700"}],"requiere":[{"re":"\\bfor\\b","msg":"Recorre el carrito con un bucle for."}],"prohibe":[{"re":"13700","msg":"Calcula el total con el bucle, no lo escribas a mano."}]}
+@@test
+assert total == 13700, "total debería valer 13700"
+
+--- leccion: tuplas-sets
+titulo: Tuplas y conjuntos
+min: 15
+resumen: Datos que no cambian y colecciones sin repetidos.
+@@teoria
+Además de listas y diccionarios, Python tiene otras dos colecciones que verás a menudo.
+
+Una **tupla** es como una lista que no se puede modificar después de crearla. Se escribe con paréntesis y sirve para datos que van juntos y no deberían cambiar, como unas coordenadas:
+
+```py
+punto = (4, 7)
+x, y = punto          # desempaquetar: cada valor a su variable
+print(f"x vale {x} e y vale {y}")
+```
+
+Un **conjunto** (`set`) guarda valores **sin repetidos y sin orden**. Es la forma más rápida de eliminar duplicados o de comparar grupos:
+
+```py
+visitas = ["ana", "luis", "ana", "sofía", "luis", "ana"]
+unicos = set(visitas)
+print(f"{len(visitas)} visitas de {len(unicos)} personas distintas")
+```
+
+Los conjuntos permiten operaciones de teoría de conjuntos:
+
+```py
+python = {"ana", "luis", "marta"}
+sql = {"luis", "marta", "pedro"}
+print(sorted(python & sql))   # en los dos grupos
+print(sorted(python | sql))   # en al menos uno
+print(sorted(python - sql))   # solo en python
+```
+
+Como un conjunto no tiene orden, para mostrarlo ordenado se usa `sorted()`, que siempre devuelve una lista.
+@@ejercicio
+Dos cursos tienen sus listas de inscritos, con algunos nombres repetidos. Usa conjuntos para imprimir exactamente:
+
+```txt
+En ambos cursos: ['luis', 'marta']
+Personas distintas: 6
+```
+
+La lista debe salir ordenada alfabéticamente (usa `sorted()`).
+@@inicio
+curso_a = ["ana", "luis", "marta", "ana", "jorge"]
+curso_b = ["marta", "pedro", "luis", "sofía", "luis"]
+@@solucion
+curso_a = ["ana", "luis", "marta", "ana", "jorge"]
+curso_b = ["marta", "pedro", "luis", "sofía", "luis"]
+
+a = set(curso_a)
+b = set(curso_b)
+
+print(f"En ambos cursos: {sorted(a & b)}")
+print(f"Personas distintas: {len(a | b)}")
+@@pista
+Convierte cada lista con set(). Los que están en ambos son a & b; todas las personas son a | b. Ordena con sorted() y cuenta con len().
+@@comprobar
+{"runs":[{"out":"En ambos cursos: ['luis', 'marta']\nPersonas distintas: 6"}],"requiere":[{"re":"set\\(|\\{","msg":"Usa conjuntos (set) para resolverlo."}]}
+
+=== modulo: funciones
+titulo: Funciones
+desc: Empaqueta tu código en piezas reutilizables con nombre, parámetros y valor de retorno.
+
+--- leccion: def
+titulo: Crear tus propias funciones
+min: 20
+resumen: def, parámetros y return: escribir una vez, usar muchas veces.
+@@teoria
+Ya usaste muchas funciones: `print()`, `len()`, `input()`. Una **función** es un bloque de código con nombre que puedes ejecutar cuando quieras. Con `def` creas las tuyas:
+
+```py
+def saludar(nombre):
+    print(f"¡Hola, {nombre}!")
+
+saludar("Ana")
+saludar("Diego")
+```
+
+`nombre` es un **parámetro**: una variable que recibe el valor que le pasas al llamar a la función, el **argumento**. Definir la función no ejecuta nada; su código corre cada vez que la llamas.
+
+La mayoría de funciones útiles no imprimen: **devuelven** un resultado con `return`, para que puedas guardarlo o usarlo en otra operación.
+
+```py
+def area_circulo(radio):
+    return 3.14159 * radio ** 2
+
+a = area_circulo(2)
+print(a)
+print(area_circulo(1) + area_circulo(3))
+```
+
+La diferencia entre `print` y `return` es clave: `print` muestra algo en pantalla y nada más; `return` entrega un valor a quien llamó a la función. Cuando Python llega a un `return`, la función termina en ese punto.
+
+Una función puede tener varios parámetros separados por comas, por ejemplo `def imc(peso, altura):`.
+@@ejercicio
+Escribe una función `precio_final(precio, descuento)` que **devuelva** (con `return`, no con `print`) el precio después de aplicar un descuento en porcentaje. Por ejemplo, `precio_final(80000, 25)` devuelve `60000.0`.
+@@inicio
+def precio_final(precio, descuento):
+    pass  # escribe aquí tu código
+
+print(precio_final(80000, 25))
+@@solucion
+def precio_final(precio, descuento):
+    return precio - precio * descuento / 100
+
+print(precio_final(80000, 25))
+@@pista
+El descuento en pesos es precio * descuento / 100. Devuelve el precio menos ese descuento con return.
+@@comprobar
+{"requiere":[{"re":"\\breturn\\b","msg":"La función tiene que devolver el resultado con return."}]}
+@@test
+assert precio_final(80000, 25) == 60000, "precio_final(80000, 25) debería devolver 60000.0. ¿Usas return?"
+assert precio_final(100, 0) == 100, "Con un descuento de 0, el precio no debería cambiar"
+assert abs(precio_final(59.9, 10) - 53.91) < 0.001, "precio_final(59.9, 10) debería devolver 53.91"
+assert precio_final(1000, 100) == 0, "Con un descuento de 100, el precio debería quedar en 0"
+
+--- leccion: parametros
+titulo: Parámetros por defecto y alcance
+min: 20
+resumen: Valores por defecto, argumentos con nombre y por qué las variables de una función son locales.
+@@teoria
+Un parámetro puede tener un **valor por defecto**, que se usa cuando no le pasas ese argumento:
+
+```py
+def saludar(nombre, saludo="Hola"):
+    return f"{saludo}, {nombre}"
+
+print(saludar("Laura"))
+print(saludar("Laura", "Buenos días"))
+print(saludar(saludo="Qué más", nombre="Laura"))
+```
+
+En la última llamada se usan **argumentos con nombre**: indicas a qué parámetro va cada valor y el orden deja de importar. Es útil cuando una función tiene muchos parámetros. Los parámetros con valor por defecto van siempre después de los que no lo tienen.
+
+Las variables que creas dentro de una función son **locales**: solo existen mientras la función se ejecuta. Fuera de ella no se pueden usar:
+
+```py
+def calcular():
+    resultado = 42
+    return resultado
+
+valor = calcular()
+print(valor)        # 42
+print(resultado)    # NameError: resultado solo existía dentro
+```
+
+Por eso las funciones se comunican con el exterior a través de sus parámetros (lo que entra) y de su `return` (lo que sale). Si una función necesita un dato, pásaselo como argumento.
+
+Para comprobar si algo **no** está en una colección existe `not in`: `"JPY" not in tasas` es `True` si esa clave no existe.
+@@ejercicio
+Escribe una función `convertir(cantidad, moneda="USD")` que pase pesos colombianos a otra moneda y devuelva el resultado **redondeado a 2 decimales** con `round(valor, 2)`. Usa estas tasas de ejemplo (pesos por unidad), que ya están en el código:
+
+- `"USD"`: 4000
+- `"EUR"`: 4400
+
+Si la moneda no está en el diccionario, devuelve `None`.
+@@inicio
+def convertir(cantidad, moneda="USD"):
+    tasas = {"USD": 4000, "EUR": 4400}
+    pass  # escribe aquí tu código
+
+print(convertir(100000))
+print(convertir(100000, "EUR"))
+print(convertir(5000, "JPY"))
+@@solucion
+def convertir(cantidad, moneda="USD"):
+    tasas = {"USD": 4000, "EUR": 4400}
+    if moneda not in tasas:
+        return None
+    return round(cantidad / tasas[moneda], 2)
+
+print(convertir(100000))
+print(convertir(100000, "EUR"))
+print(convertir(5000, "JPY"))
+@@pista
+Primero comprueba if moneda not in tasas: y devuelve None. Si sigue, divide la cantidad entre tasas[moneda] y redondea con round(..., 2).
+@@comprobar
+{}
+@@test
+assert convertir(100000) == 25.0, "convertir(100000) debería devolver 25.0, usando USD por defecto"
+assert convertir(100000, "EUR") == 22.73, "convertir(100000, 'EUR') debería devolver 22.73"
+assert convertir(50000, moneda="USD") == 12.5, "convertir(50000, moneda='USD') debería devolver 12.5"
+assert convertir(1000, "JPY") is None, "Con una moneda que no está en tasas debería devolver None"
+
+--- leccion: funciones-listas
+titulo: Funciones que trabajan con listas
+min: 20
+resumen: Recibir una colección, construir una lista nueva y devolverla.
+@@teoria
+Las funciones brillan cuando procesan colecciones. El patrón más común es: recibir una lista, crear una lista vacía, recorrer la original y añadir a la nueva lo que interese.
+
+```py
+def solo_largas(palabras, minimo=5):
+    resultado = []
+    for p in palabras:
+        if len(p) >= minimo:
+            resultado.append(p)
+    return resultado
+
+print(solo_largas(["sol", "montaña", "río", "océano"]))
+print(solo_largas(["sol", "montaña", "río", "océano"], 7))
+```
+
+Este patrón es tan habitual que Python tiene una forma corta de escribirlo, la **comprensión de listas**. Hace lo mismo en una sola línea:
+
+```py
+palabras = ["sol", "montaña", "río", "océano"]
+largas = [p for p in palabras if len(p) >= 5]
+mayus = [p.upper() for p in palabras]
+print(largas)
+print(mayus)
+```
+
+Se lee casi en voz alta: "p, para cada p en palabras, si su longitud es al menos 5". Usa la forma que te resulte más clara; las dos son correctas.
+
+`sorted()` también acepta un parámetro `key` para ordenar con otro criterio: `sorted(palabras, key=len)` ordena por longitud.
+@@ejercicio
+Escribe una función `aprobados(notas, minima=3.0)` que reciba un **diccionario** `{nombre: nota}` (en escala de 0 a 5) y devuelva una **lista ordenada alfabéticamente** con los nombres de quienes tienen una nota mayor o igual que `minima`.
+@@inicio
+def aprobados(notas, minima=3.0):
+    pass  # escribe aquí tu código
+
+grupo = {"Valentina": 4.2, "Santiago": 2.8, "Mariana": 3.0, "Sebastián": 3.9, "Isabella": 2.5}
+print(aprobados(grupo))
+print(aprobados(grupo, 4.0))
+@@solucion
+def aprobados(notas, minima=3.0):
+    lista = []
+    for nombre, nota in notas.items():
+        if nota >= minima:
+            lista.append(nombre)
+    return sorted(lista)
+
+grupo = {"Valentina": 4.2, "Santiago": 2.8, "Mariana": 3.0, "Sebastián": 3.9, "Isabella": 2.5}
+print(aprobados(grupo))
+print(aprobados(grupo, 4.0))
+@@pista
+Recorre notas.items() para tener nombre y nota a la vez, añade a una lista los que cumplan nota >= minima y devuelve sorted(lista).
+@@comprobar
+{"requiere":[{"re":"\\breturn\\b","msg":"La función tiene que devolver la lista con return."}]}
+@@test
+_g = {"Valentina": 4.2, "Santiago": 2.8, "Mariana": 3.0, "Sebastián": 3.9, "Isabella": 2.5}
+assert aprobados(_g) == ["Mariana", "Sebastián", "Valentina"], "Con la mínima por defecto (3.0) deberían aprobar Mariana, Sebastián y Valentina, en ese orden"
+assert aprobados(_g, 4.0) == ["Valentina"], "Con mínima 4.0 solo aprueba Valentina"
+assert aprobados({}) == [], "Con un diccionario vacío debería devolver una lista vacía"
+assert aprobados({"Zoe": 5.0, "Ana": 3.5}) == ["Ana", "Zoe"], "La lista tiene que salir ordenada alfabéticamente"
+
+=== modulo: proyecto
+titulo: Errores y proyecto final
+desc: Haz programas que no se rompan ante datos inesperados y junta todo en un juego completo.
+
+--- leccion: try-except
+titulo: Manejar errores con try / except
+min: 20
+resumen: Capturar errores previsibles para que el programa siga funcionando.
+@@teoria
+Algunos errores no se deben a un fallo tuyo, sino a datos inesperados: el usuario escribe "veinte" cuando pedías un número, o un divisor llega a cero. En vez de dejar que el programa se detenga, puedes **capturar** el error con `try` y `except`:
+
+```py
+texto = "veinte"
+try:
+    numero = int(texto)
+    print("Convertido:", numero)
+except ValueError:
+    print(f"'{texto}' no es un número válido")
+print("El programa continúa")
+```
+
+Python intenta ejecutar el bloque `try`. Si ocurre un error del tipo indicado, salta al bloque `except` en lugar de detenerse. Si no ocurre nada, el `except` se ignora.
+
+Puedes capturar errores distintos con varios `except`:
+
+```py
+def dividir(a, b):
+    try:
+        return a / b
+    except ZeroDivisionError:
+        return None
+
+print(dividir(10, 4))
+print(dividir(10, 0))
+```
+
+Una buena práctica: captura solo el tipo de error que esperas (`ValueError`, `ZeroDivisionError`...). Un `except` sin tipo atraparía cualquier error, incluidos los fallos de tu propio código, y te costaría mucho encontrarlos.
+@@ejercicio
+Escribe una función `a_numero(texto)` que intente convertir el texto a `float`. Si lo consigue, devuelve el número; si el texto no es un número válido, devuelve `None`.
+
+Además, debe aceptar la **coma decimal**: `"3,5"` tiene que dar `3.5`.
+@@inicio
+def a_numero(texto):
+    pass  # escribe aquí tu código
+
+print(a_numero("42"))
+print(a_numero("3,5"))
+print(a_numero("hola"))
+@@solucion
+def a_numero(texto):
+    try:
+        return float(texto.replace(",", "."))
+    except ValueError:
+        return None
+
+print(a_numero("42"))
+print(a_numero("3,5"))
+print(a_numero("hola"))
+@@pista
+Dentro del try, cambia la coma por un punto con replace(",", ".") y convierte con float(). En el except ValueError: devuelve None.
+@@comprobar
+{"requiere":[{"re":"\\btry\\b","msg":"Usa try / except para capturar el error."},{"re":"\\bexcept\\b","msg":"Falta el bloque except."}]}
+@@test
+assert a_numero("42") == 42.0, "a_numero('42') debería devolver 42.0"
+assert a_numero("3,5") == 3.5, "a_numero('3,5') debería devolver 3.5: cambia la coma por un punto"
+assert a_numero("-0.25") == -0.25, "a_numero('-0.25') debería devolver -0.25"
+assert a_numero("hola") is None, "a_numero('hola') debería devolver None"
+assert a_numero("") is None, "a_numero('') debería devolver None"
+
+--- leccion: adivina
+titulo: Proyecto: adivina el número
+min: 30
+resumen: Un juego completo que combina input, bucles, condiciones, errores y funciones.
+@@teoria
+Es hora de juntarlo todo. Vas a programar el clásico juego de adivinar un número: el ordenador piensa un número del 1 al 100 y el jugador intenta adivinarlo. Después de cada intento, el programa le dice si el número secreto es más alto o más bajo.
+
+Para que el ordenador elija un número al azar se usa el módulo `random`. Un **módulo** es un conjunto de funciones listas para usar que se cargan con `import`:
+
+```py
+import random
+
+for _ in range(3):
+    print(random.randint(1, 100))   # entero al azar entre 1 y 100, ambos incluidos
+```
+
+Ejecuta el ejemplo varias veces: cada vez salen números distintos. El guion bajo `_` es el nombre habitual para una variable cuyo valor no vas a usar.
+
+Antes de escribir código, piensa el plan en pasos. Este hábito te servirá en cualquier programa:
+
+1. Elegir el número secreto y poner el contador de intentos a cero.
+2. Repetir hasta que el jugador acierte: pedir un número, sumar un intento y decir "más alto" o "más bajo".
+3. Al acertar, felicitar e indicar cuántos intentos hicieron falta.
+
+Para el paso 2 viene bien `while True:`, un bucle que no termina por sí solo: sales de él con `break` o, dentro de una función, con `return`.
+
+Para que el comprobador pueda probar tu juego, el número secreto llega como parámetro de la función `jugar(secreto)`. Al comprobar se ignoran las llamadas a `jugar(...)` que escribas fuera de la función, así que puedes dejar activa la última línea para jugar de verdad.
+@@ejercicio
+Completa la función `jugar(secreto)`:
+
+- Pide números con `input("Tu número: ")` hasta que el jugador acierte.
+- Si el número es menor que el secreto, imprime `Más alto`. Si es mayor, `Más bajo`.
+- Al acertar, imprime `¡Correcto! Intentos: N` y **devuelve** el número de intentos.
+- Si el jugador escribe algo que no es un número entero, imprime `Escribe un número entero` y no cuentes ese intento.
+@@inicio
+import random
+
+def jugar(secreto):
+    intentos = 0
+    # Escribe aquí el bucle del juego
+
+# Para jugar de verdad, quita el # de la línea siguiente y pulsa ejecutar:
+# jugar(random.randint(1, 100))
+@@solucion
+import random
+
+def jugar(secreto):
+    intentos = 0
+    while True:
+        texto = input("Tu número: ")
+        try:
+            numero = int(texto)
+        except ValueError:
+            print("Escribe un número entero")
+            continue
+        intentos += 1
+        if numero < secreto:
+            print("Más alto")
+        elif numero > secreto:
+            print("Más bajo")
+        else:
+            print(f"¡Correcto! Intentos: {intentos}")
+            return intentos
+
+# Para jugar de verdad, quita el # de la línea siguiente y pulsa ejecutar:
+jugar(random.randint(1, 100))
+@@pista
+Usa while True: y sal con return intentos al acertar. Convierte con int() dentro de un try; en el except imprime el aviso y usa continue para pedir otro número sin sumar el intento.
+@@comprobar
+{"omitir":"^jugar\\(.*$","runs":[{"inputs":["50","25","hola","42"],"test":"_r = jugar(42)\nassert _r == 3, 'jugar(42) debería devolver 3: el texto que no es número no cuenta como intento'","out":"Más bajo\nMás alto\nEscribe un número entero\n¡Correcto! Intentos: 3"},{"inputs":["7"],"test":"assert jugar(7) == 1, 'Si acierta a la primera, jugar() debería devolver 1'","out":"¡Correcto! Intentos: 1"}]}
