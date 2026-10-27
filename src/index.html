@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#0b0f0c" />
+    <meta
+      name="description"
+      content="Aprende Python desde cero en español: lecciones cortas, código que se ejecuta en el navegador y ejercicios que se corrigen solos."
+    />
+    <title>Python desde Cero</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500;700&family=Martian+Mono:wght@500;700&display=swap"
+    />
+    <!-- build:styles -->
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Saltar al contenido</a>
+
+    <header class="site-header">
+      <div class="container site-header__inner">
+        <a class="brand" href="#panel" aria-label="Python desde Cero, inicio">
+          <span class="brand__prefix">~/</span>desdecero<span class="brand__extension">.py</span>
+        </a>
+        <nav class="main-nav" aria-label="Principal">
+          <a class="main-nav__link" href="#panel" data-nav="panel">panel</a>
+          <a class="main-nav__link" href="#ruta" data-nav="ruta">ruta</a>
+          <a class="main-nav__link" href="#playground" data-nav="playground">playground</a>
+        </nav>
+        <div class="site-header__status">
+          <span class="chip site-header__streak" title="Días seguidos practicando">
+            racha <span class="chip__value" id="header-streak">0</span>d
+          </span>
+          <span class="chip" id="header-sync" data-sync="local">
+            <span class="chip__dot"></span>
+            <span class="chip__label" id="header-sync-label">en este navegador</span>
+          </span>
+        </div>
+      </div>
+    </header>
+
+    <main id="main">
+      <!-- Vista: panel -->
+      <section class="view" id="view-panel" aria-labelledby="panel-title">
+        <div class="container">
+          <div class="hero">
+            <div>
+              <p class="eyebrow"><span class="eyebrow__mark">//</span> tu panel</p>
+              <h1 class="display hero__title" id="panel-title">
+                Python desde cero<span class="hero__accent">.</span>
+              </h1>
+              <p class="lede">
+                Una ruta de 20 lecciones cortas, de tu primer
+                <code class="inline-code">print()</code> a un juego completo. Lees una idea, la
+                pruebas en el editor y resuelves un ejercicio que se corrige al instante. Todo corre
+                en tu navegador: no hay nada que instalar.
+              </p>
+              <div class="hero__actions" id="panel-actions"></div>
+            </div>
+            <div class="terminal" aria-label="Resumen de tu progreso">
+              <div class="bar"><span>~/desdecero.py — python3</span></div>
+              <div class="terminal__body" id="panel-terminal"></div>
+            </div>
+          </div>
+
+          <div class="stats" id="panel-stats"></div>
+
+          <div class="board">
+            <div class="board__main" id="ruta">
+              <p class="eyebrow"><span class="eyebrow__mark">$</span> ls ./ruta</p>
+              <h2 class="section-title">La ruta completa</h2>
+              <p class="section-intro">
+                Siete módulos en orden. Cada lección tiene teoría breve, ejemplos que puedes
+                ejecutar y un ejercicio con comprobación automática. Al superarlo, la lección se
+                marca sola.
+              </p>
+              <div class="module-list" id="panel-modules"></div>
+            </div>
+
+            <aside class="board__side" aria-label="Actividad y ayuda">
+              <div class="card">
+                <h3 class="card__title">// actividad · últimos 28 días</h3>
+                <div
+                  class="heatmap"
+                  id="panel-heatmap"
+                  role="img"
+                  aria-label="Días con práctica en las últimas cuatro semanas"
+                ></div>
+                <div class="heatmap__legend"><span>hace 4 semanas</span><span>hoy</span></div>
+                <p class="card__text" id="panel-activity"></p>
+              </div>
+
+              <div class="card">
+                <h3 class="card__title">// cómo funciona cada lección</h3>
+                <ol class="steps">
+                  <li class="steps__item">
+                    <span class="steps__number">01</span>
+                    <span><b>Lee</b>Una idea por lección, explicada con ejemplos cortos.</span>
+                  </li>
+                  <li class="steps__item">
+                    <span class="steps__number">02</span>
+                    <span
+                      ><b>Ejecuta</b>Pulsa ejecutar en cualquier ejemplo o cámbialo en el
+                      playground.</span
+                    >
+                  </li>
+                  <li class="steps__item">
+                    <span class="steps__number">03</span>
+                    <span
+                      ><b>Comprueba</b>Resuelve el ejercicio. Si algo falla, el mensaje te dice qué
+                      y en qué línea.</span
+                    >
+                  </li>
+                </ol>
+              </div>
+
+              <div class="card">
+                <h3 class="card__title">// atajos del editor</h3>
+                <div class="shortcuts">
+                  <span><kbd>Ctrl</kbd> + <kbd>Enter</kbd></span
+                  ><span>ejecutar el código</span> <span><kbd>Tab</kbd></span
+                  ><span>sangría de 4 espacios</span> <span><kbd>Shift</kbd> + <kbd>Tab</kbd></span
+                  ><span>quitar sangría</span> <span><kbd>Esc</kbd></span
+                  ><span>salir del editor con el teclado</span>
+                </div>
+              </div>
+
+              <div class="card" id="panel-finished" hidden>
+                <h3 class="card__title">// ¿y ahora qué?</h3>
+                <p class="card__text">
+                  Completaste la ruta. Buenos siguientes pasos: instalar Python en tu ordenador y
+                  repetir el juego allí, aprender a leer y escribir archivos, y probar librerías
+                  como
+                  <code class="inline-code">pandas</code> para analizar datos.
+                </p>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </section>
+
+      <!-- Vista: lección -->
+      <section class="view" id="view-lesson" hidden>
+        <div class="container">
+          <nav class="breadcrumbs" aria-label="Ubicación">
+            <a href="#ruta">← ruta</a>
+            <span class="breadcrumbs__path" id="lesson-path"></span>
+          </nav>
+
+          <div class="lesson-layout">
+            <article class="lesson" aria-labelledby="lesson-title">
+              <div class="lesson__meta" id="lesson-meta"></div>
+              <h1 class="display display--page" id="lesson-title"></h1>
+              <p class="lede lesson__summary" id="lesson-summary"></p>
+              <div class="prose lesson__body" id="lesson-body"></div>
+
+              <div class="lesson__footer">
+                <button
+                  class="button"
+                  id="lesson-toggle-done"
+                  type="button"
+                  data-action="toggle-done"
+                >
+                  marcar como completada
+                </button>
+                <p class="eyebrow lesson__note" id="lesson-note"></p>
+              </div>
+
+              <nav class="pager" aria-label="Lecciones">
+                <a class="pager__link" id="lesson-previous" href="#">
+                  <span class="pager__label">← anterior</span><span class="pager__title"></span>
+                </a>
+                <a class="pager__link pager__link--next" id="lesson-next" href="#">
+                  <span class="pager__label">siguiente →</span><span class="pager__title"></span>
+                </a>
+              </nav>
+            </article>
+
+            <aside class="workbench" aria-label="Ejercicio">
+              <div class="bar">
+                <span>ejercicio.py</span>
+                <span class="badge" id="exercise-badge">pendiente</span>
+                <span class="bar__spacer"></span>
+                <span class="engine-status" data-engine-status>python · cargando…</span>
+              </div>
+              <div class="prose workbench__task" id="exercise-task"></div>
+              <p class="workbench__hint" id="exercise-hint" hidden></p>
+              <div class="editor" id="exercise-editor"></div>
+              <div class="toolbar">
+                <button
+                  class="button button--run"
+                  type="button"
+                  data-action="run"
+                  data-requires-python
+                >
+                  ▶ ejecutar
+                </button>
+                <button
+                  class="button button--check"
+                  type="button"
+                  data-action="check"
+                  data-requires-python
+                >
+                  ✓ comprobar
+                </button>
+                <button class="button button--stop" type="button" data-action="stop" hidden>
+                  ■ detener
+                </button>
+                <span class="toolbar__spacer"></span>
+                <button class="button button--ghost" type="button" data-action="hint">pista</button>
+                <button
+                  class="button button--ghost"
+                  type="button"
+                  data-action="solution"
+                  id="exercise-solution"
+                >
+                  solución
+                </button>
+                <button class="button button--ghost" type="button" data-action="reset">
+                  reiniciar
+                </button>
+              </div>
+              <div class="console">
+                <div class="bar bar--plain">
+                  <span>salida</span><span class="bar__spacer"></span>
+                  <button class="text-button" type="button" data-action="clear-output">
+                    limpiar
+                  </button>
+                </div>
+                <pre
+                  class="console__output"
+                  id="exercise-output"
+                  role="log"
+                  aria-live="polite"
+                ></pre>
+              </div>
+              <div class="workbench__success" id="exercise-success" hidden>
+                <span>✓ ejercicio superado · lección completada</span>
+                <span class="bar__spacer"></span>
+                <a class="cta cta--primary cta--small" id="exercise-success-link" href="#">
+                  <span class="cta__label">siguiente lección →</span>
+                </a>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </section>
+
+      <!-- Vista: playground -->
+      <section class="view" id="view-playground" hidden aria-labelledby="playground-title">
+        <div class="container">
+          <p class="eyebrow"><span class="eyebrow__mark">$</span> python3 playground.py</p>
+          <h1 class="display display--page" id="playground-title">Playground</h1>
+          <p class="lede">
+            Un editor libre para experimentar. Escribe lo que quieras y pulsa ejecutar: tu código se
+            guarda en este navegador.
+          </p>
+
+          <div class="playground__grid">
+            <div class="pane">
+              <div class="bar">
+                <span>playground.py</span>
+                <span class="bar__spacer"></span>
+                <span class="engine-status" data-engine-status>python · cargando…</span>
+              </div>
+              <div class="editor" id="playground-editor"></div>
+              <div class="toolbar">
+                <button
+                  class="button button--run"
+                  type="button"
+                  data-action="run"
+                  data-requires-python
+                >
+                  ▶ ejecutar
+                </button>
+                <button class="button button--stop" type="button" data-action="stop" hidden>
+                  ■ detener
+                </button>
+                <span class="toolbar__spacer"></span>
+                <button class="button button--ghost" type="button" data-action="load-sample">
+                  cargar ejemplo
+                </button>
+                <button class="button button--ghost" type="button" data-action="empty">
+                  vaciar
+                </button>
+              </div>
+            </div>
+            <div class="pane console">
+              <div class="bar bar--plain">
+                <span>salida</span><span class="bar__spacer"></span>
+                <button class="text-button" type="button" data-action="clear-output">
+                  limpiar
+                </button>
+              </div>
+              <pre
+                class="console__output"
+                id="playground-output"
+                role="log"
+                aria-live="polite"
+              ></pre>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container site-footer__inner">
+        <span
+          ><span class="site-footer__name">~/desdecero.py</span> # aprende python escribiendo
+          python</span
+        >
+        <span>el código se ejecuta en tu navegador con Skulpt · editor CodeMirror</span>
+      </div>
+    </footer>
+
+    <!-- build:course -->
+    <!-- build:script -->
+  </body>
+</html>

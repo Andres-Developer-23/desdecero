@@ -1,14 +1,19 @@
 {
-  "name": "python-desde-cero",
+  "name": "desdecero",
   "version": "1.0.0",
   "private": true,
   "description": "Curso interactivo para aprender Python desde cero, en español y en el navegador.",
+  "type": "module",
   "scripts": {
-    "build": "python3 build.py",
-    "test": "python3 build.py && python3 tests/verificar.py"
+    "build": "node scripts/build.js"
   },
   "devDependencies": {
     "codemirror": "5.65.16",
-    "skulpt": "1.2.0"
+    "esbuild": "0.25.10",
+    "skulpt": "1.2.0",
+    "yaml": "2.8.1"
+  },
+  "engines": {
+    "node": ">=20"
   }
 }
