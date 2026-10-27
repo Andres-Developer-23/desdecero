@@ -4,7 +4,7 @@
 
 **Pruébalo en [andres-developer-23.github.io/desdecero](https://andres-developer-23.github.io/desdecero/)**
 
-Rutas interactivas para aprender **Python desde cero, en español**. Cada ruta se divide en módulos y lecciones cortas: cada lección explica una idea, trae ejemplos que se ejecutan con un clic y termina con un ejercicio que se corrige solo.
+Rutas interactivas para aprender **Python desde cero, en español**, y después crear apps con interfaz gráfica con **Flet**. Cada ruta se divide en módulos y lecciones cortas: cada lección explica una idea, trae ejemplos que se ejecutan con un clic y termina con un ejercicio que se corrige solo.
 
 Todo funciona en el navegador. No hace falta instalar Python ni crear una cuenta.
 
@@ -30,6 +30,18 @@ El progreso y el código que escribes se guardan en el navegador.
 | 04 · Listas y diccionarios      | Listas · Diccionarios · Tuplas y conjuntos                                        |
 | 05 · Funciones                  | Crear funciones · Parámetros por defecto y alcance · Funciones con listas         |
 | 06 · Errores y proyecto final   | `try` / `except` · Proyecto: adivina el número                                    |
+
+### Ruta «Apps con Flet»
+
+5 módulos y 12 lecciones (unas 4 horas) para crear apps con [Flet](https://flet.dev) 1.0 escribiendo solo Python. Conviene haber terminado antes la ruta de Python. Cada app se ve y se usa en una vista previa dentro de la lección, y el ejercicio se comprueba manejándola como lo haría una persona: pulsando botones, escribiendo y marcando casillas.
+
+| Módulo                | Lecciones                                                                                     |
+| --------------------- | --------------------------------------------------------------------------------------------- |
+| 00 · Tu primera app   | Hola, Flet · Texto con estilo                                                                 |
+| 01 · Controles        | Iconos y botones · Campos de texto y casillas                                                 |
+| 02 · Layout           | Filas y columnas · Contenedores · Repartir el espacio y listas largas                         |
+| 03 · Eventos y estado | Clics y actualización automática · Leer lo que escribe el usuario · Añadir y quitar controles |
+| 04 · Proyecto final   | Tus propios controles · Proyecto: lista de tareas                                             |
 
 ## Desarrollo local
 
@@ -57,7 +69,7 @@ npm run check                     # formato + lint + todas las pruebas
 | `npm run test:e2e`  | Genera la página y la prueba en Chromium con Playwright, en escritorio y en móvil.          |
 | `npm test`          | Las dos anteriores.                                                                         |
 
-Las pruebas en navegador comprueban que **cada ejercicio se puede resolver** (la solución pasa y el código de partida no) y los recorridos principales: ejecutar con `input()`, completar una lección, errores marcados en el editor, ejemplos, botón de detener y que nada se desborde en móvil. Skulpt y CodeMirror se sirven desde `node_modules`, así que no dependen de la red.
+Las pruebas en navegador comprueban que **cada ejercicio se puede resolver** (la solución pasa y el código de partida no), que cada ejemplo de Flet de la teoría arranca en el simulador y los recorridos principales: ejecutar con `input()`, completar una lección, errores marcados en el editor, ejemplos, botón de detener, la vista previa de Flet y que ninguna página se desborde en móvil. Skulpt y CodeMirror se sirven desde `node_modules`, así que no dependen de la red.
 
 ```
 tests/
