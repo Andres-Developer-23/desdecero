@@ -12,6 +12,7 @@ import fletSource from "../../python/flet/__init__.py";
 import fletsimSource from "../../python/fletsim.py";
 import typingSource from "../../python/typing.py";
 import { TIME_LIMIT_MS } from "../config.js";
+import { wait } from "../lib/async.js";
 import { callPython, registerPythonFiles } from "../python/engine.js";
 
 /*
@@ -40,6 +41,9 @@ var $builtinmodule = function (name) {
 let current = null;
 let nextSessionId = 1;
 
+/** Cada cuánto se reintenta un evento mientras el motor está ocupado. */
+const BUSY_RETRY_MS = 20;
+
 /** Registra los módulos de Python del simulador y el puente. Se llama una vez al arrancar. */
 export function installFletRuntime() {
   registerPythonFiles({
@@ -54,7 +58,10 @@ export function installFletRuntime() {
     render(tree) {
       if (!current) return;
       current.rendered = true;
-      current.renderer?.render(tree);
+      // Si hay eventos en cola que Python aún no ha atendido, este dibujo ya está
+      // anticuado para lo que se está escribiendo.
+      const waiting = current.pending - (current.handling ? 1 : 0);
+      current.renderer?.render(tree, { provisional: waiting > 0 });
     },
     attach(dispatch) {
       if (current) current.dispatch = dispatch;
@@ -87,6 +94,8 @@ export function beginFletSession({ renderer = null, terminal = null, onError, ti
     dispatch: null,
     rendered: false,
     queue: Promise.resolve(),
+    pending: 0, // eventos enviados que Python todavía no ha terminado de atender
+    handling: false, // hay un manejador de eventos ejecutándose ahora mismo
   };
   renderer?.start(current.id);
   return current;
@@ -96,15 +105,28 @@ export function beginFletSession({ renderer = null, terminal = null, onError, ti
 export function sendFletEvent(sessionId, uid, name, data = null) {
   const session = current;
   if (!session || session.id !== sessionId || !session.dispatch) return;
+  session.pending += 1;
   session.queue = session.queue.then(async () => {
-    if (current !== session) return;
-    const result = await callPython(session.dispatch, [uid, name, data], {
-      onOutput: (text) => session.terminal?.write(text),
-      timeLimitMs: session.timeLimitMs,
-    });
-    if (result.status === "error") {
-      session.terminal?.showError(result.error);
-      session.onError?.(result.error);
+    try {
+      let result = { status: "busy" };
+      // El programa puede seguir ejecutándose justo después de dibujar la app:
+      // el evento espera a que el motor quede libre en lugar de perderse.
+      while (result.status === "busy") {
+        if (current !== session) return;
+        session.handling = true;
+        result = await callPython(session.dispatch, [uid, name, data], {
+          onOutput: (text) => session.terminal?.write(text),
+          timeLimitMs: session.timeLimitMs,
+        });
+        session.handling = false;
+        if (result.status === "busy") await wait(BUSY_RETRY_MS);
+      }
+      if (result.status === "error") {
+        session.terminal?.showError(result.error);
+        session.onError?.(result.error);
+      }
+    } finally {
+      session.pending -= 1;
     }
   });
 }

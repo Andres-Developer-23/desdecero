@@ -66,6 +66,30 @@ test("el playground muestra la app y responde a clics, texto y casillas", async 
   await expect(output).toContainText("casilla");
 });
 
+test("escribir deprisa no pierde letras aunque Python tarde en responder", async ({ page }) => {
+  await openApp(page, "#playground");
+  await runInPlayground(
+    page,
+    `import flet as ft
+
+def main(page: ft.Page):
+    eco = ft.Text("")
+
+    def cambiar(e):
+        sum(range(30000))  # un manejador lento
+        eco.value = "eco: " + e.control.value
+
+    page.add(ft.TextField(label="Texto", on_change=cambiar), eco)
+
+ft.run(main)
+`,
+  );
+  const field = page.locator("#playground-preview input.flet-textfield__input");
+  await field.pressSequentially("hola mundo");
+  await expect(page.locator("#playground-preview .flet-text")).toHaveText("eco: hola mundo");
+  await expect(field).toHaveValue("hola mundo");
+});
+
 test("la vista previa se detiene al ejecutar otro programa", async ({ page }) => {
   await openApp(page, "#playground");
   await runInPlayground(page, CONTADOR);

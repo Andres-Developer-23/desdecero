@@ -66,13 +66,19 @@ export function createFletRenderer(host, { onEvent }) {
       host.replaceChildren(placeholder(text));
     },
 
-    render(tree) {
+    /**
+     * Dibuja el árbol de controles que envía Python.
+     * @param {object} tree
+     * @param {{provisional?: boolean}} [options] provisional: todavía hay eventos en cola,
+     *   así que el campo que se está escribiendo conserva lo que ya tiene.
+     */
+    render(tree, { provisional = false } = {}) {
       const focus = captureFocus(host);
       const scroll = captureScroll(host);
       const theme = pickTheme(tree.theme_mode);
       host.replaceChildren(renderWindow(tree, { theme, emit }));
       restoreScroll(host, scroll);
-      restoreFocus(host, focus);
+      restoreFocus(host, focus, { keepValue: provisional });
       host.querySelectorAll("[data-auto-scroll]").forEach((list) => {
         list.scrollTop = list.scrollHeight;
       });
@@ -658,18 +664,27 @@ function fontWeight(weight) {
 function captureFocus(host) {
   const active = document.activeElement;
   if (!active || !host.contains(active) || !active.dataset?.uid) return null;
+  const editable =
+    active.tagName === "TEXTAREA" || active.type === "text" || active.type === "password";
   return {
     uid: active.dataset.uid,
     tag: active.tagName,
+    value: editable ? active.value : null,
     start: active.selectionStart ?? null,
     end: active.selectionEnd ?? null,
   };
 }
 
-function restoreFocus(host, focus) {
+/**
+ * Devuelve el foco al mismo control tras redibujar. Con keepValue, el campo
+ * conserva el texto que tenía: Python aún no ha visto las últimas teclas y
+ * su valor llegará con el siguiente dibujo.
+ */
+function restoreFocus(host, focus, { keepValue = false } = {}) {
   if (focus) {
     const target = host.querySelector(`${focus.tag}[data-uid="${focus.uid}"]`);
     if (!target) return;
+    if (keepValue && focus.value != null) target.value = focus.value;
     target.focus({ preventScroll: true });
     if (focus.start != null && typeof target.setSelectionRange === "function") {
       try {
