@@ -1,0 +1,7 @@
+dist/
+node_modules/
+test-results/
+playwright-report/
+package-lock.json
+# El Markdown de las lecciones usa *cursiva*, que Prettier cambiaría por _cursiva_.
+content/**/*.md

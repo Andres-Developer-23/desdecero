@@ -5,11 +5,23 @@
   "description": "Curso interactivo para aprender Python desde cero, en español y en el navegador.",
   "type": "module",
   "scripts": {
-    "build": "node scripts/build.js"
+    "build": "node scripts/build.js",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "npm run test:unit && npm run test:e2e",
+    "test:unit": "node --test \"tests/unit/*.test.js\"",
+    "test:e2e": "npm run build && playwright test",
+    "check": "npm run format:check && npm run lint && npm test"
   },
   "devDependencies": {
+    "@eslint/js": "9.39.5",
+    "@playwright/test": "1.63.0",
     "codemirror": "5.65.16",
     "esbuild": "0.25.10",
+    "eslint": "9.39.5",
+    "globals": "16.5.0",
+    "prettier": "3.6.2",
     "skulpt": "1.2.0",
     "yaml": "2.8.1"
   },

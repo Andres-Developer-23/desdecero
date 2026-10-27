@@ -34,6 +34,29 @@ npm run build    # genera dist/index.html
 
 `dist/index.html` es la página completa en un solo archivo: puedes abrirla directamente en el navegador o subirla a cualquier hosting estático. La primera vez necesita conexión para descargar el motor de Python y el editor.
 
+## Pruebas y calidad
+
+```bash
+npx playwright install chromium   # solo la primera vez
+npm run check                     # formato + lint + todas las pruebas
+```
+
+| Comando             | Qué hace                                                                                    |
+| ------------------- | ------------------------------------------------------------------------------------------- |
+| `npm run lint`      | Revisa el JavaScript con ESLint.                                                            |
+| `npm run format`    | Formatea el código con Prettier (`format:check` solo comprueba).                            |
+| `npm run test:unit` | Pruebas unitarias con `node:test`: fechas, racha, progreso, Markdown y carga del contenido. |
+| `npm run test:e2e`  | Genera la página y la prueba en Chromium con Playwright, en escritorio y en móvil.          |
+| `npm test`          | Las dos anteriores.                                                                         |
+
+Las pruebas en navegador comprueban que **cada ejercicio se puede resolver** (la solución pasa y el código de partida no) y los recorridos principales: ejecutar con `input()`, completar una lección, errores marcados en el editor, ejemplos, botón de detener y que nada se desborde en móvil. Skulpt y CodeMirror se sirven desde `node_modules`, así que no dependen de la red.
+
+```
+tests/
+  unit/        pruebas de funciones puras (node:test)
+  e2e/         pruebas en navegador (Playwright)
+```
+
 ## Estructura del proyecto
 
 ```
