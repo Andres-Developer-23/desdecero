@@ -4,6 +4,10 @@ Todos los cambios importantes del proyecto se anotan aquí. El formato sigue [Ke
 
 ## [Sin publicar]
 
+### Corregido
+
+- Dependabot ya no propone versiones mayores de CodeMirror y Skulpt, que la página no admite, y las demás versiones mayores llegan por separado en lugar de bloquear el resto de actualizaciones.
+
 ## [1.1.0] - 2026-10-27
 
 ### Cambiado

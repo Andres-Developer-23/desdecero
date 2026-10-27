@@ -1,5 +1,6 @@
-# Propone actualizaciones de dependencias una vez al mes, agrupadas en un
-# solo pull request por ecosistema para no llenar el repositorio de ruido.
+# Propone actualizaciones de dependencias una vez al mes.
+# Las menores y de parche llegan agrupadas en un solo pull request; las
+# mayores, cada una en el suyo, para revisarlas por separado.
 version: 2
 updates:
   - package-ecosystem: npm
@@ -11,6 +12,15 @@ updates:
     groups:
       desarrollo:
         patterns: ["*"]
+        update-types: ["minor", "patch"]
+    ignore:
+      # La página carga estas librerías desde un CDN y su código depende de
+      # la API de estas versiones mayores (CodeMirror 5 y Skulpt 1). Se
+      # actualizan a mano junto con el código que las usa.
+      - dependency-name: codemirror
+        update-types: ["version-update:semver-major"]
+      - dependency-name: skulpt
+        update-types: ["version-update:semver-major"]
 
   - package-ecosystem: github-actions
     directory: /
