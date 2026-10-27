@@ -1,0 +1,8 @@
+{
+  "requires": [
+    {
+      "pattern": "\\bfor\\b",
+      "message": "Crea los resultados con un bucle for."
+    }
+  ]
+}

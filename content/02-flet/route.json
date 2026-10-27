@@ -1,0 +1,7 @@
+{
+  "title": "Apps con Flet",
+  "description": "Crea apps con interfaz gráfica escribiendo solo Python: textos, botones, formularios, layouts y eventos, hasta una lista de tareas completa. Con la API de Flet 1.0.",
+  "level": "Intermedio",
+  "runtime": "flet",
+  "requires": "python"
+}
