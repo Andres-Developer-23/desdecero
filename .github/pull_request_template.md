@@ -10,6 +10,7 @@
 
 - [ ] `npm run check` pasa (formato, lint y todas las pruebas)
 - [ ] He revisado la página generada en el navegador
+
 <!-- Añade aquí otras comprobaciones manuales. -->
 
 ## Issue
