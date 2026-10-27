@@ -1,6 +1,8 @@
 /* Vista del playground: un editor libre con consola. */
 
 import { STORAGE_KEYS, TIME_LIMIT_MS } from "../config.js";
+import { createFletRenderer } from "../flet/renderer.js";
+import { sendFletEvent, usesFlet } from "../flet/runtime.js";
 import { $ } from "../lib/dom.js";
 import { storage } from "../lib/storage.js";
 import { stopPython } from "../python/engine.js";
@@ -34,6 +36,8 @@ export function createPlaygroundView({ progress }) {
   const root = $("#view-playground");
   const host = $("#playground-editor");
   const terminal = createTerminal($("#playground-output"));
+  const results = $("#playground-results");
+  const preview = createFletRenderer($("#playground-preview"), { onEvent: sendFletEvent });
   let editor = null;
   let saveTimer = null;
   let showing = false;
@@ -82,11 +86,17 @@ export function createPlaygroundView({ progress }) {
 
   function run() {
     if (!editor) return;
-    runInTerminal(editor.getValue(), terminal, {
+    const code = editor.getValue();
+    // La vista previa solo aparece cuando el programa usa Flet.
+    const flet = usesFlet(code);
+    results.classList.toggle("pane--with-preview", flet);
+    if (!flet) preview.clear();
+    runInTerminal(code, terminal, {
       fileName: "playground.py",
       timeLimitMs: TIME_LIMIT_MS.playground,
       showDuration: true,
       editor,
+      preview: flet ? preview : undefined,
       onStart: () => progress.recordActivity(),
     });
   }

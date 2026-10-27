@@ -60,6 +60,8 @@ async function bundle(entryPoint, options = {}) {
     minify: true,
     write: false,
     target: ["es2022", "chrome100", "firefox100", "safari15.4"],
+    // El simulador de Flet está escrito en Python y se incrusta como texto.
+    loader: { ".py": "text" },
     logLevel: "warning",
     ...options,
   });

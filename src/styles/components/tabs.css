@@ -1,0 +1,39 @@
+/* Pestañas compactas dentro de una barra (vista previa | salida). */
+
+.tabs {
+  display: flex;
+  gap: 2px;
+}
+
+.tabs__tab {
+  position: relative;
+  padding: 3px 9px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--color-text-muted);
+  font-family: var(--font-code);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.tabs__tab:hover {
+  color: var(--color-text);
+}
+
+.tabs__tab[aria-selected="true"] {
+  border-color: var(--color-border-strong);
+  background: var(--color-bg-overlay);
+  color: var(--color-accent);
+}
+
+/* Aviso de novedades en una pestaña que no se está viendo */
+.tabs__dot {
+  position: absolute;
+  top: 3px;
+  right: 2px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-highlight);
+}

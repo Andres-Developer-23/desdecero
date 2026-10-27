@@ -4,6 +4,7 @@
  *   y bloques ``` (```py se muestra como ejemplo ejecutable).
  */
 
+import { usesFlet } from "../flet/detect.js";
 import { escapeHtml } from "../lib/dom.js";
 
 const FENCE = /^```/;
@@ -80,7 +81,7 @@ function exampleHtml(code) {
     <button type="button" class="example__action example__action--run" data-action="run-example" data-requires-python>▶ ejecutar</button>
     <button type="button" class="example__action" data-action="edit-example" aria-label="Editar en el playground">editar<span class="example__action-long"> en playground</span></button>
   </div>
-  <pre class="example__code">${escapeHtml(code)}</pre>
+  <pre class="example__code">${escapeHtml(code)}</pre>${usesFlet(code) ? '\n  <div class="example__preview flet-preview" hidden></div>' : ""}
   <pre class="example__output" role="log" aria-live="polite" hidden></pre>
 </figure>`;
 }

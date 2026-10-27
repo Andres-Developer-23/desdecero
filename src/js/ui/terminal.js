@@ -3,7 +3,7 @@
  * input() y explica los errores.
  */
 
-import { ERROR_EXPLANATIONS } from "../python/errors.js";
+import { explainError } from "../python/errors.js";
 
 /**
  * Tipos de línea y su clase CSS (ver styles/components/console.css).
@@ -20,9 +20,14 @@ const KIND_CLASS = {
   fail: "out--fail",
 };
 
-export function createTerminal(element) {
+/**
+ * @param {HTMLElement} element
+ * @param {{onWrite?: () => void}} [options] onWrite avisa cada vez que se añade algo.
+ */
+export function createTerminal(element, { onWrite } = {}) {
   const scrollToEnd = () => {
     element.scrollTop = element.scrollHeight;
+    onWrite?.();
   };
 
   /** Añade texto; si el último fragmento es del mismo tipo, lo continúa. */
@@ -122,7 +127,7 @@ export function createTerminal(element) {
       const where = error.line ? ` en la línea ${error.line}` : "";
       line(`✗ ${error.type}${where}`, "error");
       if (error.message && error.type !== "TimeLimitError") line(`  ${error.message}`, "error");
-      const explanation = ERROR_EXPLANATIONS[error.type];
+      const explanation = explainError(error);
       if (explanation) line(`  → ${explanation}`, "explanation");
     },
   };

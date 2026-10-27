@@ -4,6 +4,7 @@
 
 import { createCourse, readCourseData } from "./course/course.js";
 import { checkExercise } from "./exercises/checker.js";
+import { installFletRuntime } from "./flet/runtime.js";
 import { $ } from "./lib/dom.js";
 import { startCloudSync } from "./progress/cloud-sync.js";
 import { createProgress } from "./progress/progress.js";
@@ -17,6 +18,8 @@ import { createLessonView } from "./views/lesson.js";
 import { createPanelView } from "./views/panel.js";
 import { createPlaygroundView } from "./views/playground.js";
 import { createRouteView } from "./views/route.js";
+
+installFletRuntime();
 
 const course = createCourse(readCourseData($("#course-data")));
 const progress = createProgress(course.lessons.map((lesson) => lesson.id));
