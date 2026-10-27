@@ -1,0 +1,23 @@
+# Propone actualizaciones de dependencias una vez al mes, agrupadas en un
+# solo pull request por ecosistema para no llenar el repositorio de ruido.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: monthly
+    commit-message:
+      prefix: "Actualizar dependencias:"
+    groups:
+      desarrollo:
+        patterns: ["*"]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    commit-message:
+      prefix: "Actualizar acciones:"
+    groups:
+      acciones:
+        patterns: ["*"]
