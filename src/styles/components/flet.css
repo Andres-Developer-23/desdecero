@@ -1,0 +1,632 @@
+/*
+ * Vista previa de las apps de Flet. Imita el tema de Material 3 de Flet:
+ * los colores llegan como variables --flet-* que pone el renderizador
+ * (src/js/flet/colors.js), según el tema claro u oscuro de la app.
+ */
+
+.flet-preview {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 12px;
+  background: var(--color-bg);
+}
+
+/* ---- Ventana ---- */
+
+.flet-window {
+  position: relative;
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 240px;
+  overflow: hidden;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+  background: var(--flet-surface, var(--color-bg-raised));
+  color: var(--flet-onsurface, var(--color-text));
+  font-family:
+    Roboto,
+    "Segoe UI",
+    system-ui,
+    -apple-system,
+    sans-serif;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.flet-window--light {
+  color-scheme: light;
+}
+
+.flet-window--dark {
+  color-scheme: dark;
+}
+
+.flet-window__titlebar {
+  flex: none;
+  padding: 6px 12px;
+  overflow: hidden;
+  border-bottom: 1px solid var(--flet-outlinevariant, var(--color-border));
+  background: var(--flet-surfacecontainerhigh, var(--color-bg-overlay));
+  color: var(--flet-onsurfacevariant, var(--color-text-muted));
+  font-family: var(--font-code);
+  font-size: 11.5px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.flet-window__body {
+  position: relative;
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.flet-window__placeholder {
+  margin: auto;
+  padding: 24px;
+  color: var(--color-text-muted);
+  font-family: var(--font-code);
+  font-size: 12.5px;
+  text-align: center;
+}
+
+.flet-window--stale .flet-window__body {
+  opacity: 0.45;
+  filter: grayscale(0.6);
+}
+
+.flet-window__stale-note {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  left: 10px;
+  margin: 0;
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-overlay);
+  color: var(--color-highlight);
+  font-family: var(--font-code);
+  font-size: 12px;
+  text-align: center;
+}
+
+.flet-page {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+  overflow: auto;
+}
+
+.flet-disabled {
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.flet-clickable {
+  cursor: pointer;
+}
+
+.flet-unsupported {
+  padding: 6px 10px;
+  border: 1px dashed var(--flet-error);
+  border-radius: 4px;
+  color: var(--flet-error);
+  font-size: 12px;
+}
+
+/* ---- Texto e iconos ---- */
+
+.flet-text {
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  user-select: none;
+}
+
+.flet-text--selectable {
+  user-select: text;
+}
+
+.flet-text--clamp {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+}
+
+.flet-icon {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  line-height: 1;
+}
+
+/* ---- Botones ---- */
+
+.flet-button {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 24px;
+  border: 1px solid transparent;
+  border-radius: 20px;
+  background: transparent;
+  color: var(--flet-primary);
+  font:
+    500 14px/1 Roboto,
+    "Segoe UI",
+    system-ui,
+    sans-serif;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+}
+
+.flet-button:hover {
+  filter: brightness(0.96);
+}
+
+.flet-button--elevated {
+  background: var(--flet-surfacecontainerlow);
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.3),
+    0 1px 3px 1px rgba(0, 0, 0, 0.15);
+}
+
+.flet-button--filled {
+  background: var(--flet-primary);
+  color: var(--flet-onprimary);
+}
+
+.flet-button--tonal {
+  background: var(--flet-secondarycontainer);
+  color: var(--flet-onsecondarycontainer);
+}
+
+.flet-button--outlined {
+  border-color: var(--flet-outline);
+}
+
+.flet-button--text {
+  padding: 0 12px;
+}
+
+.flet-icon-button {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--flet-onsurfacevariant);
+  cursor: pointer;
+}
+
+.flet-icon-button:hover {
+  background: color-mix(in srgb, var(--flet-onsurface) 8%, transparent);
+}
+
+.flet-fab {
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-width: 56px;
+  height: 56px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 16px;
+  background: var(--flet-primarycontainer);
+  color: var(--flet-onprimarycontainer);
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.3),
+    0 4px 8px 3px rgba(0, 0, 0, 0.15);
+  font:
+    500 14px/1 Roboto,
+    "Segoe UI",
+    system-ui,
+    sans-serif;
+  cursor: pointer;
+}
+
+/* ---- Campos de texto ---- */
+
+.flet-textfield {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  padding-top: 6px;
+}
+
+.flet-textfield__box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 0 12px;
+  border: 1px solid var(--flet-outline);
+  border-radius: 4px;
+  color: var(--flet-onsurfacevariant);
+}
+
+.flet-textfield__box:focus-within {
+  border-color: var(--flet-primary);
+  box-shadow: inset 0 0 0 1px var(--flet-primary);
+}
+
+.flet-textfield--filled .flet-textfield__box {
+  border-width: 0 0 1px;
+  border-radius: 4px 4px 0 0;
+  background: var(--flet-surfacecontainerhighest);
+}
+
+.flet-textfield--error .flet-textfield__box {
+  border-color: var(--flet-error);
+}
+
+/* Etiqueta flotante sobre el borde, como en Material 3 */
+.flet-textfield__label {
+  position: absolute;
+  top: -9px;
+  left: 8px;
+  max-width: calc(100% - 16px);
+  padding: 0 4px;
+  overflow: hidden;
+  background: var(--flet-surface);
+  color: var(--flet-onsurfacevariant);
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.flet-textfield__box:focus-within .flet-textfield__label {
+  color: var(--flet-primary);
+}
+
+.flet-textfield__input {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 12px 0;
+  border: 0;
+  background: transparent;
+  color: var(--flet-onsurface);
+  font:
+    400 16px/1.3 Roboto,
+    "Segoe UI",
+    system-ui,
+    sans-serif;
+  resize: vertical;
+}
+
+.flet-textfield__input:focus {
+  outline: none;
+}
+
+.flet-textfield__input::placeholder {
+  color: var(--flet-onsurfacevariant);
+  opacity: 0.7;
+}
+
+.flet-textfield__reveal {
+  display: inline-flex;
+  padding: 4px;
+  border: 0;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.flet-textfield__helper {
+  padding: 0 12px;
+  color: var(--flet-onsurfacevariant);
+  font-size: 12px;
+}
+
+.flet-textfield--error .flet-textfield__helper {
+  color: var(--flet-error);
+}
+
+/* ---- Casillas e interruptores ---- */
+
+.flet-toggle {
+  --flet-toggle-active: var(--flet-primary);
+  position: relative;
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 12px;
+  min-height: 40px;
+  cursor: pointer;
+}
+
+.flet-toggle--label-left {
+  flex-direction: row-reverse;
+}
+
+.flet-toggle__input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.flet-toggle__mark--checkbox {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  margin: 11px;
+  border: 2px solid var(--flet-onsurfacevariant);
+  border-radius: 2px;
+  color: transparent;
+}
+
+.flet-toggle__input:checked + .flet-toggle__mark--checkbox {
+  border-color: var(--flet-toggle-active);
+  background: var(--flet-toggle-active);
+}
+
+/* Marca de verificación dibujada con CSS: no depende de la fuente de iconos */
+.flet-toggle__input:checked + .flet-toggle__mark--checkbox::after {
+  content: "";
+  width: 5px;
+  height: 10px;
+  margin-top: -2px;
+  border: solid var(--flet-onprimary);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.flet-toggle__mark--switch {
+  position: relative;
+  flex: none;
+  width: 52px;
+  height: 32px;
+  border: 2px solid var(--flet-outline);
+  border-radius: 16px;
+  background: var(--flet-surfacecontainerhighest);
+  transition: background 0.15s;
+}
+
+.flet-toggle__mark--switch::after {
+  content: "";
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--flet-outline);
+  transition:
+    transform 0.15s,
+    width 0.15s,
+    height 0.15s;
+}
+
+.flet-toggle__input:checked + .flet-toggle__mark--switch {
+  border-color: var(--flet-toggle-active);
+  background: var(--flet-toggle-active);
+}
+
+.flet-toggle__input:checked + .flet-toggle__mark--switch::after {
+  top: 2px;
+  left: 2px;
+  width: 24px;
+  height: 24px;
+  background: var(--flet-onprimary);
+  transform: translateX(20px);
+}
+
+.flet-toggle__input:focus-visible + .flet-toggle__mark {
+  outline: 2px solid var(--flet-primary);
+  outline-offset: 2px;
+}
+
+/* ---- Deslizador y barra de progreso ---- */
+
+.flet-slider {
+  min-width: 120px;
+  accent-color: var(--flet-primary);
+}
+
+.flet-progress {
+  position: relative;
+  height: 4px;
+  overflow: hidden;
+  border-radius: 2px;
+  background: var(--flet-surfacecontainerhighest);
+}
+
+.flet-progress__fill {
+  height: 100%;
+  background: var(--flet-primary);
+}
+
+.flet-progress--indeterminate .flet-progress__fill {
+  width: 40%;
+  animation: flet-progress 1.2s ease-in-out infinite;
+}
+
+@keyframes flet-progress {
+  from {
+    transform: translateX(-100%);
+  }
+
+  to {
+    transform: translateX(250%);
+  }
+}
+
+/* ---- Layout ---- */
+
+.flet-flex {
+  display: flex;
+  min-width: 0;
+}
+
+.flet-flex--row {
+  flex-direction: row;
+}
+
+.flet-flex--column {
+  flex-direction: column;
+}
+
+.flet-scroll-x {
+  overflow-x: auto;
+}
+
+.flet-scroll-y {
+  overflow-y: auto;
+}
+
+.flet-listview {
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+}
+
+.flet-listview--column {
+  flex-direction: column;
+}
+
+.flet-listview--row {
+  flex-direction: row;
+}
+
+.flet-container {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.flet-container--aligned {
+  flex-direction: row;
+}
+
+.flet-container--ink:active {
+  filter: brightness(0.92);
+}
+
+.flet-safearea {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.flet-card {
+  display: flex;
+  flex-direction: column;
+  margin: 4px;
+  border-radius: 12px;
+  background: var(--flet-surfacecontainerlow);
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.3),
+    0 1px 3px 1px rgba(0, 0, 0, 0.15);
+}
+
+.flet-divider--horizontal {
+  display: flex;
+  align-items: center;
+  height: 16px;
+}
+
+.flet-divider--horizontal .flet-divider__line {
+  flex: 1;
+  height: 1px;
+  background: var(--flet-outlinevariant);
+}
+
+.flet-divider--vertical {
+  display: flex;
+  justify-content: center;
+  align-self: stretch;
+  width: 16px;
+}
+
+.flet-divider--vertical .flet-divider__line {
+  width: 1px;
+  background: var(--flet-outlinevariant);
+}
+
+.flet-listtile {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 56px;
+  padding: 8px 16px;
+}
+
+.flet-listtile__texts {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.flet-listtile__title {
+  color: var(--flet-onsurface);
+  font-size: 16px;
+}
+
+.flet-listtile__subtitle {
+  color: var(--flet-onsurfacevariant);
+  font-size: 14px;
+}
+
+.flet-listtile__leading,
+.flet-listtile__trailing {
+  display: flex;
+  flex: none;
+  align-items: center;
+  color: var(--flet-onsurfacevariant);
+}
+
+.flet-appbar {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 8px;
+  min-height: 56px;
+  padding: 0 8px 0 16px;
+  background: var(--flet-surface);
+  color: var(--flet-onsurface);
+  box-shadow: 0 1px 0 var(--flet-outlinevariant);
+}
+
+.flet-appbar__title {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  font-size: 20px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.flet-appbar__title--center {
+  text-align: center;
+}
+
+.flet-appbar__actions {
+  display: flex;
+  align-items: center;
+}

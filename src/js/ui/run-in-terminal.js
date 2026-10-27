@@ -1,8 +1,10 @@
 /*
- * Ejecución interactiva con la salida en una terminal. La comparten los
- * ejemplos de las lecciones, el ejercicio y el playground.
+ * Ejecución interactiva con la salida en una terminal y, si el código usa
+ * Flet, la app en una vista previa. La comparten los ejemplos de las
+ * lecciones, el ejercicio y el playground.
  */
 
+import { beginFletSession, usesFlet } from "../flet/runtime.js";
 import { isPythonEngineReady } from "../python/libraries.js";
 import { isRunning, runPython } from "../python/engine.js";
 
@@ -14,13 +16,26 @@ import { isRunning, runPython } from "../python/engine.js";
  * @param {number} [options.timeLimitMs]
  * @param {boolean} [options.showDuration] Añade "[terminado en X s]" al final.
  * @param {import("./editor.js").Editor} [options.editor] Editor donde marcar la línea del error.
+ * @param {ReturnType<import("../flet/renderer.js").createFletRenderer>} [options.preview]
+ *   Vista previa donde dibujar la app si el código usa Flet.
+ * @param {(error: object) => void} [options.onError] Error al ejecutar o en un manejador de eventos.
  * @param {() => void} [options.onStart]
  */
 export async function runInTerminal(code, terminal, options = {}) {
   if (isRunning()) return null;
 
+  const preview = usesFlet(code) ? (options.preview ?? null) : null;
   options.editor?.markErrorLine(null);
   terminal.clear();
+  const session = beginFletSession({
+    renderer: preview,
+    terminal,
+    timeLimitMs: options.timeLimitMs,
+    onError: (error) => {
+      options.editor?.markErrorLine(error.line);
+      options.onError?.(error);
+    },
+  });
   if (options.fileName) terminal.line(`$ python ${options.fileName}`, "system");
   if (isPythonEngineReady() === undefined) {
     terminal.line("# cargando el motor de Python…", "system");
@@ -47,13 +62,33 @@ export async function runInTerminal(code, terminal, options = {}) {
     case "error":
       terminal.showError(result.error);
       options.editor?.markErrorLine(result.error.line);
+      options.onError?.(result.error);
       break;
     case "ok":
-      if (!result.stdout) terminal.line("(el programa no imprimió nada)", "system");
+      if (preview) {
+        // En los ejemplos (sin nombre de archivo) la vista previa ya lo dice todo.
+        if (options.fileName) {
+          terminal.line(
+            session.rendered
+              ? "# la app está en marcha: úsala en la vista previa"
+              : "# el programa terminó sin abrir ninguna app: ¿falta ft.run(main)?",
+            "system",
+          );
+        }
+      } else if (!result.stdout) {
+        terminal.line("(el programa no imprimió nada)", "system");
+      }
       if (options.showDuration) {
         terminal.line(`[terminado en ${(result.durationMs / 1000).toFixed(2)} s]`, "system");
       }
       break;
+  }
+  if (preview && !session.rendered && result.status !== "busy") {
+    preview.showMessage(
+      result.status === "ok"
+        ? "tu programa no llamó a ft.run(main)"
+        : "la app no llegó a arrancar: mira la salida",
+    );
   }
   return result;
 }

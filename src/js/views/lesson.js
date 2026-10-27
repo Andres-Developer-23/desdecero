@@ -3,6 +3,8 @@
 import { STORAGE_KEYS, TIME_LIMIT_MS } from "../config.js";
 import { lessonPath } from "../course/course.js";
 import { checkExercise } from "../exercises/checker.js";
+import { createFletRenderer } from "../flet/renderer.js";
+import { sendFletEvent } from "../flet/runtime.js";
 import { $, escapeHtml } from "../lib/dom.js";
 import { formatDayKey, pad2 } from "../lib/dates.js";
 import { storage } from "../lib/storage.js";
@@ -11,6 +13,7 @@ import { createEditor, needsNewEditor, waitForEditorLibrary } from "../ui/editor
 import { highlightExamples } from "../ui/examples.js";
 import { renderInline, renderMarkdown } from "../ui/markdown.js";
 import { runInTerminal } from "../ui/run-in-terminal.js";
+import { createTabs } from "../ui/tabs.js";
 import { createTerminal } from "../ui/terminal.js";
 
 const DRAFT_SAVE_DELAY_MS = 400;
@@ -39,12 +42,24 @@ export function createLessonView({ course, progress }) {
     hint: $("#exercise-hint"),
     editor: $("#exercise-editor"),
     output: $("#exercise-output"),
+    outputTitle: $("#exercise-output-title"),
+    tabs: $("#exercise-tabs"),
+    preview: $("#exercise-preview"),
+    workbench: $(".workbench"),
     success: $("#exercise-success"),
     successLink: $("#exercise-success-link"),
     solutionButton: $("#exercise-solution"),
   };
 
-  const terminal = createTerminal(elements.output);
+  const terminal = createTerminal(elements.output, {
+    onWrite: () => tabs.markUnread("output"),
+  });
+  const preview = createFletRenderer(elements.preview, { onEvent: sendFletEvent });
+  const tabs = createTabs(
+    elements.tabs,
+    { preview: elements.preview, output: elements.output },
+    { initial: "output" },
+  );
   const drafts = createDraftStore();
   let lesson = null;
   let editor = null;
@@ -116,24 +131,49 @@ export function createLessonView({ course, progress }) {
       : "o supera el ejercicio y se marcará sola";
   }
 
+  /** Las lecciones de Flet tienen vista previa y pestañas; las de Python, solo la salida. */
+  const isFletLesson = () => lesson.route.runtime === "flet";
+
   function resetExercisePanel() {
+    const flet = isFletLesson();
     elements.hint.hidden = true;
     elements.success.hidden = true;
     disarmSolutionButton();
     terminal.clear();
-    terminal.line("# pulsa ▶ ejecutar (Ctrl + Enter) para ver aquí la salida,", "system");
+    terminal.line(
+      flet
+        ? "# aquí verás los print() y los errores de tu app."
+        : "# pulsa ▶ ejecutar (Ctrl + Enter) para ver aquí la salida,",
+      "system",
+    );
     terminal.line("# y ✓ comprobar cuando creas que el ejercicio está resuelto.", "system");
+
+    // Se elige la pestaña después de escribir, para no marcar "salida" como pendiente.
+    elements.workbench.classList.toggle("workbench--flet", flet);
+    elements.tabs.hidden = !flet;
+    elements.outputTitle.hidden = flet;
+    if (flet) {
+      preview.showMessage("▶ ejecuta el código para ver tu app aquí");
+      tabs.select("preview");
+    } else {
+      preview.clear();
+      tabs.select("output");
+    }
   }
 
   /* ---- Acciones ---- */
 
   function run() {
     if (!editor) return;
+    const flet = isFletLesson();
+    if (flet) tabs.select("preview");
     runInTerminal(editor.getValue(), terminal, {
       fileName: "ejercicio.py",
       timeLimitMs: TIME_LIMIT_MS.lesson,
       showDuration: true,
       editor,
+      preview: flet ? preview : undefined,
+      onError: () => tabs.select("output"),
       onStart: () => progress.recordActivity(),
     });
   }
@@ -142,6 +182,7 @@ export function createLessonView({ course, progress }) {
     if (!editor || isRunning()) return;
     const current = lesson;
     editor.markErrorLine(null);
+    tabs.select("output");
     terminal.clear();
     progress.recordActivity();
 

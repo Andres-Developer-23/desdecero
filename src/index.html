@@ -15,6 +15,15 @@
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500;700&family=Martian+Mono:wght@500;700&display=swap"
     />
+    <!-- Vista previa de Flet: tipografía e iconos de Material -->
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,400;0,500;0,700;1,400&display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/icon?family=Material+Icons|Material+Icons+Outlined|Material+Icons+Round"
+    />
     <!-- build:styles -->
   </head>
   <body>
@@ -244,11 +253,43 @@
               </div>
               <div class="console">
                 <div class="bar bar--plain">
-                  <span>salida</span><span class="bar__spacer"></span>
+                  <span class="console__title" id="exercise-output-title">salida</span>
+                  <div class="tabs" role="tablist" aria-label="Resultado" id="exercise-tabs" hidden>
+                    <button
+                      class="tabs__tab"
+                      type="button"
+                      role="tab"
+                      id="exercise-tab-preview"
+                      data-tab="preview"
+                      aria-controls="exercise-preview"
+                      aria-selected="true"
+                    >
+                      vista previa
+                    </button>
+                    <button
+                      class="tabs__tab"
+                      type="button"
+                      role="tab"
+                      id="exercise-tab-output"
+                      data-tab="output"
+                      aria-controls="exercise-output"
+                      aria-selected="false"
+                    >
+                      salida<span class="tabs__dot" hidden></span>
+                    </button>
+                  </div>
+                  <span class="bar__spacer"></span>
                   <button class="text-button" type="button" data-action="clear-output">
                     limpiar
                   </button>
                 </div>
+                <div
+                  class="flet-preview workbench__preview"
+                  id="exercise-preview"
+                  role="tabpanel"
+                  aria-labelledby="exercise-tab-preview"
+                  hidden
+                ></div>
                 <pre
                   class="console__output"
                   id="exercise-output"
@@ -275,7 +316,8 @@
           <h1 class="display display--page" id="playground-title">Playground</h1>
           <p class="lede">
             Un editor libre para experimentar. Escribe lo que quieras y pulsa ejecutar: tu código se
-            guarda en este navegador.
+            guarda en este navegador. Si importas <code class="inline-code">flet</code>, la app
+            aparece en una vista previa.
           </p>
 
           <div class="playground__grid">
@@ -307,7 +349,8 @@
                 </button>
               </div>
             </div>
-            <div class="pane console">
+            <div class="pane console" id="playground-results">
+              <div class="flet-preview playground__preview" id="playground-preview" hidden></div>
               <div class="bar bar--plain">
                 <span>salida</span><span class="bar__spacer"></span>
                 <button class="text-button" type="button" data-action="clear-output">

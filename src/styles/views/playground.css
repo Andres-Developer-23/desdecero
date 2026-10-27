@@ -42,3 +42,28 @@
     max-height: none;
   }
 }
+
+/* ---- Vista previa de Flet en el playground ---- */
+
+.playground__preview {
+  height: 340px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+@media (min-width: 960px) {
+  .pane--with-preview .playground__preview {
+    flex: 1 1 62%;
+    height: auto;
+  }
+
+  .pane--with-preview .console__output {
+    flex: 1 1 38%;
+    height: auto;
+    min-height: 120px;
+  }
+
+  .pane--with-preview {
+    height: calc(58vh + 104px);
+    min-height: 420px;
+  }
+}

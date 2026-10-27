@@ -1,8 +1,11 @@
 /*
  * Ejemplos ejecutables dentro de las lecciones: resaltado de sintaxis,
- * botón de ejecutar y botón de abrirlos en el playground.
+ * botón de ejecutar y botón de abrirlos en el playground. Los ejemplos de
+ * Flet muestran la app en su propia vista previa.
  */
 
+import { createFletRenderer } from "../flet/renderer.js";
+import { sendFletEvent } from "../flet/runtime.js";
 import { $ } from "../lib/dom.js";
 import { createTerminal } from "./terminal.js";
 import { runInTerminal } from "./run-in-terminal.js";
@@ -21,6 +24,18 @@ export function highlightExamples(root = document) {
     }
     pre.dataset.highlighted = "true";
   });
+}
+
+const previews = new WeakMap();
+
+/** La vista previa de un ejemplo de Flet, creada la primera vez que se ejecuta. */
+function previewFor(example) {
+  const host = $(".example__preview", example);
+  if (!host) return null;
+  if (!previews.has(example)) {
+    previews.set(example, createFletRenderer(host, { onEvent: sendFletEvent }));
+  }
+  return previews.get(example);
 }
 
 /**
@@ -42,7 +57,14 @@ export function setupExamples({ onRun, onEditInPlayground }) {
     }
 
     const output = $(".example__output", example);
-    output.hidden = false;
-    runInTerminal(code, createTerminal(output), { onStart: onRun });
+    const preview = previewFor(example);
+    // En los ejemplos de Flet la salida solo aparece si el programa escribe algo.
+    output.hidden = Boolean(preview);
+    const terminal = createTerminal(output, {
+      onWrite: () => {
+        if (preview && output.textContent.trim()) output.hidden = false;
+      },
+    });
+    runInTerminal(code, terminal, { onStart: onRun, preview });
   });
 }
