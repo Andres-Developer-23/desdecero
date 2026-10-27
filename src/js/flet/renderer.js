@@ -471,7 +471,14 @@ function renderFlex(node, ctx) {
   if (p.scroll) box.classList.add(isRow ? "flet-scroll-x" : "flet-scroll-y");
   // Como en Flutter, una fila ocupa todo el ancho disponible salvo que sea "tight".
   if (isRow && !p.tight && p.width == null && ctx.axis !== "row") box.style.alignSelf = "stretch";
-  box.append(...renderChildren(node.slots.controls, { ...ctx, axis: isRow ? "row" : "column" }));
+  const children = renderChildren(node.slots.controls, { ...ctx, axis: isRow ? "row" : "column" });
+  box.append(...children);
+  // Una columna es tan ancha como su hijo más ancho: si alguno ocupa todo el ancho
+  // (una fila, un campo de texto, una lista...), ella también.
+  const fillsWidth = children.some((child) => child.style.alignSelf === "stretch");
+  if (!isRow && fillsWidth && p.width == null && ctx.axis !== "row") {
+    box.style.alignSelf = "stretch";
+  }
   return box;
 }
 

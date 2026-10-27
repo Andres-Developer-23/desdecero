@@ -90,6 +90,28 @@ ft.run(main)
   await expect(field).toHaveValue("hola mundo");
 });
 
+test("una fila dentro de una columna ocupa todo el ancho, como en Flutter", async ({ page }) => {
+  await openApp(page, "#playground");
+  await runInPlayground(
+    page,
+    `import flet as ft
+
+def main(page: ft.Page):
+    fila = ft.Row(
+        [ft.Text("izquierda"), ft.Text("derecha")],
+        alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+    )
+    page.add(ft.Column([fila]))
+
+ft.run(main)
+`,
+  );
+  const preview = page.locator("#playground-preview");
+  const body = await preview.locator(".flet-page").boundingBox();
+  const right = await preview.locator(".flet-text", { hasText: "derecha" }).boundingBox();
+  expect(body.x + body.width - (right.x + right.width)).toBeLessThan(40);
+});
+
 test("la vista previa se detiene al ejecutar otro programa", async ({ page }) => {
   await openApp(page, "#playground");
   await runInPlayground(page, CONTADOR);
