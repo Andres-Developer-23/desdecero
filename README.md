@@ -1,5 +1,9 @@
 # ~/desdecero.py
 
+[![CI](https://github.com/Andres-Developer-23/desdecero/actions/workflows/ci.yml/badge.svg)](https://github.com/Andres-Developer-23/desdecero/actions/workflows/ci.yml)
+
+**Pruébalo en [andres-developer-23.github.io/desdecero](https://andres-developer-23.github.io/desdecero/)**
+
 Curso interactivo para aprender **Python desde cero, en español**. Son 20 lecciones cortas, del primer `print()` a un juego completo. Cada lección explica una idea, trae ejemplos que se ejecutan con un clic y termina con un ejercicio que se corrige solo.
 
 Todo funciona en el navegador. No hace falta instalar Python ni crear una cuenta.
@@ -56,6 +60,17 @@ tests/
   unit/        pruebas de funciones puras (node:test)
   e2e/         pruebas en navegador (Playwright)
 ```
+
+## Integración continua y publicación
+
+El workflow [`.github/workflows/ci.yml`](.github/workflows/ci.yml) se ejecuta en cada pull request y en cada cambio en `main`:
+
+1. **Verificar**: formato, lint, pruebas unitarias y pruebas en navegador. Si algo falla, guarda el informe de Playwright como artefacto durante 7 días.
+2. **Publicar**: solo en `main` y solo si la verificación pasa. Genera `dist/` y lo despliega en GitHub Pages.
+
+Para que la publicación funcione, en el repositorio ve a **Settings → Pages** y en **Source** elige **GitHub Actions** (solo hay que hacerlo una vez).
+
+Dependabot propone una vez al mes un pull request con las dependencias de npm y las acciones de GitHub actualizadas.
 
 ## Estructura del proyecto
 
