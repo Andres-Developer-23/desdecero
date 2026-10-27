@@ -1,0 +1,30 @@
+name: Contenido del curso
+description: Una lección nueva, un ejercicio que mejorar o una errata en el texto.
+title: "Contenido: "
+labels: ["tipo: contenido"]
+body:
+  - type: dropdown
+    id: tipo
+    attributes:
+      label: Tipo de cambio
+      options:
+        - Lección nueva
+        - Mejorar una lección o un ejercicio
+        - Errata o explicación confusa
+    validations:
+      required: true
+
+  - type: input
+    id: leccion
+    attributes:
+      label: Lección afectada
+      description: Número y título, si aplica.
+      placeholder: 13 · Listas
+
+  - type: textarea
+    id: detalle
+    attributes:
+      label: Detalle
+      description: Qué cambiarías y por qué. Para una lección nueva, qué debería aprender el alumno y en qué módulo encaja.
+    validations:
+      required: true

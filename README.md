@@ -162,6 +162,10 @@ Código que se añade al final del código del alumno en la última ejecución. 
 assert total == 13700, "total debería valer 13700"
 ```
 
+## Contribuir
+
+Cada cambio empieza con un issue, se hace en su propia rama y entra en `main` con un pull request que pasa la CI. Los commits se escriben en español y las versiones siguen el versionado semántico. Todo el proceso está en [CONTRIBUTING.md](CONTRIBUTING.md) y la lista de cambios por versión en [CHANGELOG.md](CHANGELOG.md).
+
 ## Tecnología
 
 - [Skulpt](https://skulpt.org) 1.2 ejecuta Python 3 dentro del navegador, sin servidor.

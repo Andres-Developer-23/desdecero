@@ -1,0 +1,37 @@
+name: Informar de un error
+description: Algo de la página o de una lección no funciona como debería.
+title: "Error: "
+labels: ["tipo: error"]
+body:
+  - type: textarea
+    id: que-pasa
+    attributes:
+      label: Qué pasa
+      description: Describe el error con tus palabras.
+    validations:
+      required: true
+
+  - type: textarea
+    id: pasos
+    attributes:
+      label: Cómo reproducirlo
+      description: Los pasos para que ocurra. Si es en una lección, indica cuál y el código que escribiste.
+      placeholder: |
+        1. Ir a la lección 07 · Pedir datos con input()
+        2. Escribir...
+        3. Pulsar comprobar
+    validations:
+      required: true
+
+  - type: textarea
+    id: esperado
+    attributes:
+      label: Qué esperabas que pasara
+    validations:
+      required: true
+
+  - type: input
+    id: navegador
+    attributes:
+      label: Navegador y dispositivo
+      placeholder: Chrome 130 en Windows, Safari en iPhone…
