@@ -1,17 +1,18 @@
 """
 Versión de requests para el simulador del curso.
 
-Tiene la API de la librería real para peticiones GET (get, Session,
-Response, raise_for_status...), pero solo visita la web de prácticas del
-curso: los sitios .example. Cualquier otra dirección da un error que lo
-explica.
+Tiene la API de la librería real (get, post, put, patch, delete, head,
+Session, Response, raise_for_status, json()...), pero solo visita los
+sitios y las APIs de práctica del curso: los dominios .example. Cualquier
+otra dirección da un error que lo explica.
 
 Cada petición tarda 0,2 segundos en un reloj simulado y queda anotada
-(URL, cabeceras, estado y hora) para que las comprobaciones de los
-ejercicios puedan revisarla. Por el mismo motivo, al importar requests,
-time.sleep() avanza ese reloj en lugar de esperar de verdad.
+(método, URL, cabeceras, cuerpo, estado y hora) para que las comprobaciones
+de los ejercicios puedan revisarla. Por el mismo motivo, al importar
+requests, time.sleep() avanza ese reloj en lugar de esperar de verdad.
 """
 
+import json as _jsonlib
 import time as _time
 
 import _web
@@ -20,8 +21,10 @@ from requests.exceptions import (
     ConnectionError,
     ConnectTimeout,
     HTTPError,
+    InvalidJSONError,
     InvalidSchema,
     InvalidURL,
+    JSONDecodeError,
     MissingSchema,
     ReadTimeout,
     RequestException,
@@ -112,12 +115,13 @@ def _default_headers():
 
 
 class PreparedRequest:
-    """La petición tal como se envió: método, URL y cabeceras."""
+    """La petición tal como se envió: método, URL, cabeceras y cuerpo."""
 
-    def __init__(self, method, url, headers):
+    def __init__(self, method, url, headers, body=None):
         self.method = method
         self.url = url
         self.headers = headers
+        self.body = body
 
     def __repr__(self):
         return "<PreparedRequest [" + self.method + "]>"
@@ -132,9 +136,9 @@ class Response:
         self.url = data["url"]
         self.text = data["body"]
         self.encoding = "utf-8"
-        self.headers = CaseInsensitiveDict(
-            {"Content-Type": data["type"], "Content-Length": str(len(data["body"].encode("utf-8")))}
-        )
+        self.headers = CaseInsensitiveDict()
+        for pair in data["headers"]:
+            self.headers[pair[0]] = pair[1]
         self.request = request
         self.history = []
         self.elapsed = 0.2
@@ -163,9 +167,11 @@ class Response:
         raise HTTPError(message, response=self)
 
     def json(self, **kwargs):
-        raise NotImplementedError(
-            "El simulador del curso no lee JSON: los sitios de práctica solo tienen páginas HTML"
-        )
+        """El cuerpo de la respuesta convertido de JSON a datos de Python."""
+        try:
+            return _jsonlib.loads(self.text, **kwargs)
+        except _jsonlib.JSONDecodeError as error:
+            raise JSONDecodeError(error.msg, error.doc, error.pos, response=self)
 
     def iter_lines(self, decode_unicode=False):
         return iter(self.text.splitlines())
@@ -185,6 +191,8 @@ def _encode_params(params):
 
     if isinstance(params, str):
         return params
+    if isinstance(params, bytes):
+        return params.decode("utf-8")
     return urlencode(params, doseq=True)
 
 
@@ -213,18 +221,52 @@ def _prepare_url(url, params):
     return url
 
 
-def request(method, url, params=None, headers=None, timeout=None, allow_redirects=True, **kwargs):
-    """Hace una petición. El simulador solo admite GET."""
-    return _send(method, url, params, _default_headers(), headers, allow_redirects)
+def _prepare_body(data, json):
+    """El cuerpo de la petición y su Content-Type, como hace requests."""
+    if not data and json is not None:
+        try:
+            return _jsonlib.dumps(json, allow_nan=False), "application/json"
+        except (TypeError, ValueError) as error:
+            raise InvalidJSONError(str(error))
+    if not data:
+        return None, None
+    if isinstance(data, bytes):
+        return data.decode("utf-8"), None
+    if isinstance(data, str):
+        return data, None
+    return _encode_params(data), "application/x-www-form-urlencoded"
 
 
-def _send(method, url, params, base_headers, headers, allow_redirects):
+def _timeout_seconds(timeout):
+    if timeout is None:
+        return None
+    if isinstance(timeout, tuple):
+        timeout = timeout[-1]
+        if timeout is None:
+            return None
+    if isinstance(timeout, bool) or not isinstance(timeout, (int, float)):
+        raise ValueError(
+            "Timeout value connect was " + repr(timeout) + ", but it must be an int, float or None."
+        )
+    if timeout <= 0:
+        raise ValueError(
+            "Attempted to set connect timeout to " + str(timeout) + ", but the timeout cannot be set to a value less than or equal to 0."
+        )
+    return float(timeout)
+
+
+def _send(method, url, base_headers, params=None, data=None, headers=None, timeout=None, allow_redirects=True, json=None, files=None, auth=None, **kwargs):
     method = str(method).upper()
-    if method != "GET":
+    if files is not None:
+        raise NotImplementedError("El simulador del curso no envía archivos con files=")
+    if auth is not None:
         raise NotImplementedError(
-            "El simulador del curso solo admite peticiones GET: los sitios de práctica no tienen formularios"
+            "El simulador del curso no admite auth=: envía la cabecera Authorization con headers="
         )
     url = _prepare_url(url, params)
+    seconds = _timeout_seconds(timeout)
+    body, content_type = _prepare_body(data, json)
+
     sent = base_headers.copy()
     if headers:
         for key in headers:
@@ -233,32 +275,59 @@ def _send(method, url, params, base_headers, headers, allow_redirects):
                     del sent[key]
             else:
                 sent[key] = str(headers[key])
-    data = _web.fetch(url, dict(sent.items()), bool(allow_redirects))
-    if "error" in data:
-        if data["error"] == "url":
-            raise InvalidURL("Invalid URL '" + url + "': " + data["message"])
-        raise ConnectionError(data["message"])
-    return Response(data, PreparedRequest(method, data["url"], sent))
+    if body is not None:
+        sent["Content-Length"] = str(len(body.encode("utf-8")))
+        if content_type and "Content-Type" not in sent:
+            sent["Content-Type"] = content_type
+    elif method in ("POST", "PUT", "PATCH"):
+        sent["Content-Length"] = "0"
+
+    answer = _web.fetch(method, url, dict(sent.items()), body, seconds)
+    if "error" in answer:
+        if answer["error"] == "url":
+            raise InvalidURL("Invalid URL '" + url + "': " + answer["message"])
+        raise ConnectionError(answer["message"])
+    return Response(answer, PreparedRequest(method, answer["url"], sent, body))
+
+
+def request(method, url, **kwargs):
+    """Hace una petición con cualquier método: requests.request("GET", url, ...)."""
+    return _send(method, url, _default_headers(), **kwargs)
 
 
 def get(url, params=None, **kwargs):
-    """Descarga una página: requests.get(url, params=None, headers=None, timeout=None)."""
+    """Pide un recurso: requests.get(url, params=None, headers=None, timeout=None)."""
     return request("GET", url, params=params, **kwargs)
 
 
-def _unsupported(method):
-    def send(url, *args, **kwargs):
-        return request(method, url)
-
-    return send
+def post(url, data=None, json=None, **kwargs):
+    """Envía datos para crear algo: requests.post(url, json={...})."""
+    return request("POST", url, data=data, json=json, **kwargs)
 
 
-post = _unsupported("POST")
-put = _unsupported("PUT")
-patch = _unsupported("PATCH")
-delete = _unsupported("DELETE")
-head = _unsupported("HEAD")
-options = _unsupported("OPTIONS")
+def put(url, data=None, **kwargs):
+    """Reemplaza un recurso entero: requests.put(url, json={...})."""
+    return request("PUT", url, data=data, **kwargs)
+
+
+def patch(url, data=None, **kwargs):
+    """Cambia parte de un recurso: requests.patch(url, json={...})."""
+    return request("PATCH", url, data=data, **kwargs)
+
+
+def delete(url, **kwargs):
+    """Borra un recurso: requests.delete(url)."""
+    return request("DELETE", url, **kwargs)
+
+
+def head(url, **kwargs):
+    """Como get, pero solo trae las cabeceras."""
+    kwargs.setdefault("allow_redirects", False)
+    return request("HEAD", url, **kwargs)
+
+
+def options(url, **kwargs):
+    return request("OPTIONS", url, **kwargs)
 
 
 class Session:
@@ -267,14 +336,30 @@ class Session:
     def __init__(self):
         self.headers = _default_headers()
 
-    def request(self, method, url, params=None, headers=None, timeout=None, allow_redirects=True, **kwargs):
-        return _send(method, url, params, self.headers, headers, allow_redirects)
+    def request(self, method, url, **kwargs):
+        return _send(method, url, self.headers, **kwargs)
 
     def get(self, url, params=None, **kwargs):
         return self.request("GET", url, params=params, **kwargs)
 
-    def post(self, url, *args, **kwargs):
-        return self.request("POST", url)
+    def post(self, url, data=None, json=None, **kwargs):
+        return self.request("POST", url, data=data, json=json, **kwargs)
+
+    def put(self, url, data=None, **kwargs):
+        return self.request("PUT", url, data=data, **kwargs)
+
+    def patch(self, url, data=None, **kwargs):
+        return self.request("PATCH", url, data=data, **kwargs)
+
+    def delete(self, url, **kwargs):
+        return self.request("DELETE", url, **kwargs)
+
+    def head(self, url, **kwargs):
+        kwargs.setdefault("allow_redirects", False)
+        return self.request("HEAD", url, **kwargs)
+
+    def options(self, url, **kwargs):
+        return self.request("OPTIONS", url, **kwargs)
 
     def close(self):
         pass
@@ -296,11 +381,19 @@ class _Codes:
 
     ok = 200
     created = 201
+    accepted = 202
+    no_content = 204
     moved_permanently = 301
     found = 302
+    not_modified = 304
     bad_request = 400
+    unauthorized = 401
     forbidden = 403
     not_found = 404
+    method_not_allowed = 405
+    conflict = 409
+    unsupported_media_type = 415
+    unprocessable_entity = 422
     too_many_requests = 429
     internal_server_error = 500
     service_unavailable = 503

@@ -9,7 +9,7 @@ import { $, escapeHtml } from "../lib/dom.js";
 import { formatDayKey, pad2 } from "../lib/dates.js";
 import { storage } from "../lib/storage.js";
 import { isRunning, stopPython } from "../python/engine.js";
-import { onWebRun, virtualWeb } from "../web/runtime.js";
+import { onWebRun, virtualInternet } from "../web/runtime.js";
 import { createWebViewer } from "../web/web-viewer.js";
 import { createEditor, needsNewEditor, waitForEditorLibrary } from "../ui/editor.js";
 import { highlightExamples } from "../ui/examples.js";
@@ -58,7 +58,7 @@ export function createLessonView({ course, progress }) {
     onWrite: () => tabs.markUnread("output"),
   });
   const preview = createFletRenderer(elements.preview, { onEvent: sendFletEvent });
-  const webViewer = createWebViewer(elements.web, { web: virtualWeb });
+  const webViewer = createWebViewer(elements.web, { internet: virtualInternet });
   const tabs = createTabs(
     elements.tabs,
     { preview: elements.preview, web: elements.web, output: elements.output },

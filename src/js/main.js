@@ -24,7 +24,7 @@ import { installWebRuntime } from "./web/runtime.js";
 const courseData = readCourseData($("#course-data"));
 installStandardLibraryExtras();
 installFletRuntime();
-installWebRuntime(courseData.web ?? {});
+installWebRuntime({ pages: courseData.web ?? {}, apis: courseData.apis ?? {} });
 
 const course = createCourse(courseData);
 const progress = createProgress(course.lessons.map((lesson) => lesson.id));

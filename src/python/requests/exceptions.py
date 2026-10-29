@@ -2,8 +2,14 @@
 Excepciones de requests, con la jerarquía de la librería real.
 
 En requests, MissingSchema, InvalidSchema e InvalidURL también heredan de
-ValueError; Skulpt no admite esa doble herencia de excepciones nativas.
+ValueError, y JSONDecodeError hereda a la vez de RequestException y de
+json.JSONDecodeError. Skulpt no admite esa doble herencia de excepciones
+nativas: JSONDecodeError hereda solo de json.JSONDecodeError, así que se
+captura con except requests.exceptions.JSONDecodeError, except
+json.JSONDecodeError y except ValueError, como en la librería real.
 """
+
+import json as _json
 
 
 class RequestException(IOError):
@@ -53,3 +59,16 @@ class InvalidSchema(RequestException):
 
 class InvalidURL(RequestException):
     pass
+
+
+class InvalidJSONError(RequestException):
+    """No se pudo convertir a JSON lo que se pasó en json=."""
+
+
+class JSONDecodeError(_json.JSONDecodeError):
+    """La respuesta no es JSON válido (lo lanza Response.json())."""
+
+    def __init__(self, msg, doc, pos, response=None):
+        _json.JSONDecodeError.__init__(self, msg, doc, pos)
+        self.response = response
+        self.request = None

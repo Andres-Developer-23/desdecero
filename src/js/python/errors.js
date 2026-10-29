@@ -24,8 +24,25 @@ export const ERROR_EXPLANATIONS = {
   MissingSchema: "La URL tiene que empezar por https:// (o http://).",
   HTTPError:
     "El servidor respondió con un código de error: 404 significa que la página no existe y 403 que no tienes permiso para verla. Revisa la URL.",
+  JSONDecodeError:
+    "El texto no es JSON válido. Si viene de r.json(), la respuesta no trae JSON: mira r.status_code y r.text (o la pestaña web); puede ser una página HTML o una respuesta vacía. Si el JSON lo escribiste tú, recuerda que usa comillas dobles y no admite comas al final.",
+  InvalidJSONError:
+    "Lo que pasaste en json= no se puede convertir a JSON: usa diccionarios, listas, textos, números, True, False o None.",
   FileNotFoundError:
     "Ese archivo no existe. En el simulador, cada ejecución empieza con el disco vacío: el programa tiene que guardarlo antes de leerlo.",
+};
+
+/** Qué significa cada código de error de una API, para los HTTPError de raise_for_status(). */
+const HTTP_STATUS_EXPLANATIONS = {
+  400: "400: la petición está mal formada; revisa los parámetros. La respuesta suele decir cuál falla: mira r.json() o la pestaña web.",
+  401: "401: falta la clave de acceso o el token, o no es válido. Revisa la cabecera que envías con headers=.",
+  403: "403: el servidor sabe quién eres, pero no te deja hacer eso (por ejemplo, una clave desactivada).",
+  404: "404: lo que pides no existe. Revisa la URL y el id.",
+  405: "405: esa dirección no admite ese método (GET, POST...). Mira qué métodos permite la cabecera Allow.",
+  415: "415: el servidor esperaba los datos en JSON. Envíalos con json= en lugar de data=.",
+  422: "422: los datos que enviaste no son válidos. La respuesta explica qué campo falla: mira r.json().",
+  429: "429: has hecho demasiadas peticiones seguidas. Espera los segundos que indica la cabecera Retry-After antes de volver a intentarlo.",
+  503: "503: el servidor está saturado o en mantenimiento. Espera un poco y vuelve a intentarlo.",
 };
 
 /** Mensajes de Skulpt que no aportan nada al alumno. */
@@ -70,6 +87,10 @@ export function explainError(error) {
   }
   if (/module 'flet' has no attribute/.test(error.message)) {
     return "Ese nombre no existe en Flet 1.0 o el simulador del curso no lo incluye. Revisa las mayúsculas: los controles empiezan por mayúscula (ft.Text, ft.Button) y las constantes van en mayúsculas (ft.Colors.BLUE).";
+  }
+  if (error.type === "HTTPError") {
+    const status = Number(error.message.match(/^(\d{3}) /)?.[1]);
+    if (HTTP_STATUS_EXPLANATIONS[status]) return HTTP_STATUS_EXPLANATIONS[status];
   }
   return ERROR_EXPLANATIONS[error.type] ?? null;
 }
