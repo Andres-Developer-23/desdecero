@@ -1,0 +1,19 @@
+{
+  "requires": [
+    {
+      "pattern": "json\\s*=",
+      "message": "Envía los datos en JSON con json=."
+    }
+  ],
+  "forbids": [
+    {
+      "pattern": "tk-ana",
+      "message": "No escribas el token: sácalo de la respuesta de /v1/token."
+    }
+  ],
+  "runs": [
+    {
+      "output": "Creada la tarea 6: Preparar la presentación\nCreada la tarea 7: Comprar café\nNo se pudo crear: titulo no puede estar vacío\nTus tareas:\n[ ] 1 Comprar pan (baja)\n[ ] 2 Terminar el curso de Python (alta)\n[x] 3 Llamar a la abuela (media)\n[ ] 6 Preparar la presentación (alta)\n[ ] 7 Comprar café (media)"
+    }
+  ]
+}

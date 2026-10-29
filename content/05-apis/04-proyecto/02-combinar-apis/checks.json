@@ -1,0 +1,19 @@
+{
+  "requires": [
+    {
+      "pattern": ":\\.2f",
+      "message": "Muestra los dólares y los euros con 2 decimales (:.2f)."
+    }
+  ],
+  "forbids": [
+    {
+      "pattern": "0\\.000",
+      "message": "Usa las tasas que da la API en lugar de escribirlas."
+    }
+  ],
+  "runs": [
+    {
+      "output": "Python para curiosos: 68500 COP = 16.37 USD = 15.08 EUR\nDatos limpios, mentes tranquilas: 74000 COP = 17.68 USD = 16.29 EUR\nAlgoritmos para la vida diaria: 63000 COP = 15.05 USD = 13.87 EUR\nTotal: 205500 COP = 49.10 USD = 45.24 EUR"
+    }
+  ]
+}

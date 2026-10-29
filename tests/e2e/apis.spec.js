@@ -149,3 +149,32 @@ requests.post("https://api.tareas.example/v1/tareas", json={"titulo": "Probar la
   await expect(viewer.locator(".web-viewer__status")).toHaveText("401 Unauthorized");
   await expect(viewer.locator(".web-viewer__source")).toContainText("Falta el token");
 });
+
+test("las lecciones de la ruta de APIs abren la API en la pestaña web", async ({ page }) => {
+  await openApp(page, "#l-crear-con-post");
+  const tabs = page.locator("#exercise-tabs");
+  await expect(tabs.locator("[data-tab='web']")).toHaveAttribute("aria-selected", "true");
+  const viewer = page.locator("#exercise-web");
+  await expect(viewer.locator(".web-viewer__address")).toHaveValue("https://api.tareas.example/");
+  await expect(viewer.locator(".web-viewer__source")).toContainText('"nombre": "API de Tareas"');
+  await expect(viewer.locator(".web-viewer__modes")).toBeHidden();
+
+  // Al ejecutar la solución, la pestaña enseña cada petición con su método.
+  await page.evaluate(() => {
+    const { course } = window.__desdecero;
+    document
+      .querySelector("#exercise-editor .CodeMirror")
+      .CodeMirror.setValue(course.getLesson("crear-con-post").solution);
+  });
+  await page.locator("#view-lesson [data-action='run']").first().click();
+  await expect(page.locator("#exercise-output")).toContainText("Creada la tarea 6");
+  await tabs.locator("[data-tab='web']").click();
+  const items = viewer.locator(".web-viewer__request-list li");
+  await expect(items).toHaveCount(5);
+  await expect(items.nth(3)).toContainText("POST");
+  await expect(items.nth(3)).toContainText("422");
+  await expect(viewer.locator(".web-viewer__address")).toHaveValue(
+    "https://api.tareas.example/v1/tareas",
+  );
+  await expect(viewer.locator(".web-viewer__source")).toContainText('"Comprar café"');
+});

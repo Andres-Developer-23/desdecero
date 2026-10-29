@@ -1,0 +1,7 @@
+{
+  "title": "APIs y JSON",
+  "description": "Usa APIs web desde Python: lee y escribe JSON, pide datos con parámetros y paginación, usa claves de acceso, maneja errores y límites, y crea, modifica y borra datos con POST, PUT, PATCH y DELETE.",
+  "level": "Intermedio",
+  "runtime": "web",
+  "requires": "poo"
+}

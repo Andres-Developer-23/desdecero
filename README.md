@@ -4,7 +4,7 @@
 
 **Pruébalo en [andres-developer-23.github.io/desdecero](https://andres-developer-23.github.io/desdecero/)**
 
-Rutas interactivas para aprender **Python desde cero, en español**, y después **programación orientada a objetos**, apps con interfaz gráfica con **Flet** y extracción de datos de la web con **web scraping**. Cada ruta se divide en módulos y lecciones cortas: cada lección explica una idea, trae ejemplos que se ejecutan con un clic y termina con un ejercicio que se corrige solo.
+Rutas interactivas para aprender **Python desde cero, en español**, y después **programación orientada a objetos**, apps con interfaz gráfica con **Flet**, extracción de datos de la web con **web scraping** y uso de **APIs y JSON**. Cada ruta se divide en módulos y lecciones cortas: cada lección explica una idea, trae ejemplos que se ejecutan con un clic y termina con un ejercicio que se corrige solo.
 
 Todo funciona en el navegador. No hace falta instalar Python ni crear una cuenta.
 
@@ -66,6 +66,18 @@ El progreso y el código que escribes se guardan en el navegador.
 | 02 · Datos limpios     | De texto a números · Tablas HTML                                    |
 | 03 · Recorrer un sitio | Seguir enlaces · Paginación · Scraping responsable                  |
 | 04 · Proyecto final    | Guardar los datos en un CSV · Proyecto: el catálogo completo        |
+
+### Ruta «APIs y JSON»
+
+5 módulos y 12 lecciones (unas 3 horas) para usar APIs web desde Python. Conviene haber terminado antes la ruta de programación orientada a objetos, porque el proyecto final convierte las respuestas en clases. Los ejercicios usan cuatro APIs de práctica que se comportan como las reales: una librería con filtros y paginación, un servicio del clima con clave de acceso y límite de peticiones, un conversor de moneda y una lista de tareas con token. La pestaña **web** enseña cada petición con lo que se envió y la respuesta JSON, y los ejercicios comprueban también cómo se hizo: qué métodos y cabeceras se usaron, si se respetó el límite y cómo quedaron los datos de la API.
+
+| Módulo                | Lecciones                                                                            |
+| --------------------- | ------------------------------------------------------------------------------------ |
+| 00 · JSON             | Qué es JSON · JSON anidado y archivos                                                |
+| 01 · Consumir una API | Tu primera API · Parámetros de consulta · Paginación                                 |
+| 02 · Claves y errores | Claves de acceso · Errores, límites y reintentos                                     |
+| 03 · Enviar datos     | Crear datos con `POST` · Modificar y borrar: `PUT`, `PATCH` y `DELETE`               |
+| 04 · Proyecto final   | Modelar respuestas con clases · Combinar varias APIs · Proyecto: un cliente completo |
 
 ## Desarrollo local
 

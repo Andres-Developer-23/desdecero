@@ -1,0 +1,23 @@
+{
+  "requires": [
+    {
+      "pattern": "params\\s*=",
+      "message": "Pasa los filtros con params=."
+    }
+  ],
+  "forbids": [
+    {
+      "pattern": "libros/5\\b",
+      "message": "Usa el id del primer resultado en lugar de escribirlo."
+    },
+    {
+      "pattern": "Hoja Suelta",
+      "message": "Saca la editorial de la respuesta de la API."
+    }
+  ],
+  "runs": [
+    {
+      "output": "Encontrados: 9\n28500 · Versos para un lunes\n29900 · Un dragón en la biblioteca\n31000 · Canciones del río Magdalena\n34900 · El robot que aprendió a dormir\n36800 · El arte de hacer preguntas\n42000 · La última estación\n45900 · El faro de la niebla\n47500 · La ciudad de los relojes parados\n49500 · Señales desde Europa\nEl más barato: Versos para un lunes (La Hoja Suelta, 96 páginas)"
+    }
+  ]
+}

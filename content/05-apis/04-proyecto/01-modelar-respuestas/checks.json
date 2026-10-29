@@ -1,0 +1,23 @@
+{
+  "requires": [
+    {
+      "pattern": "Libro\\.desde_json\\(",
+      "message": "Crea cada libro con Libro.desde_json()."
+    },
+    {
+      "pattern": "asdict\\(",
+      "message": "Convierte los destacados con asdict() antes de guardarlos."
+    }
+  ],
+  "forbids": [
+    {
+      "pattern": "Andrés Quintero",
+      "message": "Saca los datos de la API en lugar de escribirlos."
+    }
+  ],
+  "runs": [
+    {
+      "output": "Libros: 18\nDestacados:\n- Python para curiosos — Andrés Quintero (68500)\n- Breve historia del café en los Andes — Julián Ortega (61200)\n- El robot que aprendió a dormir — Sofía Cárdenas (34900)\n- La última estación — Marta Ibáñez (42000)"
+    }
+  ]
+}
