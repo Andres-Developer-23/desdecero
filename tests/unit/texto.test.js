@@ -28,6 +28,21 @@ describe("markdown de las lecciones", () => {
     );
   });
 
+  test("enlaces: los de los sitios de práctica se quedan en la lección y los demás abren otra pestaña", () => {
+    assert.equal(
+      renderInline(
+        "Mira [la librería](https://libreria.example/catalogo/) y [Flet](https://flet.dev/).",
+      ),
+      'Mira <a href="https://libreria.example/catalogo/" data-web-link>la librería</a> y ' +
+        '<a href="https://flet.dev/" target="_blank" rel="noopener noreferrer">Flet</a>.',
+    );
+    assert.equal(renderInline("[x](javascript:alert(1))"), "[x](javascript:alert(1))");
+    assert.equal(
+      renderInline("`[no](https://a.example/)`"),
+      "<code>[no](https://a.example/)</code>",
+    );
+  });
+
   test("párrafos y listas", () => {
     assert.equal(
       renderMarkdown("Uno\ndos\n\n- a\n- b\n\n1. c"),

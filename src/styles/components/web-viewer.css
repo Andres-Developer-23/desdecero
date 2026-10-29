@@ -1,0 +1,222 @@
+/*
+ * Navegador de la web de prácticas (lecciones de web scraping): peticiones
+ * del último programa, barra de dirección y la página como se ve o como
+ * código HTML.
+ */
+
+.web-viewer {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: var(--color-bg);
+}
+
+/* ---- Peticiones del último programa ---- */
+
+.web-viewer__requests {
+  flex: none;
+  max-height: 96px;
+  padding: 6px 10px;
+  overflow-y: auto;
+  border-bottom: 1px solid var(--color-border);
+  font-family: var(--font-code);
+  font-size: 11.5px;
+}
+
+.web-viewer__requests-title {
+  display: block;
+  margin-bottom: 2px;
+  color: var(--color-text-muted);
+}
+
+.web-viewer__request-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.web-viewer__request-list button {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+  padding: 2px 4px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--color-text-soft);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.web-viewer__request-list button:hover,
+.web-viewer__request-list button.is-current {
+  background: var(--color-bg-overlay);
+  color: var(--color-text);
+}
+
+.web-viewer__time {
+  flex: none;
+  width: 4.5em;
+  color: var(--color-text-muted);
+  text-align: right;
+}
+
+.web-viewer__code {
+  flex: none;
+}
+
+.web-viewer__code[data-state="ok"] {
+  color: var(--color-accent);
+}
+
+.web-viewer__code[data-state="error"] {
+  color: var(--color-danger);
+}
+
+.web-viewer__url {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ---- Barra de dirección ---- */
+
+.web-viewer__bar {
+  display: flex;
+  flex: none;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--color-border);
+  font-family: var(--font-code);
+  font-size: 12px;
+}
+
+.web-viewer__back {
+  padding: 2px 8px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--color-text-soft);
+  cursor: pointer;
+}
+
+.web-viewer__back:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.web-viewer__address {
+  flex: 1 1 200px;
+  min-width: 0;
+  padding: 3px 8px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-raised);
+  color: var(--color-text);
+  font: inherit;
+}
+
+.web-viewer__address:focus {
+  border-color: var(--color-accent);
+  outline: none;
+}
+
+.web-viewer__status[data-state="ok"] {
+  color: var(--color-accent);
+}
+
+.web-viewer__status[data-state="error"] {
+  color: var(--color-danger);
+}
+
+.web-viewer__modes {
+  display: flex;
+  gap: 2px;
+}
+
+.web-viewer__modes[hidden] {
+  display: none;
+}
+
+.web-viewer__modes button {
+  padding: 2px 8px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--color-text-muted);
+  font: inherit;
+  cursor: pointer;
+}
+
+.web-viewer__modes button[aria-pressed="true"] {
+  border-color: var(--color-border-strong);
+  background: var(--color-bg-overlay);
+  color: var(--color-accent);
+}
+
+/* ---- Página ---- */
+
+.web-viewer__view {
+  position: relative;
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.web-viewer__frame {
+  flex: 1 1 auto;
+  width: 100%;
+  min-height: 0;
+  border: 0;
+  background: #fff;
+}
+
+.web-viewer__source {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+  padding: 10px 12px;
+  overflow: auto;
+  color: var(--color-text-soft);
+  font-family: var(--font-code);
+  font-size: 12px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.web-viewer__frame[hidden],
+.web-viewer__source[hidden],
+.web-viewer__empty[hidden] {
+  display: none;
+}
+
+.web-viewer__empty {
+  margin: auto;
+  padding: 16px;
+  color: var(--color-text-muted);
+  font-family: var(--font-code);
+  font-size: 12px;
+  text-align: center;
+}
+
+.hl-tag {
+  color: var(--syntax-keyword);
+}
+
+.hl-attr {
+  color: var(--syntax-builtin);
+}
+
+.hl-value {
+  color: var(--syntax-string);
+}
+
+.hl-comment {
+  color: var(--syntax-comment);
+}

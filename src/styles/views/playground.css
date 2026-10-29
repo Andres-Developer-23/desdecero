@@ -50,6 +50,11 @@
   border-bottom: 1px solid var(--color-border);
 }
 
+/* El navegador de la web de prácticas necesita algo más de alto: lleva las peticiones encima. */
+.playground__preview.web-viewer {
+  height: 440px;
+}
+
 @media (min-width: 960px) {
   .pane--with-preview .playground__preview {
     flex: 1 1 62%;

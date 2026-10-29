@@ -270,6 +270,17 @@
                       class="tabs__tab"
                       type="button"
                       role="tab"
+                      id="exercise-tab-web"
+                      data-tab="web"
+                      aria-controls="exercise-web"
+                      aria-selected="false"
+                    >
+                      web<span class="tabs__dot" hidden></span>
+                    </button>
+                    <button
+                      class="tabs__tab"
+                      type="button"
+                      role="tab"
                       id="exercise-tab-output"
                       data-tab="output"
                       aria-controls="exercise-output"
@@ -288,6 +299,13 @@
                   id="exercise-preview"
                   role="tabpanel"
                   aria-labelledby="exercise-tab-preview"
+                  hidden
+                ></div>
+                <div
+                  class="workbench__preview"
+                  id="exercise-web"
+                  role="tabpanel"
+                  aria-labelledby="exercise-tab-web"
                   hidden
                 ></div>
                 <pre
@@ -317,7 +335,8 @@
           <p class="lede">
             Un editor libre para experimentar. Escribe lo que quieras y pulsa ejecutar: tu código se
             guarda en este navegador. Si importas <code class="inline-code">flet</code>, la app
-            aparece en una vista previa.
+            aparece en una vista previa, y si usas <code class="inline-code">requests</code>, verás
+            las páginas que pide tu programa.
           </p>
 
           <div class="playground__grid">
@@ -351,6 +370,7 @@
             </div>
             <div class="pane console" id="playground-results">
               <div class="flet-preview playground__preview" id="playground-preview" hidden></div>
+              <div class="playground__preview" id="playground-web" hidden></div>
               <div class="bar bar--plain">
                 <span>salida</span><span class="bar__spacer"></span>
                 <button class="text-button" type="button" data-action="clear-output">

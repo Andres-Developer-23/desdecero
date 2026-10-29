@@ -7,6 +7,10 @@
 import { beginFletSession, usesFlet } from "../flet/runtime.js";
 import { isPythonEngineReady } from "../python/libraries.js";
 import { isRunning, runPython } from "../python/engine.js";
+import { lastRun } from "../scraping/runtime.js";
+
+/** Líneas de cada archivo guardado que se enseñan en la consola. */
+const FILE_PREVIEW_LINES = 8;
 
 /**
  * @param {string} code
@@ -83,6 +87,7 @@ export async function runInTerminal(code, terminal, options = {}) {
       }
       break;
   }
+  if (result.status === "ok" || result.status === "error") showSavedFiles(terminal);
   if (preview && !session.rendered && result.status !== "busy") {
     preview.showMessage(
       result.status === "ok"
@@ -91,4 +96,20 @@ export async function runInTerminal(code, terminal, options = {}) {
     );
   }
   return result;
+}
+
+/** Enseña los archivos que guardó el programa en el disco simulado, con sus primeras líneas. */
+function showSavedFiles(terminal) {
+  for (const [name, text] of lastRun().files) {
+    const lines = text.replace(/\r\n?/g, "\n").replace(/\n$/, "").split("\n");
+    const count = text ? lines.length : 0;
+    terminal.line(
+      `# archivo guardado: ${name} · ${count === 1 ? "1 línea" : `${count} líneas`}`,
+      "system",
+    );
+    for (const line of lines.slice(0, FILE_PREVIEW_LINES)) terminal.line(`  ${line}`, "system");
+    if (count > FILE_PREVIEW_LINES) {
+      terminal.line(`  … (${count - FILE_PREVIEW_LINES} más)`, "system");
+    }
+  }
 }

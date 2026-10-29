@@ -1,5 +1,6 @@
 /*
  * Pestañas accesibles (role="tablist"): cada botón con data-tab muestra su panel.
+ * Las pestañas ocultas (hidden) se saltan al moverse con las flechas.
  */
 
 /**
@@ -29,8 +30,10 @@ export function createTabs(tablist, panels, { initial }) {
 
   tablist.addEventListener("keydown", (event) => {
     if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
-    const index = tabs.findIndex((tab) => tab.dataset.tab === current);
-    const next = tabs[(index + (event.key === "ArrowRight" ? 1 : tabs.length - 1)) % tabs.length];
+    const visible = tabs.filter((tab) => !tab.hidden);
+    const index = visible.findIndex((tab) => tab.dataset.tab === current);
+    const step = event.key === "ArrowRight" ? 1 : visible.length - 1;
+    const next = visible[(index + step) % visible.length];
     select(next.dataset.tab);
     next.focus();
   });
@@ -40,6 +43,10 @@ export function createTabs(tablist, panels, { initial }) {
   return {
     select,
     selected: () => current,
+    /** Muestra solo las pestañas indicadas. */
+    show(names) {
+      for (const tab of tabs) tab.hidden = !names.includes(tab.dataset.tab);
+    },
     /** Marca con un punto una pestaña que tiene novedades sin ver. */
     markUnread(name) {
       if (name === current) return;
