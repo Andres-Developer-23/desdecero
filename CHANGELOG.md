@@ -4,6 +4,23 @@ Todos los cambios importantes del proyecto se anotan aquí. El formato sigue [Ke
 
 ## [Sin publicar]
 
+## [1.5.0] - 2026-10-29
+
+### Añadido
+
+- Ruta «APIs y JSON»: 12 lecciones en 5 módulos para usar APIs web desde Python, de leer JSON a un cliente completo con `POST`, `PUT`, `PATCH` y `DELETE`.
+- Módulo `json` (`loads`, `dumps`, `load`, `dump` y `JSONDecodeError`) con los mismos resultados y mensajes de error que CPython. Está disponible en todas las rutas.
+- Cuatro APIs de práctica: `api.libreria.example` (filtros, orden y paginación), `api.clima.example` (clave de acceso y límite de peticiones con `Retry-After`), `api.cambio.example` (cambio de moneda) y `api.tareas.example` (token, validación y CRUD). Cada ejecución empieza con sus datos originales.
+- `requests` admite todos los métodos, `json=`, `data=`, `timeout=`, las cabeceras de la respuesta y `Response.json()`.
+- La pestaña «web» enseña el método de cada petición, las cabeceras y los datos enviados, y las respuestas JSON con sangría y colores.
+- `websim` revisa el método, los datos enviados y el `timeout` de cada petición, y el estado final de una API.
+- Explicaciones en español de `JSONDecodeError` y de cada código de error de las APIs (400, 401, 403, 404, 405, 415, 422, 429 y 503).
+
+### Cambiado
+
+- El simulador de scraping pasa a llamarse simulador web (`"runtime": "web"`) y sirve tanto los sitios como las APIs de práctica.
+- Los sitios de práctica responden `405 Method Not Allowed` a lo que no sea `GET` o `HEAD`.
+
 ## [1.4.0] - 2026-10-29
 
 ### Añadido
@@ -101,7 +118,8 @@ Todos los cambios importantes del proyecto se anotan aquí. El formato sigue [Ke
 - Consola con `input()` interactivo y errores explicados en español.
 - Playground libre y progreso guardado en el navegador.
 
-[Sin publicar]: https://github.com/Andres-Developer-23/desdecero/compare/v1.4.0...HEAD
+[Sin publicar]: https://github.com/Andres-Developer-23/desdecero/compare/v1.5.0...HEAD
+[1.5.0]: https://github.com/Andres-Developer-23/desdecero/compare/v1.4.0...v1.5.0
 [1.4.0]: https://github.com/Andres-Developer-23/desdecero/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/Andres-Developer-23/desdecero/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/Andres-Developer-23/desdecero/compare/v1.1.0...v1.2.0
