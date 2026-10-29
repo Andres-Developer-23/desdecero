@@ -108,6 +108,7 @@ export async function runPython(code, options = {}) {
 
   const startedAt = performance.now();
   try {
+    for (const setup of runSetups) await setup(Sk);
     await Sk.misceval.asyncToPromise(() => Sk.importMainWithBody("<stdin>", false, code, true));
     return { status: "ok", stdout, durationMs: performance.now() - startedAt };
   } catch (error) {
@@ -128,6 +129,18 @@ export async function runPython(code, options = {}) {
 function setRunning(value) {
   running = value;
   emitter.emit("running", value);
+}
+
+/** Preparativos que se repiten antes de cada ejecución. */
+const runSetups = [];
+
+/**
+ * Añade un preparativo que se ejecuta antes de cada programa, con Skulpt ya
+ * configurado (por ejemplo, vaciar el disco simulado). Puede ser asíncrono.
+ * @param {(Sk: any) => void | Promise<void>} setup
+ */
+export function addRunSetup(setup) {
+  runSetups.push(setup);
 }
 
 /** Módulos extra (por ejemplo el simulador de Flet), por ruta dentro de Skulpt. */

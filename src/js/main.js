@@ -18,10 +18,13 @@ import { createLessonView } from "./views/lesson.js";
 import { createPanelView } from "./views/panel.js";
 import { createPlaygroundView } from "./views/playground.js";
 import { createRouteView } from "./views/route.js";
+import { installScrapingRuntime } from "./scraping/runtime.js";
 
+const courseData = readCourseData($("#course-data"));
 installFletRuntime();
+installScrapingRuntime(courseData.web ?? {});
 
-const course = createCourse(readCourseData($("#course-data")));
+const course = createCourse(courseData);
 const progress = createProgress(course.lessons.map((lesson) => lesson.id));
 const header = createHeader();
 let syncStatus = "local";
