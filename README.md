@@ -118,6 +118,8 @@ Dependabot propone una vez al mes un pull request con las dependencias de npm y 
 content/                      contenido del curso: rutas, módulos y lecciones
   web/
     libreria.example/         sitios de práctica para el web scraping (HTML, CSS y robots.txt)
+  api/
+    api.libreria.example.json datos de las APIs de práctica (su código está en src/js/web/apis/)
   01-python/
     route.json                título, descripción, nivel y motor de la ruta
     00-primeros-pasos/
@@ -132,7 +134,7 @@ src/
   index.html                  estructura de la página
   styles/                     estilos: variables, componentes, layout y vistas
   js/                         código de la aplicación (ver abajo)
-  python/                     módulos de Python que corren en el navegador: simuladores de Flet y de scraping
+  python/                     módulos de Python que corren en el navegador: json, abc, dataclasses y los simuladores
 scripts/
   build.js                    valida el contenido y genera dist/index.html
   lib/load-course.js          lee y valida content/
@@ -168,15 +170,31 @@ Las dependencias van en un solo sentido: `views` usa `ui`, `exercises`, `flet`, 
 
 Lo que no está implementado da un error claro en español, y los nombres que Flet 1.0 eliminó (`ft.app`, `ft.ElevatedButton`, `ft.padding.all`, `ft.alignment.center`…) explican cómo se escriben ahora. Fuera del alcance del simulador quedan la navegación entre vistas, los diálogos, las imágenes y el empaquetado.
 
-### Simulador de web scraping
+### Simulador web: scraping y APIs
 
-Desde la página no se puede descargar una web real: el navegador bloquea las peticiones a otros dominios. Los ejercicios de scraping usan una **web de prácticas**, los archivos de `content/web/`, que se sirven como si fueran sitios de verdad (`content/web/libreria.example/catalogo/pagina-2.html` responde en `https://libreria.example/catalogo/pagina-2.html`). Los sitios usan el dominio reservado `.example`, que nunca apunta a una web real.
+Desde la página no se puede descargar una web real: el navegador bloquea las peticiones a otros dominios. Las rutas de scraping y de APIs usan un **internet de prácticas** con el dominio reservado `.example`, que nunca apunta a una web real:
 
-- `src/python/requests/` tiene la API de requests para peticiones GET (`get`, `Session`, `Response`, `raise_for_status()` y sus excepciones). Responde 404 a las páginas que no existen, redirige `http://` y las carpetas sin barra final, y explica en español que no puede salir de la web de prácticas.
+- **Sitios de práctica**: los archivos de `content/web/` se sirven como si fueran sitios de verdad (`content/web/libreria.example/catalogo/pagina-2.html` responde en `https://libreria.example/catalogo/pagina-2.html`). Solo admiten `GET` y `HEAD`.
+- **APIs de práctica** (`src/js/web/apis/`, con sus datos en `content/api/`), que responden JSON con los códigos y cabeceras de una API REST real:
+
+| API                    | Qué enseña                                                                                                  |
+| ---------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `api.libreria.example` | El catálogo de la librería: filtros, orden y paginación con enlaces `siguiente` y `anterior`.               |
+| `api.clima.example`    | Clave de acceso en `X-API-Key` (401 y 403) y límite de 5 peticiones cada 10 s (429 con `Retry-After`).      |
+| `api.cambio.example`   | Tasas de cambio y conversiones con parámetros de consulta.                                                  |
+| `api.tareas.example`   | Token con `POST /v1/token`, `Authorization: Bearer`, `POST`, `PUT`, `PATCH`, `DELETE` y validación con 422. |
+
+Las APIs guardan estado (las tareas creadas, las peticiones que cuentan para el límite) solo durante una ejecución: cada programa empieza con los datos de `content/api/`.
+
+En Python:
+
+- `src/python/requests/` tiene la API de requests: `get`, `post`, `put`, `patch`, `delete`, `head`, `Session`, `params=`, `headers=`, `json=`, `data=`, `timeout=`, `Response.json()`, `raise_for_status()` y sus excepciones. Redirige `http://` y las carpetas sin barra final, y explica en español que no puede salir del internet de prácticas.
+- `src/python/json/` es el módulo `json` (`loads`, `dumps`, `load`, `dump`, `JSONDecodeError`) con los resultados y mensajes de error de CPython. El texto se analiza en JavaScript (`src/js/python/json-parse.js`), que es mucho más rápido que hacerlo en Skulpt.
 - `src/python/bs4/` es BeautifulSoup 4: el HTML lo analiza el `DOMParser` del navegador y Python recorre el árbol con `find`, `find_all`, `get_text`, atributos, padres y hermanos. `select` y `select_one` usan `querySelectorAll`, así que admiten cualquier selector CSS.
 - También están `urllib.parse`, `urllib.robotparser` y `csv`, que Skulpt no trae, y un `open()` con un disco simulado que empieza vacío en cada ejecución. Al terminar, la consola enseña los archivos guardados.
-- Al importar requests, `time.sleep()` avanza un reloj simulado en lugar de esperar. Cada petición queda anotada con su hora, sus cabeceras y su estado.
-- `src/js/web/web-viewer.js` es el navegador de la pestaña **web** de las lecciones (y del playground). Lista las peticiones del último programa y enseña cada página tal como se ve o como su código HTML.
+- Al importar requests, `time.sleep()` avanza un reloj simulado en lugar de esperar. Cada petición queda anotada con su método, su hora, sus cabeceras, sus datos y su estado.
+
+`src/js/web/web-viewer.js` es el navegador de la pestaña **web** de las lecciones (y del playground). Lista las peticiones del último programa y, para cada una, enseña lo que se envió y lo que respondió el servidor: la página tal como se ve o como su código HTML, o el JSON con sangría y colores. La barra de dirección hace peticiones `GET` con una sesión aparte, así que explorar no cambia lo que vio el programa.
 
 ## Escribir lecciones
 
@@ -218,7 +236,7 @@ Una pista corta.
 
 Se admite un Markdown reducido: párrafos, subtítulos con `### `, listas con `- ` o `1. ` (sin anidar), `**negrita**`, `*cursiva*`, `` `código` ``, `[enlaces](https://...)` y bloques de código. Un bloque ` ```py ` se muestra con botón de ejecutar; ` ```txt ` se muestra como texto fijo, por ejemplo la salida esperada. Los enlaces a la web de prácticas (`https://libreria.example/`) se abren en la pestaña web de la lección.
 
-En las rutas de scraping, la clave opcional `web` de los metadatos indica la página de prácticas que se abre al entrar en la lección (`web: https://libreria.example/`).
+En las rutas del simulador web, la clave opcional `web` de los metadatos indica la página o la dirección de una API que se abre al entrar en la lección (`web: https://libreria.example/` o `web: https://api.libreria.example/v1/libros`).
 
 ### `checks.json`
 
@@ -268,16 +286,19 @@ assert "Hola, Ana" in texts(), "Al pulsar Saludar debería aparecer «Hola, Ana�
 | `submit(campo)`             | Pulsa Enter en un `TextField` (lanza `on_submit`).                           |
 | `toggle(casilla)`           | Marca o desmarca un `Checkbox` o un `Switch`.                                |
 
-En las rutas de scraping, `test.py` usa el módulo `websim` para revisar qué hizo el programa:
+En las rutas del simulador web, `test.py` usa el módulo `websim` para revisar qué hizo el programa:
 
-| Función                       | Qué devuelve                                                                       |
-| ----------------------------- | ---------------------------------------------------------------------------------- |
-| `peticiones()`                | Las peticiones, en orden: `{"url", "estado", "segundo", "cabeceras"}`.             |
-| `urls_pedidas()`              | Solo las URL, en orden y con repeticiones.                                         |
-| `pausas()`                    | Segundos entre una petición y la siguiente (según el reloj simulado).              |
-| `cabecera(peticion, nombre)`  | El valor de una cabecera de una petición, sin distinguir mayúsculas.               |
-| `archivos()` / `leer(nombre)` | Los archivos que guardó el programa / el texto de uno (o un error que lo explica). |
-| `filas_csv(nombre)`           | Las filas de un CSV guardado, como diccionarios.                                   |
+| Función                       | Qué devuelve                                                                                          |
+| ----------------------------- | ----------------------------------------------------------------------------------------------------- |
+| `peticiones()`                | Las peticiones, en orden: `{"metodo", "url", "estado", "segundo", "cabeceras", "cuerpo", "timeout"}`. |
+| `peticiones_a(metodo, texto)` | Las peticiones con ese método cuya URL contiene el texto.                                             |
+| `datos_enviados(peticion)`    | Los datos JSON que envió una petición (o `None`).                                                     |
+| `estado_api(dominio)`         | Los datos de una API al terminar el programa (p. ej. las tareas).                                     |
+| `urls_pedidas()`              | Solo las URL, en orden y con repeticiones.                                                            |
+| `pausas()`                    | Segundos entre una petición y la siguiente (según el reloj simulado).                                 |
+| `cabecera(peticion, nombre)`  | El valor de una cabecera de una petición, sin distinguir mayúsculas.                                  |
+| `archivos()` / `leer(nombre)` | Los archivos que guardó el programa / el texto de uno (o un error que lo explica).                    |
+| `filas_csv(nombre)`           | Las filas de un CSV guardado, como diccionarios.                                                      |
 
 ## Contribuir
 
@@ -291,6 +312,6 @@ Cada cambio empieza con un issue, se hace en su propia rama y entra en `main` co
 - [esbuild](https://esbuild.github.io) empaqueta el JavaScript y los estilos.
 - Tipografías de Google Fonts: Martian Mono, IBM Plex Sans y JetBrains Mono.
 
-Skulpt implementa la mayor parte de Python 3, pero no todo. Por ejemplo, no admite `match` / `case`, `nonlocal` ni `eval`, y no trae los módulos `json`, `abc`, `typing`, `dataclasses`, `csv` ni `urllib.parse`. El curso aporta versiones propias de `abc`, `dataclasses` y `typing` (en todas las rutas) y de `csv`, `urllib.parse` y `urllib.robotparser` (simulador de scraping).
+Skulpt implementa la mayor parte de Python 3, pero no todo. Por ejemplo, no admite `match` / `case`, `nonlocal` ni `eval`, y no trae los módulos `json`, `abc`, `typing`, `dataclasses`, `csv` ni `urllib.parse`. El curso aporta versiones propias de `json`, `abc`, `dataclasses` y `typing` (en todas las rutas) y de `csv`, `urllib.parse` y `urllib.robotparser` (simulador web).
 
 `src/js/python/skulpt-patches.js` corrige además algunas diferencias con CPython: `str.title()` con tildes, el mensaje de las excepciones propias (`super().__init__(mensaje)`), `super()` cuando la clase base tiene `__str__`, las anotaciones sin valor (`nombre: str`), `list[str]` y un fallo por el que un `import` podía perder el módulo si Skulpt hacía una pausa en mitad.
