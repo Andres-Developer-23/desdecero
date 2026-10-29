@@ -1,0 +1,13 @@
+{
+  "requires": [
+    {
+      "pattern": "abstractmethod",
+      "message": "Marca los métodos abstractos con @abstractmethod."
+    }
+  ],
+  "runs": [
+    {
+      "output": "Rectangulo: área 6.00, perímetro 10.00\nCirculo: área 3.14, perímetro 6.28\nCuadrado: área 16.00, perímetro 16.00\nÁrea total: 25.14"
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "requires": [
+    {
+      "pattern": "@classmethod",
+      "message": "desde_texto debería ser un método de clase (@classmethod)."
+    },
+    {
+      "pattern": "@staticmethod",
+      "message": "es_mayor_de_edad debería ser un método estático (@staticmethod)."
+    }
+  ],
+  "runs": [
+    {
+      "output": "ana.ruiz@escuela.example · 15 años · mayor: False\nluis.mora.vega@escuela.example · 32 años · mayor: True\nUsuarios creados: 2"
+    }
+  ]
+}

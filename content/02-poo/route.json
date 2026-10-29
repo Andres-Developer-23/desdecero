@@ -1,0 +1,7 @@
+{
+  "title": "Programación orientada a objetos",
+  "description": "Organiza tus programas con clases y objetos: métodos, métodos especiales, propiedades, herencia, clases abstractas y excepciones propias, hasta un banco completo.",
+  "level": "Intermedio",
+  "runtime": "python",
+  "requires": "python"
+}

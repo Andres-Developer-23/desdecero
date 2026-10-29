@@ -1,0 +1,13 @@
+{
+  "requires": [
+    {
+      "pattern": "super\\(\\)",
+      "message": "Usa super() para reutilizar el código de Vehiculo."
+    }
+  ],
+  "runs": [
+    {
+      "output": "Renault Kangoo (4 ruedas)\nYamaha XTZ (2 ruedas)\nVolvo FH (4 ruedas) · carga: 12 t"
+    }
+  ]
+}

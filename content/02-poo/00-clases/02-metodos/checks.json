@@ -1,0 +1,7 @@
+{
+  "runs": [
+    {
+      "output": "Batería agotada\nBatería al 40 %\nBatería llena\nBatería al 70 %\nBatería agotada"
+    }
+  ]
+}

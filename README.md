@@ -4,7 +4,7 @@
 
 **Pruébalo en [andres-developer-23.github.io/desdecero](https://andres-developer-23.github.io/desdecero/)**
 
-Rutas interactivas para aprender **Python desde cero, en español**, y después crear apps con interfaz gráfica con **Flet** y extraer datos de la web con **web scraping**. Cada ruta se divide en módulos y lecciones cortas: cada lección explica una idea, trae ejemplos que se ejecutan con un clic y termina con un ejercicio que se corrige solo.
+Rutas interactivas para aprender **Python desde cero, en español**, y después **programación orientada a objetos**, apps con interfaz gráfica con **Flet** y extracción de datos de la web con **web scraping**. Cada ruta se divide en módulos y lecciones cortas: cada lección explica una idea, trae ejemplos que se ejecutan con un clic y termina con un ejercicio que se corrige solo.
 
 Todo funciona en el navegador. No hace falta instalar Python ni crear una cuenta.
 
@@ -30,6 +30,18 @@ El progreso y el código que escribes se guardan en el navegador.
 | 04 · Listas y diccionarios      | Listas · Diccionarios · Tuplas y conjuntos                                        |
 | 05 · Funciones                  | Crear funciones · Parámetros por defecto y alcance · Funciones con listas         |
 | 06 · Errores y proyecto final   | `try` / `except` · Proyecto: adivina el número                                    |
+
+### Ruta «Programación orientada a objetos»
+
+5 módulos y 12 lecciones (unas 4 horas) para organizar los programas con clases y objetos. Conviene haber terminado antes la ruta de Python. Termina con un banco completo que usa clases de datos, propiedades, herencia, composición y excepciones propias. Las comprobaciones prueban las clases del alumno con valores distintos a los del enunciado.
+
+| Módulo                       | Lecciones                                                                                                                    |
+| ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| 00 · Clases y objetos        | Clases y objetos · Métodos                                                                                                   |
+| 01 · Métodos especiales      | Cómo se muestra un objeto · Comparar y ordenar objetos · Operadores y colecciones propias · Clases de datos con `@dataclass` |
+| 02 · Encapsulamiento         | Propiedades · Atributos y métodos de clase                                                                                   |
+| 03 · Herencia y polimorfismo | Herencia · Polimorfismo y clases abstractas                                                                                  |
+| 04 · Proyecto final          | Composición y excepciones propias · Proyecto: un banco                                                                       |
 
 ### Ruta «Apps con Flet»
 
@@ -81,7 +93,7 @@ npm run check                     # formato + lint + todas las pruebas
 | `npm run test:e2e`  | Genera la página y la prueba en Chromium con Playwright, en escritorio y en móvil.          |
 | `npm test`          | Las dos anteriores.                                                                         |
 
-Las pruebas en navegador comprueban que **cada ejercicio se puede resolver** (la solución pasa y el código de partida no), que cada ejemplo de las rutas de Flet y de scraping se ejecuta en su simulador y los recorridos principales: ejecutar con `input()`, completar una lección, errores marcados en el editor, ejemplos, botón de detener, la vista previa de Flet y que ninguna página se desborde en móvil. Skulpt y CodeMirror se sirven desde `node_modules`, así que no dependen de la red.
+Las pruebas en navegador comprueban que **cada ejercicio se puede resolver** (la solución pasa y el código de partida no), que cada ejemplo de la teoría se ejecuta sin errores (salvo en la ruta de Python, que tiene errores a propósito) y los recorridos principales: ejecutar con `input()`, completar una lección, errores marcados en el editor, ejemplos, botón de detener, la vista previa de Flet y que ninguna página se desborde en móvil. Skulpt y CodeMirror se sirven desde `node_modules`, así que no dependen de la red.
 
 ```
 tests/

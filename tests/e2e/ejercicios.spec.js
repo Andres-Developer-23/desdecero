@@ -1,8 +1,9 @@
 /*
  * Cada ejercicio del curso tiene que poder resolverse:
  * la solución supera la comprobación y el código de partida no.
- * Además, los ejemplos de la teoría de las rutas con simulador (Flet y
- * scraping) tienen que ejecutarse sin errores.
+ * Además, los ejemplos de la teoría de todas las rutas salvo la de Python
+ * (que tiene ejemplos con input() y errores a propósito) tienen que
+ * ejecutarse sin errores.
  */
 
 import path from "node:path";
@@ -15,11 +16,11 @@ const course = loadCourse(path.join(ROOT, "content"));
 const lessons = course.routes.flatMap((route) => route.modules.flatMap((module) => module.lessons));
 
 /**
- * Bloques ```py de la teoría de las rutas con simulador. Los de Flet,
- * además de ejecutarse sin errores, tienen que llegar a ft.run(main).
+ * Bloques ```py de la teoría que se comprueban. Los de Flet, además de
+ * ejecutarse sin errores, tienen que llegar a ft.run(main).
  */
-const simulatorExamples = course.routes
-  .filter((route) => route.runtime !== "python")
+const checkedExamples = course.routes
+  .filter((route) => route.id !== "python")
   .flatMap((route) => route.modules.flatMap((module) => module.lessons))
   .flatMap((lesson) =>
     [...lesson.theory.matchAll(/```py\n([\s\S]*?)```/g)]
@@ -81,8 +82,8 @@ test.describe("ejercicios", () => {
     });
   }
 
-  for (const example of simulatorExamples) {
-    test(`${example.name} se ejecuta en el simulador`, async () => {
+  for (const example of checkedExamples) {
+    test(`${example.name} se ejecuta sin errores`, async () => {
       const result = await runExample(page, example);
       expect(result.passed, `el ejemplo falla:\n${result.log}`).toBe(true);
     });

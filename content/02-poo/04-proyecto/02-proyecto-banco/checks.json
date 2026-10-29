@@ -1,0 +1,7 @@
+{
+  "runs": [
+    {
+      "output": "Error: Saldo insuficiente: tienes 300 y quieres retirar 800\nCuenta 1 de Ana · saldo: 1200\nCuenta 2 de Luis · saldo: 300\nCuenta 3 de Eva · saldo: 2040\nTotal: 3540\nMovimientos de Ana: ingreso 1500, retiro 300"
+    }
+  ]
+}

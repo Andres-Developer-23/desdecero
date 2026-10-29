@@ -1,0 +1,17 @@
+{
+  "requires": [
+    {
+      "pattern": "@property",
+      "message": "Usa @property para las propiedades."
+    },
+    {
+      "pattern": "\\.setter",
+      "message": "Valida al asignar con un setter: @precio.setter."
+    }
+  ],
+  "runs": [
+    {
+      "output": "Café: 18900 · agotado: True\nCafé: 18900 · agotado: False\nError: El stock no puede ser negativo\nError: El precio debe ser positivo"
+    }
+  ]
+}
