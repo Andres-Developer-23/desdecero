@@ -1,7 +1,8 @@
 /*
  * Lee el curso desde content/ y comprueba que esté completo.
  *
- *   content/web/<sitio>.example/...            web de prácticas para el scraping (opcional)
+ *   content/web/<sitio>.example/...            web de prácticas del simulador web (opcional)
+ *   content/api/<api>.example.json             datos de las APIs de práctica (opcional)
  *   content/NN-ruta/route.json                 título, descripción, nivel y motor
  *   content/NN-ruta/NN-modulo/module.json      título y descripción del módulo
  *   content/NN-ruta/NN-modulo/NN-leccion/
@@ -24,7 +25,7 @@ const LESSON_SECTIONS = { Ejercicio: "exercise", Pista: "hint" };
 const CHECK_KEYS = new Set(["requires", "forbids", "ignore", "runs"]);
 const RUN_KEYS = new Set(["inputs", "output", "contains", "test"]);
 /** Motores con los que se ejecutan los ejercicios de una ruta. */
-export const RUNTIMES = new Set(["python", "flet", "scraping"]);
+export const RUNTIMES = new Set(["python", "flet", "web"]);
 /** Tipos de archivo de la web de prácticas, por extensión. */
 const WEB_TYPES = {
   ".html": "text/html; charset=utf-8",
@@ -35,6 +36,7 @@ const WEB_TYPES = {
 };
 /** Los sitios de práctica usan el dominio reservado .example: nunca apuntan a una web real. */
 const WEB_HOST = /^[a-z0-9]+(?:-[a-z0-9]+)*\.example$/;
+const API_FILE = /^(api\.[a-z0-9]+(?:-[a-z0-9]+)*\.example)\.json$/;
 
 export class CourseError extends Error {
   constructor(problems) {
@@ -45,16 +47,18 @@ export class CourseError extends Error {
   }
 }
 
-/** Devuelve { routes: [...], web: {...} } listo para incrustar en la página. */
+/** Devuelve { routes: [...], web: {...}, apis: {...} } listo para incrustar en la página. */
 export function loadCourse(contentDir) {
   const problems = [];
   const seenLessonIds = new Map();
 
-  const routes = numberedDirs(contentDir, problems, { ignore: ["web"] }).map(({ dir, slug }) =>
-    loadRoute(dir, slug, { problems, seenLessonIds }),
+  const routes = numberedDirs(contentDir, problems, { ignore: ["web", "api"] }).map(
+    ({ dir, slug }) => loadRoute(dir, slug, { problems, seenLessonIds }),
   );
   const webDir = path.join(contentDir, "web");
   const web = existsSync(webDir) ? loadWeb(webDir, problems) : {};
+  const apiDir = path.join(contentDir, "api");
+  const apis = existsSync(apiDir) ? loadApis(apiDir, problems) : {};
 
   if (!routes.length) problems.push(`${rel(contentDir)}: no hay rutas`);
   const routeIds = new Set(routes.map((route) => route.id));
@@ -64,11 +68,11 @@ export function loadCourse(contentDir) {
     }
   }
 
-  // La página inicial de la pestaña «web» de una lección tiene que existir.
+  // La página inicial de la pestaña «web» de una lección tiene que existir (o ser de una API).
   for (const route of routes) {
     for (const lesson of route.modules.flatMap((module) => module.lessons)) {
       const page = lesson.web?.endsWith("/") ? `${lesson.web}index.html` : lesson.web;
-      if (lesson.web != null && !web[page]) {
+      if (lesson.web != null && !web[page] && !(apiHost(lesson.web) in apis)) {
         problems.push(
           `${rel(lesson.dir)}/lesson.md: "web" apunta a una página que no existe: ${lesson.web}`,
         );
@@ -79,7 +83,15 @@ export function loadCourse(contentDir) {
   }
 
   if (problems.length) throw new CourseError(problems);
-  return { routes, web };
+  return { routes, web, apis };
+}
+
+function apiHost(url) {
+  try {
+    return new URL(url).protocol === "https:" ? new URL(url).host : null;
+  } catch {
+    return null;
+  }
 }
 
 function loadRoute(dir, id, context) {
@@ -111,7 +123,7 @@ function loadRoute(dir, id, context) {
 /**
  * Lee la web de prácticas: content/web/libreria.example/catalogo/pagina-2.html
  * se sirve en https://libreria.example/catalogo/pagina-2.html. Cada index.html
- * responde también en la URL de su carpeta (eso lo resuelve src/js/scraping/web.js).
+ * responde también en la URL de su carpeta (eso lo resuelve src/js/web/virtual-web.js).
  */
 function loadWeb(dir, problems) {
   const pages = {};
@@ -132,6 +144,25 @@ function loadWeb(dir, problems) {
     }
   }
   return pages;
+}
+
+/**
+ * Lee los datos de las APIs de práctica: content/api/api.libreria.example.json
+ * son los datos de https://api.libreria.example (la API está en src/js/web/apis/).
+ */
+function loadApis(dir, problems) {
+  const apis = {};
+  for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    const file = path.join(dir, entry.name);
+    const host = entry.isFile() ? entry.name.match(API_FILE)?.[1] : null;
+    if (!host) {
+      problems.push(`${rel(file)}: cada API es un archivo api.<nombre>.example.json`);
+      continue;
+    }
+    const data = readJson(file, problems);
+    if (data) apis[host] = data;
+  }
+  return apis;
 }
 
 function listFiles(dir) {

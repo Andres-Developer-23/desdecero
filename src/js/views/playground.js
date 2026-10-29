@@ -6,9 +6,9 @@ import { sendFletEvent, usesFlet } from "../flet/runtime.js";
 import { $ } from "../lib/dom.js";
 import { storage } from "../lib/storage.js";
 import { stopPython } from "../python/engine.js";
-import { usesScraping } from "../scraping/detect.js";
-import { onScrapingRun, virtualWeb } from "../scraping/runtime.js";
-import { createWebViewer } from "../scraping/web-viewer.js";
+import { usesWeb } from "../web/detect.js";
+import { onWebRun, virtualInternet } from "../web/runtime.js";
+import { createWebViewer } from "../web/web-viewer.js";
 import { createEditor, needsNewEditor, waitForEditorLibrary } from "../ui/editor.js";
 import { runInTerminal } from "../ui/run-in-terminal.js";
 import { createTerminal } from "../ui/terminal.js";
@@ -42,7 +42,7 @@ export function createPlaygroundView({ progress }) {
   const results = $("#playground-results");
   const preview = createFletRenderer($("#playground-preview"), { onEvent: sendFletEvent });
   const webHost = $("#playground-web");
-  const webViewer = createWebViewer(webHost, { web: virtualWeb });
+  const webViewer = createWebViewer(webHost, { internet: virtualInternet });
   let showsWeb = false;
   let editor = null;
   let saveTimer = null;
@@ -95,7 +95,7 @@ export function createPlaygroundView({ progress }) {
     const code = editor.getValue();
     // La vista previa aparece cuando el programa usa Flet, y el navegador cuando pide páginas.
     const flet = usesFlet(code);
-    showsWeb = !flet && usesScraping(code);
+    showsWeb = !flet && usesWeb(code);
     results.classList.toggle("pane--with-preview", flet || showsWeb);
     if (!flet) preview.clear();
     if (showsWeb) webViewer.reset(null);
@@ -110,7 +110,7 @@ export function createPlaygroundView({ progress }) {
     });
   }
 
-  onScrapingRun((lastRun) => {
+  onWebRun((lastRun) => {
     if (showing && showsWeb) webViewer.showRun(lastRun);
   });
 

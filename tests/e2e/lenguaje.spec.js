@@ -1,6 +1,6 @@
 /*
  * Python que Skulpt no traía o hacía distinto de CPython: excepciones
- * propias, anotaciones sin valor, list[str], abc y dataclasses.
+ * propias, anotaciones sin valor, list[str], abc, dataclasses y json.
  */
 
 import { expect, openApp, test } from "./fixtures.js";
@@ -223,6 +223,47 @@ class Gerente(Empleado):
         self.sueldo *= 2
 
 assert repr(Gerente("Ana", 1500)) == "Gerente(nombre='Ana', sueldo=3000, equipo=[])"
+`,
+  );
+  expect(result.passed, result.log).toBe(true);
+});
+
+test("json lee y escribe como en CPython, con los mismos errores", async ({ page }) => {
+  const result = await run(
+    page,
+    `import json
+
+datos = json.loads('{"titulo": "El a\\\\u00f1o", "precio": 12.5, "paginas": 320, "stock": null, "tags": ["a", true]}')
+assert datos == {"titulo": "El año", "precio": 12.5, "paginas": 320, "stock": None, "tags": ["a", True]}
+assert type(datos["paginas"]) is int and type(datos["precio"]) is float
+assert json.loads("[1.0, 12345678901234567890]") == [1.0, 12345678901234567890]
+
+assert json.dumps({"b": 1, "a": [1, 2.0, None]}) == '{"b": 1, "a": [1, 2.0, null]}'
+assert json.dumps("ñ") == '"\\\\u00f1"' and json.dumps("ñ", ensure_ascii=False) == '"ñ"'
+assert json.dumps({"b": 1, "a": {}}, indent=2, sort_keys=True) == '{\\n  "a": {},\\n  "b": 1\\n}'
+assert json.dumps([1, 2], separators=(",", ":")) == "[1,2]"
+assert json.dumps({1: True}) == '{"1": true}'
+assert json.dumps({"s": {3}}, default=list) == '{"s": [3]}'
+
+try:
+    json.dumps({"s": {3}})
+    assert False
+except TypeError as error:
+    assert str(error) == "Object of type set is not JSON serializable", str(error)
+
+try:
+    json.loads('{\\n  "a": 1,\\n}')
+    assert False
+except json.JSONDecodeError as error:
+    assert isinstance(error, ValueError)
+    assert str(error) == "Illegal trailing comma before end of object: line 2 column 9 (char 10)", str(error)
+    assert (error.msg, error.lineno, error.colno, error.pos) == ("Illegal trailing comma before end of object", 2, 9, 10)
+
+try:
+    json.loads("{'a': 1}")
+    assert False
+except ValueError as error:
+    assert str(error).startswith("Expecting property name enclosed in double quotes")
 `,
   );
   expect(result.passed, result.log).toBe(true);

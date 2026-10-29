@@ -1,28 +1,56 @@
 """
-Ayudas para comprobar los ejercicios de web scraping en el simulador.
+Ayudas para comprobar los ejercicios del simulador web.
 
-Las usan los test.py de la ruta de scraping: revisan qué páginas pidió el
-programa del alumno, con qué cabeceras y pausas, y qué archivos guardó.
+Las usan los test.py de las rutas de scraping y de APIs: revisan qué
+peticiones hizo el programa del alumno (método, URL, cabeceras, datos,
+pausas), qué archivos guardó y cómo quedaron los datos de una API.
 """
 
 import csv
+import json
 
 import _web
 
 
 def peticiones():
-    """Peticiones de esta ejecución, en orden: [{"url", "estado", "segundo", "cabeceras"}]."""
+    """
+    Peticiones de esta ejecución, en orden. Cada una es un diccionario con
+    "metodo", "url", "estado", "segundo", "cabeceras", "cuerpo" y "timeout".
+    """
     result = []
     for item in _web.requests_log():
         result.append(
             {
+                "metodo": item["method"],
                 "url": item["url"],
                 "estado": item["status"],
                 "segundo": item["time"],
                 "cabeceras": item["headers"],
+                "cuerpo": item["body"],
+                "timeout": item["timeout"],
             }
         )
     return result
+
+
+def peticiones_a(metodo, fragmento=""):
+    """Las peticiones con ese método cuya URL contiene el fragmento."""
+    return [p for p in peticiones() if p["metodo"] == metodo.upper() and fragmento in p["url"]]
+
+
+def datos_enviados(peticion):
+    """Los datos JSON que se enviaron en una petición (o None si no envió JSON)."""
+    if peticion["cuerpo"] is None:
+        return None
+    try:
+        return json.loads(peticion["cuerpo"])
+    except ValueError:
+        return None
+
+
+def estado_api(dominio):
+    """Los datos de una API al terminar el programa (p. ej. las tareas de api.tareas.example)."""
+    return _web.api_state(dominio)
 
 
 def urls_pedidas():

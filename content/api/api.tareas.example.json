@@ -1,0 +1,49 @@
+{
+  "usuarios": {
+    "ana": {
+      "clave": "python123",
+      "token": "tk-ana-5f2b9c"
+    },
+    "luis": {
+      "clave": "clave456",
+      "token": "tk-luis-8d41e7"
+    }
+  },
+  "tareas": [
+    {
+      "id": 1,
+      "titulo": "Comprar pan",
+      "hecha": false,
+      "prioridad": "baja",
+      "usuario": "ana"
+    },
+    {
+      "id": 2,
+      "titulo": "Terminar el curso de Python",
+      "hecha": false,
+      "prioridad": "alta",
+      "usuario": "ana"
+    },
+    {
+      "id": 3,
+      "titulo": "Llamar a la abuela",
+      "hecha": true,
+      "prioridad": "media",
+      "usuario": "ana"
+    },
+    {
+      "id": 4,
+      "titulo": "Pagar la factura de la luz",
+      "hecha": false,
+      "prioridad": "alta",
+      "usuario": "luis"
+    },
+    {
+      "id": 5,
+      "titulo": "Regar las plantas",
+      "hecha": true,
+      "prioridad": "baja",
+      "usuario": "luis"
+    }
+  ]
+}

@@ -37,7 +37,7 @@ class RobotFileParser:
 
     def read(self):
         """Descarga el robots.txt y lo interpreta."""
-        data = _web.fetch(self.url, {"User-Agent": "Python-urllib/3.12"}, True)
+        data = _web.fetch("GET", self.url, {"User-Agent": "Python-urllib/3.12"}, None, None)
         if "error" in data:
             raise IOError(data["message"])
         status = data["status"]

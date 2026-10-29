@@ -1,15 +1,18 @@
 /*
- * Conecta el simulador de web scraping (Python, src/python/) con la página.
+ * Conecta el simulador web (Python, src/python/) con la página: las
+ * librerías para hacer scraping y usar APIs.
  *
- * - requests pide las páginas a la web de prácticas (web.js) con
- *   _web.fetch(). Cada petición queda anotada con su hora en un reloj
- *   simulado, que time.sleep() hace avanzar sin esperar de verdad.
+ * - requests hace las peticiones a los sitios y APIs de práctica
+ *   (internet.js) con _web.fetch(). Cada petición queda anotada, con su
+ *   respuesta y su hora en un reloj simulado que time.sleep() hace avanzar
+ *   sin esperar de verdad.
  * - BeautifulSoup analiza el HTML con el DOMParser del navegador y recorre
  *   en Python el árbol que devuelve _web.parse_html(). select() usa
  *   querySelectorAll sobre ese mismo documento.
  * - open() escribe en un disco simulado.
  *
- * Las peticiones, los documentos y el disco se vacían antes de cada ejecución.
+ * Las peticiones, el estado de las APIs, los documentos y el disco se
+ * vacían antes de cada ejecución.
  */
 
 import archivosSource from "../../python/_archivos.py";
@@ -22,10 +25,12 @@ import robotparserSource from "../../python/urllib/robotparser.py";
 import websimSource from "../../python/websim.py";
 import { createEmitter } from "../lib/events.js";
 import { addRunSetup, onRunningChange, registerPythonFiles } from "../python/engine.js";
-import { createVirtualWeb } from "./web.js";
+import { createInternet } from "./internet.js";
 
 /** Lo que tarda cada petición en el reloj simulado, en segundos. */
 const REQUEST_SECONDS = 0.2;
+/** Máximo de peticiones anotadas por ejecución (un bucle sin fin no llena la memoria). */
+const MAX_LOGGED_REQUESTS = 500;
 
 /*
  * Módulo nativo de Skulpt que hace de puente con JavaScript ("import _web").
@@ -50,6 +55,7 @@ var $builtinmodule = function (name) {
   expose("parse_html", host.parseHtml);
   expose("select", host.select);
   expose("requests_log", host.requestsLog);
+  expose("api_state", host.apiState);
   expose("file_read", host.fileRead);
   expose("file_write", host.fileWrite);
   expose("file_names", host.fileNames);
@@ -57,22 +63,29 @@ var $builtinmodule = function (name) {
 };
 `;
 
-let web = createVirtualWeb({});
+let internet = createInternet();
 let virtualFileApi = null;
 const emitter = createEmitter();
 const state = newState();
 
 function newState() {
-  return { clock: 0, requests: [], files: new Map(), documents: [] };
+  return {
+    clock: 0,
+    requests: [],
+    session: internet.newSession(),
+    files: new Map(),
+    documents: [],
+  };
 }
 
 /**
- * Registra los módulos de Python del simulador y la web de prácticas.
+ * Registra los módulos de Python del simulador, la web y las APIs de práctica.
  * Se llama una vez al arrancar.
- * @param {Record<string, {type: string, body: string}>} pages
+ * @param {{pages?: Record<string, {type: string, body: string}>, apis?: Record<string, object>}} sources
  */
-export function installScrapingRuntime(pages) {
-  web = createVirtualWeb(pages);
+export function installWebRuntime(sources) {
+  internet = createInternet(sources);
+  Object.assign(state, newState());
 
   registerPythonFiles({
     "src/lib/requests/__init__.py": requestsSource,
@@ -93,7 +106,8 @@ export function installScrapingRuntime(pages) {
     },
     parseHtml,
     select,
-    requestsLog: () => state.requests.map((request) => ({ ...request })),
+    requestsLog: () => state.requests.map(toPythonLog),
+    apiState: (host) => internet.snapshot(state.session, String(host)),
     fileRead: (name) => (state.files.has(name) ? state.files.get(name) : null),
     fileWrite: (name, text) => {
       state.files.set(name, String(text));
@@ -107,12 +121,25 @@ export function installScrapingRuntime(pages) {
   });
 }
 
-/** La web de prácticas (para el navegador de la pestaña «web»). */
-export const virtualWeb = () => web;
+/** Los sitios y APIs de práctica (para el navegador de la pestaña «web»). */
+export const virtualInternet = () => internet;
+
+/**
+ * @typedef {object} LoggedRequest
+ * @property {string} method
+ * @property {string} url URL pedida.
+ * @property {string} finalUrl URL después de las redirecciones.
+ * @property {Record<string, string>} headers Cabeceras enviadas.
+ * @property {string | null} body Cuerpo enviado.
+ * @property {number | null} timeout
+ * @property {number} time Segundo del reloj simulado en que empezó.
+ * @property {number} status
+ * @property {import("./internet.js").InternetResponse} response
+ */
 
 /**
  * Peticiones y archivos de la última ejecución.
- * @returns {{requests: Array<{url: string, finalUrl: string, status: number, time: number}>, files: Map<string, string>}}
+ * @returns {{requests: LoggedRequest[], files: Map<string, string>}}
  */
 export function lastRun() {
   return {
@@ -122,9 +149,9 @@ export function lastRun() {
 }
 
 /** Avisa al terminar cada ejecución: listener(lastRun()). */
-export const onScrapingRun = (listener) => emitter.on("run", listener);
+export const onWebRun = (listener) => emitter.on("run", listener);
 
-/** Antes de cada programa: vacía la web y el disco, y pone el open() simulado. */
+/** Antes de cada programa: vacía la web, las APIs y el disco, y pone el open() simulado. */
 async function prepareRun(Sk) {
   Object.assign(state, newState());
   if (!virtualFileApi) {
@@ -141,18 +168,42 @@ async function prepareRun(Sk) {
   Object.assign(Sk.builtins, virtualFileApi, { OSError: Sk.builtin.IOError });
 }
 
-function fetch(url, headers) {
-  const result = web.resolve(String(url));
-  if ("error" in result) return result;
-  state.requests.push({
-    url: String(url),
-    finalUrl: result.url,
-    status: result.status,
-    time: Math.round(state.clock * 1000) / 1000,
-    headers: { ...(headers ?? {}) },
-  });
+/** La petición que hace requests: la responde internet.js y queda anotada. */
+function fetch(method, url, headers, body, timeout) {
+  const sent = { ...(headers ?? {}) };
+  const response = internet.request(
+    { method, url: String(url), headers: sent, body: body ?? null },
+    { session: state.session, clock: state.clock },
+  );
+  if ("error" in response) return response;
+  if (state.requests.length < MAX_LOGGED_REQUESTS) {
+    state.requests.push({
+      method: String(method).toUpperCase(),
+      url: String(url),
+      finalUrl: response.url,
+      headers: sent,
+      body: body ?? null,
+      timeout: timeout ?? null,
+      time: Math.round(state.clock * 1000) / 1000,
+      status: response.status,
+      response,
+    });
+  }
   state.clock += REQUEST_SECONDS;
-  return result;
+  return response;
+}
+
+/** Una petición anotada, tal como la ven websim.peticiones() y las comprobaciones. */
+function toPythonLog(request) {
+  return {
+    method: request.method,
+    url: request.url,
+    status: request.status,
+    time: request.time,
+    headers: request.headers,
+    body: request.body,
+    timeout: request.timeout,
+  };
 }
 
 /* ---- HTML: del DOMParser a un árbol que BeautifulSoup recorre en Python ---- */

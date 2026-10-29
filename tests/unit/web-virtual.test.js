@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, test } from "node:test";
-import { createVirtualWeb } from "../../src/js/scraping/web.js";
+import { createVirtualWeb } from "../../src/js/web/virtual-web.js";
 
 const html = (body) => ({ type: "text/html; charset=utf-8", body });
 
