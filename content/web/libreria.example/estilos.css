@@ -1,0 +1,28 @@
+:root { --tinta: #2b2118; --papel: #fbf6ee; --acento: #9c3d1c; --suave: #7a6a5a; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--papel); color: var(--tinta); font-family: Georgia, "Times New Roman", serif; line-height: 1.5; }
+a { color: var(--acento); }
+.cabecera { display: flex; flex-wrap: wrap; gap: 8px 24px; align-items: baseline; justify-content: space-between; padding: 16px 24px; background: var(--tinta); color: var(--papel); }
+.cabecera a { color: var(--papel); }
+.logo { margin: 0; font-size: 22px; }
+.menu { display: flex; gap: 16px; padding: 0; margin: 0; list-style: none; font-family: system-ui, sans-serif; font-size: 14px; }
+main { max-width: 960px; margin: 0 auto; padding: 24px; }
+.resultados { color: var(--suave); font-family: system-ui, sans-serif; font-size: 14px; }
+.catalogo { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; padding: 0; list-style: none; }
+.libro { display: flex; flex-direction: column; gap: 4px; padding: 16px; border: 1px solid #e3d8c6; border-radius: 6px; background: #fff; }
+.libro__titulo { margin: 0; font-size: 17px; }
+.libro__titulo a { color: var(--tinta); text-decoration: none; }
+.libro p { margin: 0; }
+.libro__autor { color: var(--suave); font-style: italic; }
+.estrellas { color: #d08a00; letter-spacing: 2px; }
+.precio { font-family: system-ui, sans-serif; font-weight: 700; font-size: 18px; }
+.disponibilidad { font-family: system-ui, sans-serif; font-size: 13px; }
+.en-stock { color: #2f7a3b; }
+.agotado { color: #a33; }
+.paginacion { display: flex; gap: 16px; justify-content: space-between; padding: 0; margin: 24px 0 0; list-style: none; font-family: system-ui, sans-serif; }
+.migas { color: var(--suave); font-family: system-ui, sans-serif; font-size: 14px; }
+.ficha h1 { margin: 8px 0 4px; }
+.ficha p { margin: 4px 0; }
+.ficha-tecnica { border-collapse: collapse; margin-top: 8px; }
+.ficha-tecnica th, .ficha-tecnica td { padding: 6px 12px; border-bottom: 1px solid #e3d8c6; text-align: left; }
+.pie { padding: 24px; color: var(--suave); text-align: center; font-family: system-ui, sans-serif; font-size: 13px; }

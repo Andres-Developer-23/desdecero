@@ -1,0 +1,6 @@
+# La Gaceta de Ejemplo
+User-agent: *
+Disallow: /borradores/
+
+User-agent: CopiadorRapido
+Disallow: /

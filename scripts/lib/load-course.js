@@ -1,6 +1,7 @@
 /*
  * Lee el curso desde content/ y comprueba que esté completo.
  *
+ *   content/web/<sitio>.example/...            web de prácticas para el scraping (opcional)
  *   content/NN-ruta/route.json                 título, descripción, nivel y motor
  *   content/NN-ruta/NN-modulo/module.json      título y descripción del módulo
  *   content/NN-ruta/NN-modulo/NN-leccion/
@@ -23,7 +24,17 @@ const LESSON_SECTIONS = { Ejercicio: "exercise", Pista: "hint" };
 const CHECK_KEYS = new Set(["requires", "forbids", "ignore", "runs"]);
 const RUN_KEYS = new Set(["inputs", "output", "contains", "test"]);
 /** Motores con los que se ejecutan los ejercicios de una ruta. */
-export const RUNTIMES = new Set(["python", "flet"]);
+export const RUNTIMES = new Set(["python", "flet", "scraping"]);
+/** Tipos de archivo de la web de prácticas, por extensión. */
+const WEB_TYPES = {
+  ".html": "text/html; charset=utf-8",
+  ".txt": "text/plain; charset=utf-8",
+  ".css": "text/css; charset=utf-8",
+  ".csv": "text/csv; charset=utf-8",
+  ".xml": "application/xml; charset=utf-8",
+};
+/** Los sitios de práctica usan el dominio reservado .example: nunca apuntan a una web real. */
+const WEB_HOST = /^[a-z0-9]+(?:-[a-z0-9]+)*\.example$/;
 
 export class CourseError extends Error {
   constructor(problems) {
@@ -34,14 +45,16 @@ export class CourseError extends Error {
   }
 }
 
-/** Devuelve { routes: [...] } listo para incrustar en la página. */
+/** Devuelve { routes: [...], web: {...} } listo para incrustar en la página. */
 export function loadCourse(contentDir) {
   const problems = [];
   const seenLessonIds = new Map();
 
-  const routes = numberedDirs(contentDir, problems).map(({ dir, slug }) =>
+  const routes = numberedDirs(contentDir, problems, { ignore: ["web"] }).map(({ dir, slug }) =>
     loadRoute(dir, slug, { problems, seenLessonIds }),
   );
+  const webDir = path.join(contentDir, "web");
+  const web = existsSync(webDir) ? loadWeb(webDir, problems) : {};
 
   if (!routes.length) problems.push(`${rel(contentDir)}: no hay rutas`);
   const routeIds = new Set(routes.map((route) => route.id));
@@ -49,11 +62,24 @@ export function loadCourse(contentDir) {
     if (route.requires && !routeIds.has(route.requires)) {
       problems.push(`${rel(route.dir)}/route.json: "requires" apunta a una ruta que no existe`);
     }
+  }
+
+  // La página inicial de la pestaña «web» de una lección tiene que existir.
+  for (const route of routes) {
+    for (const lesson of route.modules.flatMap((module) => module.lessons)) {
+      const page = lesson.web?.endsWith("/") ? `${lesson.web}index.html` : lesson.web;
+      if (lesson.web != null && !web[page]) {
+        problems.push(
+          `${rel(lesson.dir)}/lesson.md: "web" apunta a una página que no existe: ${lesson.web}`,
+        );
+      }
+      delete lesson.dir;
+    }
     delete route.dir;
   }
 
   if (problems.length) throw new CourseError(problems);
-  return { routes };
+  return { routes, web };
 }
 
 function loadRoute(dir, id, context) {
@@ -82,6 +108,39 @@ function loadRoute(dir, id, context) {
   };
 }
 
+/**
+ * Lee la web de prácticas: content/web/libreria.example/catalogo/pagina-2.html
+ * se sirve en https://libreria.example/catalogo/pagina-2.html. Cada index.html
+ * responde también en la URL de su carpeta (eso lo resuelve src/js/scraping/web.js).
+ */
+function loadWeb(dir, problems) {
+  const pages = {};
+  for (const host of readdirSync(dir, { withFileTypes: true })) {
+    const hostDir = path.join(dir, host.name);
+    if (!host.isDirectory() || !WEB_HOST.test(host.name)) {
+      problems.push(`${rel(hostDir)}: cada sitio es una carpeta con un dominio .example`);
+      continue;
+    }
+    for (const file of listFiles(hostDir)) {
+      const type = WEB_TYPES[path.extname(file)];
+      if (!type) {
+        problems.push(`${rel(file)}: tipo de archivo no admitido en la web de prácticas`);
+        continue;
+      }
+      const urlPath = path.relative(hostDir, file).split(path.sep).join("/");
+      pages[`https://${host.name}/${urlPath}`] = { type, body: readFileSync(file, "utf8") };
+    }
+  }
+  return pages;
+}
+
+function listFiles(dir) {
+  return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+    const full = path.join(dir, entry.name);
+    return entry.isDirectory() ? listFiles(full) : [full];
+  });
+}
+
 function loadModule(dir, id, { problems, seenLessonIds }) {
   const meta = readJson(path.join(dir, "module.json"), problems) ?? {};
   requireStrings(meta, ["title", "description"], path.join(dir, "module.json"), problems);
@@ -93,7 +152,7 @@ function loadModule(dir, id, { problems, seenLessonIds }) {
       );
     }
     seenLessonIds.set(lessonId, lessonDir);
-    return loadLesson(lessonDir, lessonId, problems);
+    return { ...loadLesson(lessonDir, lessonId, problems), dir: lessonDir };
   });
 
   if (!lessons.length) problems.push(`${rel(dir)}: el módulo no tiene lecciones`);
@@ -109,6 +168,9 @@ function loadLesson(dir, id, problems) {
   requireStrings(meta, ["title", "summary"], file("lesson.md"), problems);
   if (!Number.isInteger(meta.minutes) || meta.minutes <= 0) {
     problems.push(`${rel(file("lesson.md"))}: "minutes" debe ser un número entero positivo`);
+  }
+  if (meta.web !== undefined && typeof meta.web !== "string") {
+    problems.push(`${rel(file("lesson.md"))}: "web" debe ser la URL de una página de prácticas`);
   }
 
   const checks = readJson(file("checks.json"), problems) ?? {};
@@ -126,6 +188,7 @@ function loadLesson(dir, id, problems) {
     solution: readText(file("solution.py"), problems) ?? "",
     test: existsSync(file("test.py")) ? readText(file("test.py"), problems).trimEnd() : "",
     checks,
+    web: meta.web ?? null,
   };
 }
 
@@ -197,9 +260,9 @@ function validateChecks(checks, file, problems) {
 
 /* ---- Lectura de archivos ---- */
 
-function numberedDirs(parent, problems) {
+function numberedDirs(parent, problems, { ignore = [] } = {}) {
   return readdirSync(parent, { withFileTypes: true })
-    .filter((entry) => entry.isDirectory())
+    .filter((entry) => entry.isDirectory() && !ignore.includes(entry.name))
     .map((entry) => {
       const match = entry.name.match(NUMBERED_DIR);
       if (!match) {

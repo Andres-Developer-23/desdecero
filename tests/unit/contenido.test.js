@@ -21,13 +21,21 @@ const VALID_LESSON = {
 const ROUTE_JSON =
   '{ "title": "Ruta", "description": "De prueba", "level": "Inicial", "runtime": "python" }';
 
-/** Crea un curso de prueba con una ruta, un módulo y las lecciones indicadas. */
-function makeCourse(name, lessons, routeJson = ROUTE_JSON) {
+/**
+ * Crea un curso de prueba con una ruta, un módulo y las lecciones indicadas.
+ * web: archivos de la web de prácticas, por ruta dentro de web/.
+ */
+function makeCourse(name, lessons, routeJson = ROUTE_JSON, web = {}) {
   const dir = path.join(temp, name);
   const routeDir = path.join(dir, "01-ruta");
   const moduleDir = path.join(routeDir, "00-basico");
   mkdirSync(moduleDir, { recursive: true });
   writeFileSync(path.join(routeDir, "route.json"), routeJson);
+  for (const [file, content] of Object.entries(web)) {
+    const target = path.join(dir, "web", file);
+    mkdirSync(path.dirname(target), { recursive: true });
+    writeFileSync(target, content);
+  }
   writeFileSync(
     path.join(moduleDir, "module.json"),
     '{ "title": "Básico", "description": "Lo primero" }',
@@ -75,6 +83,64 @@ describe("carga del contenido", () => {
         solution: 'print("hola")\n',
         test: "",
         checks: { runs: [{ output: "hola" }] },
+        web: null,
+      },
+    );
+    assert.deepEqual(course.web, {});
+  });
+
+  test("lee la web de prácticas: cada archivo en su URL", () => {
+    const lesson = {
+      ...VALID_LESSON,
+      "lesson.md": VALID_LESSON["lesson.md"].replace(
+        "summary:",
+        "web: https://tienda.example/productos/\nsummary:",
+      ),
+    };
+    const course = loadCourse(
+      makeCourse("web", { "01-hola": lesson }, ROUTE_JSON, {
+        "tienda.example/index.html": "<h1>Tienda</h1>",
+        "tienda.example/productos/index.html": "<h1>Productos</h1>",
+        "tienda.example/robots.txt": "User-agent: *\nDisallow: /admin/\n",
+      }),
+    );
+    assert.deepEqual(Object.keys(course.web).sort(), [
+      "https://tienda.example/index.html",
+      "https://tienda.example/productos/index.html",
+      "https://tienda.example/robots.txt",
+    ]);
+    assert.deepEqual(course.web["https://tienda.example/productos/index.html"], {
+      type: "text/html; charset=utf-8",
+      body: "<h1>Productos</h1>",
+    });
+    assert.equal(course.web["https://tienda.example/robots.txt"].type, "text/plain; charset=utf-8");
+    assert.equal(course.routes[0].modules[0].lessons[0].web, "https://tienda.example/productos/");
+  });
+
+  test("valida la web de prácticas: dominios .example, tipos conocidos y páginas que existan", () => {
+    const lesson = {
+      ...VALID_LESSON,
+      "lesson.md": VALID_LESSON["lesson.md"].replace(
+        "summary:",
+        "web: https://tienda.example/no-existe.html\nsummary:",
+      ),
+    };
+    const dir = makeCourse("web-rota", { "01-hola": lesson }, ROUTE_JSON, {
+      "tienda.example/index.html": "<h1>Tienda</h1>",
+      "tienda.example/logo.png": "png",
+      "google.com/index.html": "<h1>No</h1>",
+    });
+    assert.throws(
+      () => loadCourse(dir),
+      (error) => {
+        const text = error.problems.join("\n");
+        assert.match(text, /web\/google\.com: cada sitio es una carpeta con un dominio \.example/);
+        assert.match(text, /logo\.png: tipo de archivo no admitido/);
+        assert.match(
+          text,
+          /"web" apunta a una página que no existe: https:\/\/tienda\.example\/no-existe\.html/,
+        );
+        return true;
       },
     );
   });
@@ -113,7 +179,7 @@ describe("carga del contenido", () => {
       () => loadCourse(dir),
       (error) => {
         const text = error.problems.join("\n");
-        assert.match(text, /route\.json: "runtime" debe ser uno de: python, flet/);
+        assert.match(text, /route\.json: "runtime" debe ser uno de: python, flet, scraping/);
         assert.match(text, /route\.json: "requires" apunta a una ruta que no existe/);
         return true;
       },
