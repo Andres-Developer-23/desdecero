@@ -1,0 +1,13 @@
+{
+  "requires": [
+    {
+      "pattern": "BeautifulSoup\\(",
+      "message": "Analiza el HTML con BeautifulSoup(respuesta.text, \"html.parser\")."
+    }
+  ],
+  "runs": [
+    {
+      "output": "Clima de Ejemplo · Pronóstico de hoy\nClima de Ejemplo\nPronóstico para hoy en ciudades de Colombia"
+    }
+  ]
+}

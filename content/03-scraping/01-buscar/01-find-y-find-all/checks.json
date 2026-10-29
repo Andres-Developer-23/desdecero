@@ -1,0 +1,13 @@
+{
+  "requires": [
+    {
+      "pattern": "find_all\\(",
+      "message": "Busca todas las noticias con find_all()."
+    }
+  ],
+  "runs": [
+    {
+      "output": "[Cultura] La biblioteca municipal abrirá también de noche\n[Tecnología] Estudiantes crean una app para separar la basura\n[Barrio] El parque central estrena huerta comunitaria\n[Cultura] Vuelve la feria del libro con 120 expositores\n[Movilidad] Nuevo carril para bicicletas en la avenida principal\n[Cultura] La orquesta juvenil gana un concurso nacional\n6 noticias"
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+{
+  "title": "Buscar en el HTML",
+  "description": "find, find_all, texto, atributos y selectores CSS con BeautifulSoup."
+}

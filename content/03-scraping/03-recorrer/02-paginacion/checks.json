@@ -1,0 +1,13 @@
+{
+  "requires": [
+    {
+      "pattern": "\\bwhile\\b",
+      "message": "Pasa de página con un bucle while que siga el enlace «Siguiente»."
+    }
+  ],
+  "runs": [
+    {
+      "output": "Refranes: 20\nPáginas: 4\nconstancia: 4\npaciencia: 3\nprudencia: 3\ntrabajo: 3"
+    }
+  ]
+}

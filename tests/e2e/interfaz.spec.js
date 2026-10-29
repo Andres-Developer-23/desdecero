@@ -10,6 +10,8 @@ test("el panel muestra las rutas y el siguiente paso", async ({ page }) => {
   const flet = page.getByRole("article", { name: "Apps con Flet" });
   await expect(flet).toContainText("0/12");
   await expect(flet).toContainText("Antes conviene terminar «Python desde cero»");
+  const scraping = page.getByRole("article", { name: "Web scraping con Python" });
+  await expect(scraping).toContainText("0/12");
   await expect(page.locator("#panel-actions .cta--primary")).toContainText(
     "empezar: Tu primer programa",
   );

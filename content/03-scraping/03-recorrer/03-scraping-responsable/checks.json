@@ -1,0 +1,17 @@
+{
+  "requires": [
+    {
+      "pattern": "RobotFileParser\\(",
+      "message": "Lee el robots.txt con RobotFileParser."
+    },
+    {
+      "pattern": "timeout\\s*=",
+      "message": "Pon un timeout en cada petición: requests.get(url, headers=CABECERAS, timeout=10)."
+    }
+  ],
+  "runs": [
+    {
+      "output": "La biblioteca municipal abrirá también de noche\nProhibida: https://noticias.example/borradores/proxima-portada.html\nError 404: https://noticias.example/2026/10/20/esta-noticia-no-existe.html\nVuelve la feria del libro con 120 expositores\nLa orquesta juvenil gana un concurso nacional"
+    }
+  ]
+}

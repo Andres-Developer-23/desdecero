@@ -1,0 +1,13 @@
+{
+  "requires": [
+    {
+      "pattern": "DictReader\\(",
+      "message": "Vuelve a leer el archivo con csv.DictReader para contar sus filas."
+    }
+  ],
+  "runs": [
+    {
+      "output": "Guardadas 12 ciudades en clima.csv"
+    }
+  ]
+}

@@ -222,3 +222,35 @@ print(BeautifulSoup("<p>a</p>", "html.parser").find_all("p").text)`,
   expect(scheme.log).toContain("MissingSchema");
   expect(scheme.log).toContain("tiene que empezar por https://");
 });
+
+test("las lecciones de scraping tienen una pestaña web con la página del ejercicio", async ({
+  page,
+}) => {
+  await openApp(page, "#l-que-es-scraping");
+  const tabs = page.locator("#exercise-tabs");
+  await expect(tabs.locator("[data-tab='web']")).toBeVisible();
+  await expect(tabs.locator("[data-tab='preview']")).toBeHidden();
+  await expect(tabs.locator("[data-tab='web']")).toHaveAttribute("aria-selected", "true");
+
+  const viewer = page.locator("#exercise-web");
+  await expect(viewer.locator(".web-viewer__address")).toHaveValue("https://libreria.example/");
+  await expect(page.frameLocator("#exercise-web iframe").locator("h1")).toHaveText("Catálogo");
+
+  // Los enlaces de la teoría a la web de prácticas se abren en la pestaña.
+  await page.locator("#lesson-body a", { hasText: "clima.example" }).click();
+  await expect(viewer.locator(".web-viewer__address")).toHaveValue("https://clima.example/");
+
+  // Al ejecutar se ve la salida, y la pestaña web avisa de las páginas pedidas.
+  await page.evaluate(() => {
+    const { course } = window.__desdecero;
+    document
+      .querySelector("#exercise-editor .CodeMirror")
+      .CodeMirror.setValue(course.getLesson("que-es-scraping").solution);
+  });
+  await page.locator("#view-lesson [data-action='run']").first().click();
+  await expect(page.locator("#exercise-output")).toContainText("text/html; charset=utf-8");
+  await expect(tabs.locator("[data-tab='web'] .tabs__dot")).toBeVisible();
+  await tabs.locator("[data-tab='web']").click();
+  await expect(viewer.locator(".web-viewer__request-list li")).toHaveCount(1);
+  await expect(viewer.locator(".web-viewer__address")).toHaveValue("https://noticias.example/");
+});

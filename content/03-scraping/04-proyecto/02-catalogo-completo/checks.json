@@ -1,0 +1,13 @@
+{
+  "requires": [
+    {
+      "pattern": "\\bwhile\\b",
+      "message": "Recorre el catálogo con un bucle while que siga el enlace «Siguiente»."
+    }
+  ],
+  "runs": [
+    {
+      "output": "Libros guardados: 18\nAgotados: 3\nPrecio medio: 50367\nCategoría con más libros: Novela (4)"
+    }
+  ]
+}

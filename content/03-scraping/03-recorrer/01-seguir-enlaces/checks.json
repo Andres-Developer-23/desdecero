@@ -1,0 +1,13 @@
+{
+  "requires": [
+    {
+      "pattern": "urljoin\\(",
+      "message": "Completa las direcciones de los enlaces con urljoin()."
+    }
+  ],
+  "runs": [
+    {
+      "output": "El faro de la niebla: 7\nPython para curiosos: 12\nCartas desde el páramo: 0\nLa aritmética de las nubes: 3\nVersos para un lunes: 9\nBreve historia del café en los Andes: 4"
+    }
+  ]
+}
