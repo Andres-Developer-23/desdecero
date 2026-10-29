@@ -7,10 +7,8 @@
  * Al empezar otra ejecución, la vista previa anterior se detiene.
  */
 
-import dataclassesSource from "../../python/dataclasses.py";
 import fletSource from "../../python/flet/__init__.py";
 import fletsimSource from "../../python/fletsim.py";
-import typingSource from "../../python/typing.py";
 import { TIME_LIMIT_MS } from "../config.js";
 import { wait } from "../lib/async.js";
 import { callPython, registerPythonFiles } from "../python/engine.js";
@@ -49,8 +47,6 @@ export function installFletRuntime() {
   registerPythonFiles({
     "src/lib/flet/__init__.py": fletSource,
     "src/lib/fletsim.py": fletsimSource,
-    "src/lib/dataclasses.py": dataclassesSource,
-    "src/lib/typing.py": typingSource,
     "src/lib/_flet_bridge.js": BRIDGE_SOURCE,
   });
 
