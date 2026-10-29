@@ -1,0 +1,45 @@
+{
+  "fecha": "2026-10-29",
+  "monedas": {
+    "USD": {
+      "nombre": "Dólar estadounidense",
+      "por_dolar": 1
+    },
+    "EUR": {
+      "nombre": "Euro",
+      "por_dolar": 0.9215
+    },
+    "COP": {
+      "nombre": "Peso colombiano",
+      "por_dolar": 4185.5
+    },
+    "MXN": {
+      "nombre": "Peso mexicano",
+      "por_dolar": 18.735
+    },
+    "ARS": {
+      "nombre": "Peso argentino",
+      "por_dolar": 985.25
+    },
+    "CLP": {
+      "nombre": "Peso chileno",
+      "por_dolar": 942.8
+    },
+    "PEN": {
+      "nombre": "Sol peruano",
+      "por_dolar": 3.762
+    },
+    "BRL": {
+      "nombre": "Real brasileño",
+      "por_dolar": 5.482
+    },
+    "GBP": {
+      "nombre": "Libra esterlina",
+      "por_dolar": 0.7712
+    },
+    "JPY": {
+      "nombre": "Yen japonés",
+      "por_dolar": 149.35
+    }
+  }
+}

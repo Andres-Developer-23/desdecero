@@ -1,0 +1,793 @@
+{
+  "fecha": "2026-10-29",
+  "claves": {
+    "demo-clima-2026": "activa",
+    "clave-antigua-2019": "desactivada"
+  },
+  "limite": {
+    "peticiones": 5,
+    "segundos": 10
+  },
+  "ciudades": [
+    {
+      "nombre": "Bogotá",
+      "altitud": 2640,
+      "actual": {
+        "temperatura": 15,
+        "sensacion": 14,
+        "humedad": 80,
+        "viento_kmh": 6,
+        "estado": "Lluvioso"
+      },
+      "pronostico": [
+        {
+          "fecha": "2026-10-30",
+          "maxima": 19,
+          "minima": 8,
+          "lluvia": 70,
+          "estado": "Lluvioso"
+        },
+        {
+          "fecha": "2026-10-31",
+          "maxima": 20,
+          "minima": 8,
+          "lluvia": 80,
+          "estado": "Lluvioso"
+        },
+        {
+          "fecha": "2026-11-01",
+          "maxima": 18,
+          "minima": 9,
+          "lluvia": 50,
+          "estado": "Nublado"
+        },
+        {
+          "fecha": "2026-11-02",
+          "maxima": 21,
+          "minima": 9,
+          "lluvia": 85,
+          "estado": "Lluvioso"
+        },
+        {
+          "fecha": "2026-11-03",
+          "maxima": 19,
+          "minima": 7,
+          "lluvia": 60,
+          "estado": "Lluvioso"
+        },
+        {
+          "fecha": "2026-11-04",
+          "maxima": 17,
+          "minima": 8,
+          "lluvia": 90,
+          "estado": "Lluvioso"
+        },
+        {
+          "fecha": "2026-11-05",
+          "maxima": 20,
+          "minima": 7,
+          "lluvia": 65,
+          "estado": "Lluvioso"
+        }
+      ],
+      "alertas": []
+    },
+    {
+      "nombre": "Medellín",
+      "altitud": 1495,
+      "actual": {
+        "temperatura": 23,
+        "sensacion": 23,
+        "humedad": 75,
+        "viento_kmh": 13,
+        "estado": "Nublado"
+      },
+      "pronostico": [
+        {
+          "fecha": "2026-10-30",
+          "maxima": 27,
+          "minima": 17,
+          "lluvia": 60,
+          "estado": "Nublado"
+        },
+        {
+          "fecha": "2026-10-31",
+          "maxima": 26,
+          "minima": 18,
+          "lluvia": 40,
+          "estado": "Nublado"
+        },
+        {
+          "fecha": "2026-11-01",
+          "maxima": 29,
+          "minima": 18,
+          "lluvia": 75,
+          "estado": "Lluvioso"
+        },
+        {
+          "fecha": "2026-11-02",
+          "maxima": 27,
+          "minima": 16,
+          "lluvia": 50,
+          "estado": "Nublado"
+        },
+        {
+          "fecha": "2026-11-03",
+          "maxima": 25,
+          "minima": 17,
+          "lluvia": 80,
+          "estado": "Lluvioso"
+        },
+        {
+          "fecha": "2026-11-04",
+          "maxima": 28,
+          "minima": 16,
+          "lluvia": 55,
+          "estado": "Nublado"
+        },
+        {
+          "fecha": "2026-11-05",
+          "maxima": 27,
+          "minima": 17,
+          "lluvia": 60,
+          "estado": "Lluvioso"
+        }
+      ],
+      "alertas": []
+    },
+    {
+      "nombre": "Cali",
+      "altitud": 1018,
+      "actual": {
+        "temperatura": 26,
+        "sensacion": 26,
+        "humedad": 65,
+        "viento_kmh": 20,
+        "estado": "Parcialmente nublado"
+      },
+      "pronostico": [
+        {
+          "fecha": "2026-10-30",
+          "maxima": 30,
+          "minima": 19,
+          "lluvia": 40,
+          "estado": "Parcialmente nublado"
+        },
+        {
+          "fecha": "2026-10-31",
+          "maxima": 32,
+          "minima": 20,
+          "lluvia": 55,
+          "estado": "Nublado"
+        },
+        {
+          "fecha": "2026-11-01",
+          "maxima": 30,
+          "minima": 18,
+          "lluvia": 30,
+          "estado": "Parcialmente nublado"
+        },
+        {
+          "fecha": "2026-11-02",
+          "maxima": 28,
+          "minima": 19,
+          "lluvia": 60,
+          "estado": "Lluvioso"
+        },
+        {
+          "fecha": "2026-11-03",
+          "maxima": 31,
+          "minima": 18,
+          "lluvia": 35,
+          "estado": "Parcialmente nublado"
+        },
+        {
+          "fecha": "2026-11-04",
+          "maxima": 30,
+          "minima": 19,
+          "lluvia": 40,
+          "estado": "Nublado"
+        },
+        {
+          "fecha": "2026-11-05",
+          "maxima": 31,
+          "minima": 19,
+          "lluvia": 50,
+          "estado": "Nublado"
+        }
+      ],
+      "alertas": []
+    },
+    {
+      "nombre": "Barranquilla",
+      "altitud": 18,
+      "actual": {
+        "temperatura": 30,
+        "sensacion": 30,
+        "humedad": 55,
+        "viento_kmh": 10,
+        "estado": "Soleado"
+      },
+      "pronostico": [
+        {
+          "fecha": "2026-10-30",
+          "maxima": 33,
+          "minima": 25,
+          "lluvia": 20,
+          "estado": "Soleado"
+        },
+        {
+          "fecha": "2026-10-31",
+          "maxima": 33,
+          "minima": 24,
+          "lluvia": 10,
+          "estado": "Soleado"
+        },
+        {
+          "fecha": "2026-11-01",
+          "maxima": 31,
+          "minima": 25,
+          "lluvia": 40,
+          "estado": "Nublado"
+        },
+        {
+          "fecha": "2026-11-02",
+          "maxima": 34,
+          "minima": 24,
+          "lluvia": 15,
+          "estado": "Soleado"
+        },
+        {
+          "fecha": "2026-11-03",
+          "maxima": 33,
+          "minima": 25,
+          "lluvia": 20,
+          "estado": "Parcialmente nublado"
+        },
+        {
+          "fecha": "2026-11-04",
+          "maxima": 34,
+          "minima": 25,
+          "lluvia": 30,
+          "estado": "Parcialmente nublado"
+        },
+        {
+          "fecha": "2026-11-05",
+          "maxima": 32,
+          "minima": 26,
+          "lluvia": 0,
+          "estado": "Soleado"
+        }
+      ],
+      "alertas": []
+    },
+    {
+      "nombre": "Cartagena",
+      "altitud": 2,
+      "actual": {
+        "temperatura": 29,
+        "sensacion": 29,
+        "humedad": 60,
+        "viento_kmh": 17,
+        "estado": "Soleado"
+      },
+      "pronostico": [
+        {
+          "fecha": "2026-10-30",
+          "maxima": 32,
+          "minima": 25,
+          "lluvia": 30,
+          "estado": "Soleado"
+        },
+        {
+          "fecha": "2026-10-31",
+          "maxima": 30,
+          "minima": 25,
+          "lluvia": 50,
+          "estado": "Nublado"
+        },
+        {
+          "fecha": "2026-11-01",
+          "maxima": 33,
+          "minima": 24,
+          "lluvia": 25,
+          "estado": "Parcialmente nublado"
+        },
+        {
+          "fecha": "2026-11-02",
+          "maxima": 32,
+          "minima": 25,
+          "lluvia": 30,
+          "estado": "Parcialmente nublado"
+        },
+        {
+          "fecha": "2026-11-03",
+          "maxima": 33,
+          "minima": 25,
+          "lluvia": 40,
+          "estado": "Nublado"
+        },
+        {
+          "fecha": "2026-11-04",
+          "maxima": 31,
+          "minima": 26,
+          "lluvia": 10,
+          "estado": "Soleado"
+        },
+        {
+          "fecha": "2026-11-05",
+          "maxima": 34,
+          "minima": 26,
+          "lluvia": 45,
+          "estado": "Nublado"
+        }
+      ],
+      "alertas": []
+    },
+    {
+      "nombre": "Bucaramanga",
+      "altitud": 959,
+      "actual": {
+        "temperatura": 24,
+        "sensacion": 24,
+        "humedad": 70,
+        "viento_kmh": 7,
+        "estado": "Nublado"
+      },
+      "pronostico": [
+        {
+          "fecha": "2026-10-30",
+          "maxima": 28,
+          "minima": 19,
+          "lluvia": 50,
+          "estado": "Nublado"
+        },
+        {
+          "fecha": "2026-10-31",
+          "maxima": 29,
+          "minima": 18,
+          "lluvia": 45,
+          "estado": "Nublado"
+        },
+        {
+          "fecha": "2026-11-01",
+          "maxima": 28,
+          "minima": 19,
+          "lluvia": 50,
+          "estado": "Nublado"
+        },
+        {
+          "fecha": "2026-11-02",
+          "maxima": 29,
+          "minima": 19,
+          "lluvia": 60,
+          "estado": "Lluvioso"
+        },
+        {
+          "fecha": "2026-11-03",
+          "maxima": 27,
+          "minima": 20,
+          "lluvia": 30,
+          "estado": "Parcialmente nublado"
+        },
+        {
+          "fecha": "2026-11-04",
+          "maxima": 30,
+          "minima": 20,
+          "lluvia": 65,
+          "estado": "Lluvioso"
+        },
+        {
+          "fecha": "2026-11-05",
+          "maxima": 28,
+          "minima": 18,
+          "lluvia": 40,
+          "estado": "Nublado"
+        }
+      ],
+      "alertas": []
+    },
+    {
+      "nombre": "Pereira",
+      "altitud": 1411,
+      "actual": {
+        "temperatura": 22,
+        "sensacion": 22,
+        "humedad": 82,
+        "viento_kmh": 14,
+        "estado": "Lluvioso"
+      },
+      "pronostico": [
+        {
+          "fecha": "2026-10-30",
+          "maxima": 26,
+          "minima": 16,
+          "lluvia": 75,
+          "estado": "Lluvioso"
+        },
+        {
+          "fecha": "2026-10-31",
+          "maxima": 26,
+          "minima": 16,
+          "lluvia": 75,
+          "estado": "Lluvioso"
+        },
+        {
+          "fecha": "2026-11-01",
+          "maxima": 27,
+          "minima": 16,
+          "lluvia": 85,
+          "estado": "Lluvioso"
+        },
+        {
+          "fecha": "2026-11-02",
+          "maxima": 25,
+          "minima": 17,
+          "lluvia": 55,
+          "estado": "Nublado"
+        },
+        {
+          "fecha": "2026-11-03",
+          "maxima": 28,
+          "minima": 17,
+          "lluvia": 90,
+          "estado": "Lluvioso"
+        },
+        {
+          "fecha": "2026-11-04",
+          "maxima": 26,
+          "minima": 15,
+          "lluvia": 65,
+          "estado": "Lluvioso"
+        },
+        {
+          "fecha": "2026-11-05",
+          "maxima": 24,
+          "minima": 16,
+          "lluvia": 95,
+          "estado": "Lluvioso"
+        }
+      ],
+      "alertas": [
+        {
+          "tipo": "lluvias",
+          "nivel": "amarilla",
+          "mensaje": "Lluvias intensas durante la noche."
+        }
+      ]
+    },
+    {
+      "nombre": "Manizales",
+      "altitud": 2160,
+      "actual": {
+        "temperatura": 18,
+        "sensacion": 18,
+        "humedad": 85,
+        "viento_kmh": 21,
+        "estado": "Lluvioso"
+      },
+      "pronostico": [
+        {
+          "fecha": "2026-10-30",
+          "maxima": 22,
+          "minima": 13,
+          "lluvia": 80,
+          "estado": "Lluvioso"
+        },
+        {
+          "fecha": "2026-10-31",
+          "maxima": 23,
+          "minima": 13,
+          "lluvia": 90,
+          "estado": "Lluvioso"
+        },
+        {
+          "fecha": "2026-11-01",
+          "maxima": 21,
+          "minima": 14,
+          "lluvia": 60,
+          "estado": "Lluvioso"
+        },
+        {
+          "fecha": "2026-11-02",
+          "maxima": 24,
+          "minima": 14,
+          "lluvia": 95,
+          "estado": "Lluvioso"
+        },
+        {
+          "fecha": "2026-11-03",
+          "maxima": 22,
+          "minima": 12,
+          "lluvia": 70,
+          "estado": "Lluvioso"
+        },
+        {
+          "fecha": "2026-11-04",
+          "maxima": 20,
+          "minima": 13,
+          "lluvia": 100,
+          "estado": "Lluvioso"
+        },
+        {
+          "fecha": "2026-11-05",
+          "maxima": 23,
+          "minima": 12,
+          "lluvia": 75,
+          "estado": "Lluvioso"
+        }
+      ],
+      "alertas": [
+        {
+          "tipo": "deslizamientos",
+          "nivel": "amarilla",
+          "mensaje": "Suelos saturados por las lluvias: precaución en las vías."
+        }
+      ]
+    },
+    {
+      "nombre": "Santa Marta",
+      "altitud": 6,
+      "actual": {
+        "temperatura": 30,
+        "sensacion": 30,
+        "humedad": 50,
+        "viento_kmh": 11,
+        "estado": "Soleado"
+      },
+      "pronostico": [
+        {
+          "fecha": "2026-10-30",
+          "maxima": 34,
+          "minima": 24,
+          "lluvia": 10,
+          "estado": "Soleado"
+        },
+        {
+          "fecha": "2026-10-31",
+          "maxima": 33,
+          "minima": 25,
+          "lluvia": 0,
+          "estado": "Soleado"
+        },
+        {
+          "fecha": "2026-11-01",
+          "maxima": 36,
+          "minima": 25,
+          "lluvia": 25,
+          "estado": "Parcialmente nublado"
+        },
+        {
+          "fecha": "2026-11-02",
+          "maxima": 34,
+          "minima": 23,
+          "lluvia": 0,
+          "estado": "Soleado"
+        },
+        {
+          "fecha": "2026-11-03",
+          "maxima": 32,
+          "minima": 24,
+          "lluvia": 30,
+          "estado": "Parcialmente nublado"
+        },
+        {
+          "fecha": "2026-11-04",
+          "maxima": 35,
+          "minima": 23,
+          "lluvia": 5,
+          "estado": "Soleado"
+        },
+        {
+          "fecha": "2026-11-05",
+          "maxima": 34,
+          "minima": 24,
+          "lluvia": 10,
+          "estado": "Soleado"
+        }
+      ],
+      "alertas": [
+        {
+          "tipo": "calor",
+          "nivel": "amarilla",
+          "mensaje": "Temperaturas altas al mediodía: bebe agua."
+        }
+      ]
+    },
+    {
+      "nombre": "Pasto",
+      "altitud": 2527,
+      "actual": {
+        "temperatura": 14,
+        "sensacion": 13,
+        "humedad": 77,
+        "viento_kmh": 18,
+        "estado": "Nublado"
+      },
+      "pronostico": [
+        {
+          "fecha": "2026-10-30",
+          "maxima": 18,
+          "minima": 8,
+          "lluvia": 65,
+          "estado": "Nublado"
+        },
+        {
+          "fecha": "2026-10-31",
+          "maxima": 20,
+          "minima": 9,
+          "lluvia": 80,
+          "estado": "Lluvioso"
+        },
+        {
+          "fecha": "2026-11-01",
+          "maxima": 18,
+          "minima": 7,
+          "lluvia": 55,
+          "estado": "Nublado"
+        },
+        {
+          "fecha": "2026-11-02",
+          "maxima": 16,
+          "minima": 8,
+          "lluvia": 85,
+          "estado": "Lluvioso"
+        },
+        {
+          "fecha": "2026-11-03",
+          "maxima": 19,
+          "minima": 7,
+          "lluvia": 60,
+          "estado": "Lluvioso"
+        },
+        {
+          "fecha": "2026-11-04",
+          "maxima": 18,
+          "minima": 8,
+          "lluvia": 65,
+          "estado": "Lluvioso"
+        },
+        {
+          "fecha": "2026-11-05",
+          "maxima": 19,
+          "minima": 8,
+          "lluvia": 75,
+          "estado": "Lluvioso"
+        }
+      ],
+      "alertas": []
+    },
+    {
+      "nombre": "Villavicencio",
+      "altitud": 467,
+      "actual": {
+        "temperatura": 27,
+        "sensacion": 29,
+        "humedad": 72,
+        "viento_kmh": 8,
+        "estado": "Parcialmente nublado"
+      },
+      "pronostico": [
+        {
+          "fecha": "2026-10-30",
+          "maxima": 31,
+          "minima": 21,
+          "lluvia": 55,
+          "estado": "Parcialmente nublado"
+        },
+        {
+          "fecha": "2026-10-31",
+          "maxima": 31,
+          "minima": 20,
+          "lluvia": 45,
+          "estado": "Nublado"
+        },
+        {
+          "fecha": "2026-11-01",
+          "maxima": 29,
+          "minima": 21,
+          "lluvia": 75,
+          "estado": "Lluvioso"
+        },
+        {
+          "fecha": "2026-11-02",
+          "maxima": 32,
+          "minima": 20,
+          "lluvia": 50,
+          "estado": "Nublado"
+        },
+        {
+          "fecha": "2026-11-03",
+          "maxima": 31,
+          "minima": 21,
+          "lluvia": 55,
+          "estado": "Nublado"
+        },
+        {
+          "fecha": "2026-11-04",
+          "maxima": 32,
+          "minima": 21,
+          "lluvia": 65,
+          "estado": "Lluvioso"
+        },
+        {
+          "fecha": "2026-11-05",
+          "maxima": 30,
+          "minima": 22,
+          "lluvia": 35,
+          "estado": "Parcialmente nublado"
+        }
+      ],
+      "alertas": []
+    },
+    {
+      "nombre": "Leticia",
+      "altitud": 96,
+      "actual": {
+        "temperatura": 28,
+        "sensacion": 30,
+        "humedad": 87,
+        "viento_kmh": 15,
+        "estado": "Tormentas"
+      },
+      "pronostico": [
+        {
+          "fecha": "2026-10-30",
+          "maxima": 32,
+          "minima": 23,
+          "lluvia": 85,
+          "estado": "Tormentas"
+        },
+        {
+          "fecha": "2026-10-31",
+          "maxima": 30,
+          "minima": 23,
+          "lluvia": 100,
+          "estado": "Tormentas"
+        },
+        {
+          "fecha": "2026-11-01",
+          "maxima": 33,
+          "minima": 22,
+          "lluvia": 80,
+          "estado": "Tormentas"
+        },
+        {
+          "fecha": "2026-11-02",
+          "maxima": 32,
+          "minima": 23,
+          "lluvia": 85,
+          "estado": "Tormentas"
+        },
+        {
+          "fecha": "2026-11-03",
+          "maxima": 33,
+          "minima": 23,
+          "lluvia": 95,
+          "estado": "Tormentas"
+        },
+        {
+          "fecha": "2026-11-04",
+          "maxima": 31,
+          "minima": 24,
+          "lluvia": 65,
+          "estado": "Lluvioso"
+        },
+        {
+          "fecha": "2026-11-05",
+          "maxima": 34,
+          "minima": 24,
+          "lluvia": 100,
+          "estado": "Tormentas"
+        }
+      ],
+      "alertas": [
+        {
+          "tipo": "tormentas",
+          "nivel": "naranja",
+          "mensaje": "Tormentas eléctricas fuertes por la tarde."
+        }
+      ]
+    }
+  ]
+}

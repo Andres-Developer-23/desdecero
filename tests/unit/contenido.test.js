@@ -87,6 +87,7 @@ describe("carga del contenido", () => {
       },
     );
     assert.deepEqual(course.web, {});
+    assert.deepEqual(course.apis, {});
   });
 
   test("lee la web de prácticas: cada archivo en su URL", () => {
@@ -140,6 +141,40 @@ describe("carga del contenido", () => {
           text,
           /"web" apunta a una página que no existe: https:\/\/tienda\.example\/no-existe\.html/,
         );
+        return true;
+      },
+    );
+  });
+
+  test("lee los datos de las APIs de práctica y admite lecciones que empiezan en una API", () => {
+    const lesson = {
+      ...VALID_LESSON,
+      "lesson.md": VALID_LESSON["lesson.md"].replace(
+        "summary:",
+        "web: https://api.tienda.example/v1/productos?pagina=2\nsummary:",
+      ),
+    };
+    const dir = makeCourse("apis", { "01-hola": lesson });
+    mkdirSync(path.join(dir, "api"));
+    writeFileSync(path.join(dir, "api", "api.tienda.example.json"), '{ "productos": [] }');
+    const course = loadCourse(dir);
+    assert.deepEqual(course.apis, { "api.tienda.example": { productos: [] } });
+  });
+
+  test("valida los archivos de las APIs: nombre api.<nombre>.example.json y JSON válido", () => {
+    const dir = makeCourse("apis-rotas", { "01-hola": VALID_LESSON });
+    mkdirSync(path.join(dir, "api"));
+    writeFileSync(path.join(dir, "api", "tienda.json"), "{}");
+    writeFileSync(path.join(dir, "api", "api.rota.example.json"), "{ no es json");
+    assert.throws(
+      () => loadCourse(dir),
+      (error) => {
+        const text = error.problems.join("\n");
+        assert.match(
+          text,
+          /api\/tienda\.json: cada API es un archivo api\.<nombre>\.example\.json/,
+        );
+        assert.match(text, /api\.rota\.example\.json/);
         return true;
       },
     );
