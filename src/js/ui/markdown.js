@@ -1,6 +1,6 @@
 /*
  * Markdown reducido para el texto de las lecciones:
- *   párrafos, listas con "- " o "1. ", **negrita**, *cursiva*, `código`,
+ *   párrafos, subtítulos "### ", listas con "- " o "1. ", **negrita**, *cursiva*, `código`,
  *   [enlaces](https://...) y bloques ``` (```py se muestra como ejemplo ejecutable).
  *
  * Los enlaces a los sitios de práctica (*.example) llevan data-web-link: la
@@ -13,6 +13,7 @@ import { escapeHtml } from "../lib/dom.js";
 const FENCE = /^```/;
 const BULLET = /^- /;
 const NUMBERED = /^\d+\. /;
+const SUBHEADING = /^### /;
 
 /**
  * @param {string} source
@@ -37,6 +38,9 @@ export function renderMarkdown(source, { runnableCode = true } = {}) {
       html.push(language === "py" && runnableCode ? exampleHtml(text) : outputBlockHtml(text));
     } else if (!line.trim()) {
       i++;
+    } else if (SUBHEADING.test(line)) {
+      html.push(`<h3>${renderInline(line.replace(SUBHEADING, ""))}</h3>`);
+      i++;
     } else if (BULLET.test(line) || NUMBERED.test(line)) {
       const pattern = BULLET.test(line) ? BULLET : NUMBERED;
       const tag = pattern === BULLET ? "ul" : "ol";
@@ -48,7 +52,7 @@ export function renderMarkdown(source, { runnableCode = true } = {}) {
       );
     } else {
       const paragraph = [];
-      while (i < lines.length && lines[i].trim() && !/^(```|- |\d+\. )/.test(lines[i])) {
+      while (i < lines.length && lines[i].trim() && !/^(```|- |\d+\. |### )/.test(lines[i])) {
         paragraph.push(lines[i++]);
       }
       html.push(`<p>${renderInline(paragraph.join(" "))}</p>`);

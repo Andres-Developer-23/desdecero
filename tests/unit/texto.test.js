@@ -43,6 +43,13 @@ describe("markdown de las lecciones", () => {
     );
   });
 
+  test("subtítulos con ###", () => {
+    assert.equal(
+      renderMarkdown("Texto.\n### Robots y `robots.txt`\nMás texto."),
+      "<p>Texto.</p>\n<h3>Robots y <code>robots.txt</code></h3>\n<p>Más texto.</p>",
+    );
+  });
+
   test("párrafos y listas", () => {
     assert.equal(
       renderMarkdown("Uno\ndos\n\n- a\n- b\n\n1. c"),
