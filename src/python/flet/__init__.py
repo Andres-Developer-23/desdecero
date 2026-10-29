@@ -11,6 +11,7 @@ Lo que no está implementado da un error claro en español.
 """
 
 import _flet_bridge
+from dataclasses import Field as _FieldDefault
 
 _registry = {}
 _state = {"page": None, "mounted": {}, "rendering": False, "again": False, "next_uid": 1}
@@ -305,28 +306,15 @@ ControlEvent = Event
 # Controles
 # ---------------------------------------------------------------------------
 
-_MISSING = object()
 _schemas = {}
-
-
-class _FieldDefault:
-    """Valor por defecto creado con dataclasses.field(...)."""
-
-    def __init__(self, default=_MISSING, default_factory=_MISSING):
-        self.default = default
-        self.default_factory = default_factory
-
-    def make(self):
-        if self.default_factory is not _MISSING:
-            return self.default_factory()
-        if self.default is _MISSING:
-            return None
-        return self.default
 
 
 def _fresh(default):
     if isinstance(default, _FieldDefault):
         return default.make()
+    # "equipo: str" sin valor por defecto (ver skulpt-patches.js): empieza en None.
+    if type(default).__name__ == "AnotacionSinValor":
+        return None
     if isinstance(default, list):
         return list(default)
     return default

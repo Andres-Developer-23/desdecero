@@ -9,6 +9,7 @@ import { $ } from "./lib/dom.js";
 import { startCloudSync } from "./progress/cloud-sync.js";
 import { createProgress } from "./progress/progress.js";
 import { loadEditorLibrary, loadPythonEngine } from "./python/libraries.js";
+import { installStandardLibraryExtras } from "./python/stdlib.js";
 import { createRouter } from "./router.js";
 import { bindEngineStatus } from "./ui/engine-status.js";
 import { highlightExamples, setupExamples } from "./ui/examples.js";
@@ -21,6 +22,7 @@ import { createRouteView } from "./views/route.js";
 import { installScrapingRuntime } from "./scraping/runtime.js";
 
 const courseData = readCourseData($("#course-data"));
+installStandardLibraryExtras();
 installFletRuntime();
 installScrapingRuntime(courseData.web ?? {});
 
