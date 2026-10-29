@@ -1,0 +1,7 @@
+{
+  "runs": [
+    {
+      "output": "[Jugador('Bruno', 45), Jugador('Ana', 30), Jugador('Carla', 12)]\nGanador: Bruno\nTrue\nFalse"
+    }
+  ]
+}

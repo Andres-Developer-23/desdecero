@@ -1,0 +1,7 @@
+{
+  "runs": [
+    {
+      "output": "Café · $ 18.900\nProducto('Café', 18900)\n[Producto('Pan', 2500), Producto('Leche', 4200)]\nTotal del pedido: Pan · $ 2.500 y Leche · $ 4.200"
+    }
+  ]
+}

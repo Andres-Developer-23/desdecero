@@ -1,0 +1,7 @@
+{
+  "runs": [
+    {
+      "output": "Prestado: Rayuela\nError: «Rayuela» ya está prestado\nError: No existe el libro «Ficciones»\nDisponibles: ['Pedro Páramo', 'Aura']\nDisponibles: ['Rayuela', 'Pedro Páramo', 'Aura']"
+    }
+  ]
+}

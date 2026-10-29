@@ -1,0 +1,13 @@
+{
+  "requires": [
+    {
+      "pattern": "@dataclass",
+      "message": "Escribe la clase con el decorador @dataclass."
+    }
+  ],
+  "runs": [
+    {
+      "output": "Tarea(titulo='Estudiar', prioridad=1, hecha=False, etiquetas=['clase'])\nPendientes por prioridad:\n- Estudiar (1)\n- Llamar (2)\n- Ordenar (3)\nTrue"
+    }
+  ]
+}

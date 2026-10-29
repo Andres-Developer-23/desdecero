@@ -12,6 +12,15 @@ test("el panel muestra las rutas y el siguiente paso", async ({ page }) => {
   await expect(flet).toContainText("Antes conviene terminar «Python desde cero»");
   const scraping = page.getByRole("article", { name: "Web scraping con Python" });
   await expect(scraping).toContainText("0/12");
+  const poo = page.getByRole("article", { name: "Programación orientada a objetos" });
+  await expect(poo).toContainText("0/12");
+  // Las rutas siguen el orden de las carpetas: Python, POO, Flet y scraping.
+  await expect(page.locator(".route-card h3")).toHaveText([
+    /Python desde cero/,
+    /Programación orientada a objetos/,
+    /Apps con Flet/,
+    /Web scraping con Python/,
+  ]);
   await expect(page.locator("#panel-actions .cta--primary")).toContainText(
     "empezar: Tu primer programa",
   );
