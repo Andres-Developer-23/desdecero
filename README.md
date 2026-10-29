@@ -92,6 +92,8 @@ Dependabot propone una vez al mes un pull request con las dependencias de npm y 
 
 ```
 content/                      contenido del curso: rutas, módulos y lecciones
+  web/
+    libreria.example/         sitios de práctica para el web scraping (HTML, CSS y robots.txt)
   01-python/
     route.json                título, descripción, nivel y motor de la ruta
     00-primeros-pasos/
@@ -106,7 +108,7 @@ src/
   index.html                  estructura de la página
   styles/                     estilos: variables, componentes, layout y vistas
   js/                         código de la aplicación (ver abajo)
-  python/                     módulos de Python que corren en el navegador: el simulador de Flet
+  python/                     módulos de Python que corren en el navegador: simuladores de Flet y de scraping
 scripts/
   build.js                    valida el contenido y genera dist/index.html
   lib/load-course.js          lee y valida content/
@@ -114,22 +116,23 @@ scripts/
 
 ### Código de la aplicación (`src/js/`)
 
-| Carpeta / archivo | Responsabilidad                                                                          |
-| ----------------- | ---------------------------------------------------------------------------------------- |
-| `main.js`         | Punto de entrada: crea el curso, el progreso y las vistas, y los conecta.                |
-| `config.js`       | Versiones, URLs de CDN, límites de tiempo y claves de guardado.                          |
-| `router.js`       | Cambia de vista según el hash de la URL.                                                 |
-| `hash-routes.js`  | Traduce el hash a una vista: `#panel`, `#rutas`, `#ruta-<id>`, `#l-<id>`, `#playground`. |
-| `lib/`            | Utilidades sin estado: DOM, fechas, eventos, `localStorage` y carga de scripts.          |
-| `course/`         | Modelo del curso: rutas, módulos, numeración y navegación entre lecciones.               |
-| `progress/`       | Lecciones completadas, racha y sincronización opcional con la cuenta.                    |
-| `python/`         | Carga de Skulpt y CodeMirror, ejecución de Python y explicación de errores.              |
-| `exercises/`      | Comprobación automática de los ejercicios.                                               |
-| `flet/`           | Simulador de Flet: sesiones y eventos, dibujo de la vista previa y colores de Material.  |
-| `ui/`             | Piezas de interfaz: terminal, editor, Markdown, ejemplos y cabecera.                     |
-| `views/`          | Las pantallas: panel, ruta, lección y playground.                                        |
+| Carpeta / archivo | Responsabilidad                                                                           |
+| ----------------- | ----------------------------------------------------------------------------------------- |
+| `main.js`         | Punto de entrada: crea el curso, el progreso y las vistas, y los conecta.                 |
+| `config.js`       | Versiones, URLs de CDN, límites de tiempo y claves de guardado.                           |
+| `router.js`       | Cambia de vista según el hash de la URL.                                                  |
+| `hash-routes.js`  | Traduce el hash a una vista: `#panel`, `#rutas`, `#ruta-<id>`, `#l-<id>`, `#playground`.  |
+| `lib/`            | Utilidades sin estado: DOM, fechas, eventos, `localStorage` y carga de scripts.           |
+| `course/`         | Modelo del curso: rutas, módulos, numeración y navegación entre lecciones.                |
+| `progress/`       | Lecciones completadas, racha y sincronización opcional con la cuenta.                     |
+| `python/`         | Carga de Skulpt y CodeMirror, ejecución de Python y explicación de errores.               |
+| `exercises/`      | Comprobación automática de los ejercicios.                                                |
+| `flet/`           | Simulador de Flet: sesiones y eventos, dibujo de la vista previa y colores de Material.   |
+| `scraping/`       | Simulador de scraping: web de prácticas, puente con Python y navegador de la pestaña web. |
+| `ui/`             | Piezas de interfaz: terminal, editor, Markdown, ejemplos y cabecera.                      |
+| `views/`          | Las pantallas: panel, ruta, lección y playground.                                         |
 
-Las dependencias van en un solo sentido: `views` usa `ui`, `exercises`, `flet`, `python`, `progress` y `course`, y todos ellos pueden usar `lib` y `config`. Ningún módulo de `python/` o `progress/` toca el DOM.
+Las dependencias van en un solo sentido: `views` usa `ui`, `exercises`, `flet`, `scraping`, `python`, `progress` y `course`, y todos ellos pueden usar `lib` y `config`. Ningún módulo de `python/` o `progress/` toca el DOM.
 
 ### Simulador de Flet
 
@@ -140,6 +143,16 @@ Las dependencias van en un solo sentido: `views` usa `ui`, `exercises`, `flet`, 
 3. `src/js/flet/renderer.js` lo dibuja con aspecto de Material 3 y devuelve los eventos (clic, escribir, Enter, marcar) a Python.
 
 Lo que no está implementado da un error claro en español, y los nombres que Flet 1.0 eliminó (`ft.app`, `ft.ElevatedButton`, `ft.padding.all`, `ft.alignment.center`…) explican cómo se escriben ahora. Fuera del alcance del simulador quedan la navegación entre vistas, los diálogos, las imágenes y el empaquetado.
+
+### Simulador de web scraping
+
+Desde la página no se puede descargar una web real: el navegador bloquea las peticiones a otros dominios. Los ejercicios de scraping usan una **web de prácticas**, los archivos de `content/web/`, que se sirven como si fueran sitios de verdad (`content/web/libreria.example/catalogo/pagina-2.html` responde en `https://libreria.example/catalogo/pagina-2.html`). Los sitios usan el dominio reservado `.example`, que nunca apunta a una web real.
+
+- `src/python/requests/` tiene la API de requests para peticiones GET (`get`, `Session`, `Response`, `raise_for_status()` y sus excepciones). Responde 404 a las páginas que no existen, redirige `http://` y las carpetas sin barra final, y explica en español que no puede salir de la web de prácticas.
+- `src/python/bs4/` es BeautifulSoup 4: el HTML lo analiza el `DOMParser` del navegador y Python recorre el árbol con `find`, `find_all`, `get_text`, atributos, padres y hermanos. `select` y `select_one` usan `querySelectorAll`, así que admiten cualquier selector CSS.
+- También están `urllib.parse`, `urllib.robotparser` y `csv`, que Skulpt no trae, y un `open()` con un disco simulado que empieza vacío en cada ejecución. Al terminar, la consola enseña los archivos guardados.
+- Al importar requests, `time.sleep()` avanza un reloj simulado en lugar de esperar. Cada petición queda anotada con su hora, sus cabeceras y su estado.
+- `src/js/scraping/web-viewer.js` es el navegador de la pestaña **web** de las lecciones (y del playground). Lista las peticiones del último programa y enseña cada página tal como se ve o como su código HTML.
 
 ## Escribir lecciones
 
@@ -179,7 +192,9 @@ Enunciado del ejercicio.
 Una pista corta.
 ```
 
-Se admite un Markdown reducido: párrafos, listas con `- ` o `1. `, `**negrita**`, `*cursiva*`, `` `código` `` y bloques de código. Un bloque ` ```py ` se muestra con botón de ejecutar; ` ```txt ` se muestra como texto fijo, por ejemplo la salida esperada.
+Se admite un Markdown reducido: párrafos, listas con `- ` o `1. `, `**negrita**`, `*cursiva*`, `` `código` ``, `[enlaces](https://...)` y bloques de código. Un bloque ` ```py ` se muestra con botón de ejecutar; ` ```txt ` se muestra como texto fijo, por ejemplo la salida esperada. Los enlaces a la web de prácticas (`https://libreria.example/`) se abren en la pestaña web de la lección.
+
+En las rutas de scraping, la clave opcional `web` de los metadatos indica la página de prácticas que se abre al entrar en la lección (`web: https://libreria.example/`).
 
 ### `checks.json`
 
@@ -229,6 +244,17 @@ assert "Hola, Ana" in texts(), "Al pulsar Saludar debería aparecer «Hola, Ana�
 | `submit(campo)`             | Pulsa Enter en un `TextField` (lanza `on_submit`).                           |
 | `toggle(casilla)`           | Marca o desmarca un `Checkbox` o un `Switch`.                                |
 
+En las rutas de scraping, `test.py` usa el módulo `websim` para revisar qué hizo el programa:
+
+| Función                       | Qué devuelve                                                                       |
+| ----------------------------- | ---------------------------------------------------------------------------------- |
+| `peticiones()`                | Las peticiones, en orden: `{"url", "estado", "segundo", "cabeceras"}`.             |
+| `urls_pedidas()`              | Solo las URL, en orden y con repeticiones.                                         |
+| `pausas()`                    | Segundos entre una petición y la siguiente (según el reloj simulado).              |
+| `cabecera(peticion, nombre)`  | El valor de una cabecera de una petición, sin distinguir mayúsculas.               |
+| `archivos()` / `leer(nombre)` | Los archivos que guardó el programa / el texto de uno (o un error que lo explica). |
+| `filas_csv(nombre)`           | Las filas de un CSV guardado, como diccionarios.                                   |
+
 ## Contribuir
 
 Cada cambio empieza con un issue, se hace en su propia rama y entra en `main` con un pull request que pasa la CI. Los commits se escriben en español y las versiones siguen el versionado semántico. Todo el proceso está en [CONTRIBUTING.md](CONTRIBUTING.md) y la lista de cambios por versión en [CHANGELOG.md](CHANGELOG.md).
@@ -241,4 +267,4 @@ Cada cambio empieza con un issue, se hace en su propia rama y entra en `main` co
 - [esbuild](https://esbuild.github.io) empaqueta el JavaScript y los estilos.
 - Tipografías de Google Fonts: Martian Mono, IBM Plex Sans y JetBrains Mono.
 
-Skulpt implementa la mayor parte de Python 3, pero no todo. Por ejemplo, no admite `match` / `case`, `nonlocal` ni `eval`, y no trae los módulos `json`, `typing` ni `dataclasses` (los dos últimos los aporta el simulador de Flet en una versión mínima).
+Skulpt implementa la mayor parte de Python 3, pero no todo. Por ejemplo, no admite `match` / `case`, `nonlocal` ni `eval`, y no trae los módulos `json`, `typing`, `dataclasses`, `csv` ni `urllib.parse`. Los simuladores aportan versiones de `typing` y `dataclasses` (Flet) y de `csv`, `urllib.parse` y `urllib.robotparser` (scraping).
