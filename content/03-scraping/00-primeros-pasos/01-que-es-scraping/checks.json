@@ -1,0 +1,13 @@
+{
+  "requires": [
+    {
+      "pattern": "requests\\.get\\(",
+      "message": "Descarga la página con requests.get()."
+    }
+  ],
+  "runs": [
+    {
+      "output": "200\ntext/html; charset=utf-8\n3330"
+    }
+  ]
+}

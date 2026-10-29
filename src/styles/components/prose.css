@@ -28,6 +28,23 @@
   font-weight: 600;
 }
 
+.prose h3 {
+  margin: 30px 0 12px;
+  color: var(--color-text-strong);
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.prose a {
+  color: var(--color-accent);
+  text-underline-offset: 3px;
+}
+
+.prose a:hover {
+  color: var(--color-accent-hover);
+}
+
 .prose em {
   color: var(--color-text);
 }

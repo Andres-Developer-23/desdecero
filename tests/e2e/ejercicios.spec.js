@@ -1,7 +1,8 @@
 /*
  * Cada ejercicio del curso tiene que poder resolverse:
  * la solución supera la comprobación y el código de partida no.
- * Además, los ejemplos de Flet de la teoría tienen que arrancar sin errores.
+ * Además, los ejemplos de la teoría de las rutas con simulador (Flet y
+ * scraping) tienen que ejecutarse sin errores.
  */
 
 import path from "node:path";
@@ -13,16 +14,22 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..")
 const course = loadCourse(path.join(ROOT, "content"));
 const lessons = course.routes.flatMap((route) => route.modules.flatMap((module) => module.lessons));
 
-/** Bloques ```py de la teoría que crean una app de Flet. */
-const fletExamples = lessons.flatMap((lesson) =>
-  [...lesson.theory.matchAll(/```py\n([\s\S]*?)```/g)]
-    .map((match) => match[1])
-    .filter((code) => /^\s*import flet\b/m.test(code))
-    .map((code, index) => ({ name: `${lesson.id} · ejemplo ${index + 1}`, code })),
-);
-
-/** Comprobación mínima de un ejemplo: se ejecuta sin errores y llega a ft.run(main). */
-const EXAMPLE_CHECK = { checks: {}, test: "from fletsim import *\npage()" };
+/**
+ * Bloques ```py de la teoría de las rutas con simulador. Los de Flet,
+ * además de ejecutarse sin errores, tienen que llegar a ft.run(main).
+ */
+const simulatorExamples = course.routes
+  .filter((route) => route.runtime !== "python")
+  .flatMap((route) => route.modules.flatMap((module) => module.lessons))
+  .flatMap((lesson) =>
+    [...lesson.theory.matchAll(/```py\n([\s\S]*?)```/g)]
+      .map((match) => match[1])
+      .map((code, index) => ({
+        name: `${lesson.id} · ejemplo ${index + 1}`,
+        code,
+        test: /^\s*import flet\b/m.test(code) ? "from fletsim import *\npage()" : "",
+      })),
+  );
 
 /** Ejecuta el comprobador dentro de la página con el código indicado. */
 async function check(page, lessonId, field) {
@@ -38,16 +45,16 @@ async function check(page, lessonId, field) {
   );
 }
 
-/** Ejecuta un ejemplo de Flet con el simulador y devuelve el resultado. */
-async function runExample(page, code) {
+/** Ejecuta un ejemplo con su comprobación mínima y devuelve el resultado. */
+async function runExample(page, { code, test }) {
   return page.evaluate(
-    async ({ code, lesson }) => {
+    async ({ code, test }) => {
       const { checkExercise, createTerminal } = window.__desdecero;
       const output = document.createElement("pre");
-      const result = await checkExercise(lesson, code, createTerminal(output));
+      const result = await checkExercise({ checks: {}, test }, code, createTerminal(output));
       return { ...result, log: output.textContent };
     },
-    { code, lesson: EXAMPLE_CHECK },
+    { code, test },
   );
 }
 
@@ -74,9 +81,9 @@ test.describe("ejercicios", () => {
     });
   }
 
-  for (const example of fletExamples) {
-    test(`${example.name} arranca en el simulador`, async () => {
-      const result = await runExample(page, example.code);
+  for (const example of simulatorExamples) {
+    test(`${example.name} se ejecuta en el simulador`, async () => {
+      const result = await runExample(page, example);
       expect(result.passed, `el ejemplo falla:\n${result.log}`).toBe(true);
     });
   }

@@ -4,7 +4,7 @@
 
 **Pruébalo en [andres-developer-23.github.io/desdecero](https://andres-developer-23.github.io/desdecero/)**
 
-Rutas interactivas para aprender **Python desde cero, en español**, y después crear apps con interfaz gráfica con **Flet**. Cada ruta se divide en módulos y lecciones cortas: cada lección explica una idea, trae ejemplos que se ejecutan con un clic y termina con un ejercicio que se corrige solo.
+Rutas interactivas para aprender **Python desde cero, en español**, y después crear apps con interfaz gráfica con **Flet** y extraer datos de la web con **web scraping**. Cada ruta se divide en módulos y lecciones cortas: cada lección explica una idea, trae ejemplos que se ejecutan con un clic y termina con un ejercicio que se corrige solo.
 
 Todo funciona en el navegador. No hace falta instalar Python ni crear una cuenta.
 
@@ -43,6 +43,18 @@ El progreso y el código que escribes se guardan en el navegador.
 | 03 · Eventos y estado | Clics y actualización automática · Leer lo que escribe el usuario · Añadir y quitar controles |
 | 04 · Proyecto final   | Tus propios controles · Proyecto: lista de tareas                                             |
 
+### Ruta «Web scraping con Python»
+
+5 módulos y 12 lecciones (unas 4 horas) para extraer datos de páginas web con requests y BeautifulSoup. Conviene haber terminado antes la ruta de Python. Los ejercicios usan una web de prácticas con cuatro sitios inventados (una librería, un refranero, un pronóstico del clima y un periódico). Cada lección tiene una pestaña **web** para ver sus páginas y su HTML, y los ejercicios comprueban también cómo se hizo: qué páginas se pidieron, con qué cabeceras y pausas, y qué archivos se guardaron.
+
+| Módulo                 | Lecciones                                                           |
+| ---------------------- | ------------------------------------------------------------------- |
+| 00 · Primeros pasos    | Qué es el web scraping · HTML para scrapers y BeautifulSoup         |
+| 01 · Buscar en el HTML | Buscar con `find` y `find_all` · Texto y atributos · Selectores CSS |
+| 02 · Datos limpios     | De texto a números · Tablas HTML                                    |
+| 03 · Recorrer un sitio | Seguir enlaces · Paginación · Scraping responsable                  |
+| 04 · Proyecto final    | Guardar los datos en un CSV · Proyecto: el catálogo completo        |
+
 ## Desarrollo local
 
 Necesitas [Node.js](https://nodejs.org) 20 o superior.
@@ -69,7 +81,7 @@ npm run check                     # formato + lint + todas las pruebas
 | `npm run test:e2e`  | Genera la página y la prueba en Chromium con Playwright, en escritorio y en móvil.          |
 | `npm test`          | Las dos anteriores.                                                                         |
 
-Las pruebas en navegador comprueban que **cada ejercicio se puede resolver** (la solución pasa y el código de partida no), que cada ejemplo de Flet de la teoría arranca en el simulador y los recorridos principales: ejecutar con `input()`, completar una lección, errores marcados en el editor, ejemplos, botón de detener, la vista previa de Flet y que ninguna página se desborde en móvil. Skulpt y CodeMirror se sirven desde `node_modules`, así que no dependen de la red.
+Las pruebas en navegador comprueban que **cada ejercicio se puede resolver** (la solución pasa y el código de partida no), que cada ejemplo de las rutas de Flet y de scraping se ejecuta en su simulador y los recorridos principales: ejecutar con `input()`, completar una lección, errores marcados en el editor, ejemplos, botón de detener, la vista previa de Flet y que ninguna página se desborde en móvil. Skulpt y CodeMirror se sirven desde `node_modules`, así que no dependen de la red.
 
 ```
 tests/
@@ -192,7 +204,7 @@ Enunciado del ejercicio.
 Una pista corta.
 ```
 
-Se admite un Markdown reducido: párrafos, listas con `- ` o `1. `, `**negrita**`, `*cursiva*`, `` `código` ``, `[enlaces](https://...)` y bloques de código. Un bloque ` ```py ` se muestra con botón de ejecutar; ` ```txt ` se muestra como texto fijo, por ejemplo la salida esperada. Los enlaces a la web de prácticas (`https://libreria.example/`) se abren en la pestaña web de la lección.
+Se admite un Markdown reducido: párrafos, subtítulos con `### `, listas con `- ` o `1. ` (sin anidar), `**negrita**`, `*cursiva*`, `` `código` ``, `[enlaces](https://...)` y bloques de código. Un bloque ` ```py ` se muestra con botón de ejecutar; ` ```txt ` se muestra como texto fijo, por ejemplo la salida esperada. Los enlaces a la web de prácticas (`https://libreria.example/`) se abren en la pestaña web de la lección.
 
 En las rutas de scraping, la clave opcional `web` de los metadatos indica la página de prácticas que se abre al entrar en la lección (`web: https://libreria.example/`).
 

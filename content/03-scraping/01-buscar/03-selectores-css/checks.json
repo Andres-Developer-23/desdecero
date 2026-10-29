@@ -1,0 +1,13 @@
+{
+  "requires": [
+    {
+      "pattern": "\\.select(_one)?\\(",
+      "message": "Usa selectores CSS con select() o select_one()."
+    }
+  ],
+  "runs": [
+    {
+      "output": "El faro de la niebla | $ 45.900 | En stock\nPython para curiosos | $ 68.500 | En stock\nCartas desde el páramo | $ 39.900 | Agotado\nLa aritmética de las nubes | $ 52.000 | En stock\nVersos para un lunes | $ 28.500 | En stock\nBreve historia del café en los Andes | $ 61.200 | En stock"
+    }
+  ]
+}
