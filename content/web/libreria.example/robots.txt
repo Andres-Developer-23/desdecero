@@ -1,0 +1,5 @@
+# Robots de la Librería El Marcapáginas
+User-agent: *
+Disallow: /carrito/
+Disallow: /admin/
+Crawl-delay: 1

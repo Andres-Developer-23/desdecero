@@ -107,8 +107,10 @@ ft.run(main)
 `,
   );
   const preview = page.locator("#playground-preview");
+  const rightText = preview.locator(".flet-text", { hasText: "derecha" });
+  await expect(rightText).toBeVisible();
   const body = await preview.locator(".flet-page").boundingBox();
-  const right = await preview.locator(".flet-text", { hasText: "derecha" }).boundingBox();
+  const right = await rightText.boundingBox();
   expect(body.x + body.width - (right.x + right.width)).toBeLessThan(40);
 });
 

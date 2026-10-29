@@ -6,6 +6,9 @@ import { sendFletEvent, usesFlet } from "../flet/runtime.js";
 import { $ } from "../lib/dom.js";
 import { storage } from "../lib/storage.js";
 import { stopPython } from "../python/engine.js";
+import { usesScraping } from "../scraping/detect.js";
+import { onScrapingRun, virtualWeb } from "../scraping/runtime.js";
+import { createWebViewer } from "../scraping/web-viewer.js";
 import { createEditor, needsNewEditor, waitForEditorLibrary } from "../ui/editor.js";
 import { runInTerminal } from "../ui/run-in-terminal.js";
 import { createTerminal } from "../ui/terminal.js";
@@ -38,6 +41,9 @@ export function createPlaygroundView({ progress }) {
   const terminal = createTerminal($("#playground-output"));
   const results = $("#playground-results");
   const preview = createFletRenderer($("#playground-preview"), { onEvent: sendFletEvent });
+  const webHost = $("#playground-web");
+  const webViewer = createWebViewer(webHost, { web: virtualWeb });
+  let showsWeb = false;
   let editor = null;
   let saveTimer = null;
   let showing = false;
@@ -87,10 +93,13 @@ export function createPlaygroundView({ progress }) {
   function run() {
     if (!editor) return;
     const code = editor.getValue();
-    // La vista previa solo aparece cuando el programa usa Flet.
+    // La vista previa aparece cuando el programa usa Flet, y el navegador cuando pide páginas.
     const flet = usesFlet(code);
-    results.classList.toggle("pane--with-preview", flet);
+    showsWeb = !flet && usesScraping(code);
+    results.classList.toggle("pane--with-preview", flet || showsWeb);
     if (!flet) preview.clear();
+    if (showsWeb) webViewer.reset(null);
+    webHost.hidden = !showsWeb;
     runInTerminal(code, terminal, {
       fileName: "playground.py",
       timeLimitMs: TIME_LIMIT_MS.playground,
@@ -100,6 +109,10 @@ export function createPlaygroundView({ progress }) {
       onStart: () => progress.recordActivity(),
     });
   }
+
+  onScrapingRun((lastRun) => {
+    if (showing && showsWeb) webViewer.showRun(lastRun);
+  });
 
   const actions = {
     run,

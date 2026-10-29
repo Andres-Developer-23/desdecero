@@ -20,6 +20,7 @@
 @import "./components/editor.css";
 @import "./components/tabs.css";
 @import "./components/flet.css";
+@import "./components/web-viewer.css";
 
 @import "./layout/header.css";
 @import "./layout/footer.css";

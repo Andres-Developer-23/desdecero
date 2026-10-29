@@ -9,6 +9,8 @@ import { $, escapeHtml } from "../lib/dom.js";
 import { formatDayKey, pad2 } from "../lib/dates.js";
 import { storage } from "../lib/storage.js";
 import { isRunning, stopPython } from "../python/engine.js";
+import { onScrapingRun, virtualWeb } from "../scraping/runtime.js";
+import { createWebViewer } from "../scraping/web-viewer.js";
 import { createEditor, needsNewEditor, waitForEditorLibrary } from "../ui/editor.js";
 import { highlightExamples } from "../ui/examples.js";
 import { renderInline, renderMarkdown } from "../ui/markdown.js";
@@ -45,6 +47,7 @@ export function createLessonView({ course, progress }) {
     outputTitle: $("#exercise-output-title"),
     tabs: $("#exercise-tabs"),
     preview: $("#exercise-preview"),
+    web: $("#exercise-web"),
     workbench: $(".workbench"),
     success: $("#exercise-success"),
     successLink: $("#exercise-success-link"),
@@ -55,9 +58,10 @@ export function createLessonView({ course, progress }) {
     onWrite: () => tabs.markUnread("output"),
   });
   const preview = createFletRenderer(elements.preview, { onEvent: sendFletEvent });
+  const webViewer = createWebViewer(elements.web, { web: virtualWeb });
   const tabs = createTabs(
     elements.tabs,
-    { preview: elements.preview, output: elements.output },
+    { preview: elements.preview, web: elements.web, output: elements.output },
     { initial: "output" },
   );
   const drafts = createDraftStore();
@@ -131,11 +135,16 @@ export function createLessonView({ course, progress }) {
       : "o supera el ejercicio y se marcará sola";
   }
 
-  /** Las lecciones de Flet tienen vista previa y pestañas; las de Python, solo la salida. */
+  /**
+   * Las lecciones de Flet tienen la vista previa de la app; las de scraping,
+   * el navegador de la web de prácticas; las de Python, solo la salida.
+   */
   const isFletLesson = () => lesson.route.runtime === "flet";
+  const isScrapingLesson = () => lesson?.route.runtime === "scraping";
 
   function resetExercisePanel() {
     const flet = isFletLesson();
+    const scraping = isScrapingLesson();
     elements.hint.hidden = true;
     elements.success.hidden = true;
     disarmSolutionButton();
@@ -146,20 +155,41 @@ export function createLessonView({ course, progress }) {
         : "# pulsa ▶ ejecutar (Ctrl + Enter) para ver aquí la salida,",
       "system",
     );
+    if (scraping) terminal.line("# en «web», las páginas que pida tu programa,", "system");
     terminal.line("# y ✓ comprobar cuando creas que el ejercicio está resuelto.", "system");
 
     // Se elige la pestaña después de escribir, para no marcar "salida" como pendiente.
     elements.workbench.classList.toggle("workbench--flet", flet);
-    elements.tabs.hidden = !flet;
-    elements.outputTitle.hidden = flet;
+    elements.workbench.classList.toggle("workbench--web", scraping);
+    elements.tabs.hidden = !flet && !scraping;
+    elements.outputTitle.hidden = flet || scraping;
+    tabs.show(flet ? ["preview", "output"] : scraping ? ["web", "output"] : ["output"]);
     if (flet) {
       preview.showMessage("▶ ejecuta el código para ver tu app aquí");
       tabs.select("preview");
     } else {
       preview.clear();
-      tabs.select("output");
+      if (scraping) webViewer.reset(lesson.web);
+      tabs.select(scraping && lesson.web ? "web" : "output");
     }
   }
+
+  /** Al terminar un programa, el navegador enseña las páginas que pidió. */
+  onScrapingRun((lastRun) => {
+    if (!isScrapingLesson() || root.hidden) return;
+    webViewer.showRun(lastRun);
+    if (lastRun.requests.length) tabs.markUnread("web");
+  });
+
+  /** Los enlaces de la teoría a los sitios de práctica se abren en la pestaña «web». */
+  elements.body.addEventListener("click", (event) => {
+    const link = event.target.closest("a[data-web-link]");
+    if (!link || !isScrapingLesson()) return;
+    event.preventDefault();
+    tabs.select("web");
+    webViewer.open(link.href);
+    elements.web.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  });
 
   /* ---- Acciones ---- */
 
@@ -167,6 +197,7 @@ export function createLessonView({ course, progress }) {
     if (!editor) return;
     const flet = isFletLesson();
     if (flet) tabs.select("preview");
+    if (isScrapingLesson()) tabs.select("output");
     runInTerminal(editor.getValue(), terminal, {
       fileName: "ejercicio.py",
       timeLimitMs: TIME_LIMIT_MS.lesson,

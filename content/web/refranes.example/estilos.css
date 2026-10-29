@@ -1,0 +1,14 @@
+* { box-sizing: border-box; }
+body { margin: 0; background: #f3f6f4; color: #1f2d27; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; line-height: 1.5; }
+.cabecera { padding: 28px 24px 12px; text-align: center; }
+.cabecera h1 { margin: 0; font-family: Georgia, serif; font-size: 34px; }
+.cabecera p { margin: 4px 0 0; color: #5b6e65; }
+main { max-width: 720px; margin: 0 auto; padding: 12px 24px 24px; }
+.refran { margin: 0 0 14px; padding: 16px 20px; border-left: 4px solid #2e8b6a; border-radius: 4px; background: #fff; }
+.refran .texto { margin: 0; font-family: Georgia, serif; font-size: 20px; }
+.refran .significado { margin: 6px 0 8px; color: #5b6e65; }
+.temas { display: flex; flex-wrap: wrap; gap: 6px; padding: 0; margin: 0; list-style: none; }
+.tema { display: inline-block; padding: 1px 10px; border-radius: 999px; background: #dff1e8; color: #1d6b4f; font-size: 13px; }
+.paginacion { display: flex; justify-content: space-between; padding: 0; margin: 20px 0 0; list-style: none; }
+.paginacion a { color: #1d6b4f; font-weight: 600; }
+.pie { padding: 20px; color: #5b6e65; text-align: center; font-size: 13px; }

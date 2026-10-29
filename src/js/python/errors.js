@@ -21,6 +21,11 @@ export const ERROR_EXPLANATIONS = {
     "El programa tardó demasiado y se detuvo. ¿Hay un bucle while cuya condición nunca deja de cumplirse?",
   ImportError: "Ese módulo no está disponible aquí.",
   RecursionError: "Una función se llama a sí misma sin parar.",
+  MissingSchema: "La URL tiene que empezar por https:// (o http://).",
+  HTTPError:
+    "El servidor respondió con un código de error: 404 significa que la página no existe y 403 que no tienes permiso para verla. Revisa la URL.",
+  FileNotFoundError:
+    "Ese archivo no existe. En el simulador, cada ejecución empieza con el disco vacío: el programa tiene que guardarlo antes de leerlo.",
 };
 
 /** Mensajes de Skulpt que no aportan nada al alumno. */
@@ -57,6 +62,12 @@ const SELF_EXPLANATORY =
 /** Explicación para principiantes de un error, o null si el mensaje ya basta. */
 export function explainError(error) {
   if (SELF_EXPLANATORY.test(error.message)) return null;
+  if (/'NoneType' object has no attribute/.test(error.message)) {
+    return "Intentas usar algo que vale None. Si viene de find() o select_one(), es que no encontraron nada: revisa en el HTML (pestaña web) que la etiqueta y la clase existan, o comprueba que el resultado no sea None antes de usarlo.";
+  }
+  if (/'ResultSet' object has no attribute/.test(error.message)) {
+    return "find_all() y select() devuelven una lista de etiquetas, no una sola. Recórrela con un for, o usa find() o select_one() si solo quieres la primera.";
+  }
   if (/module 'flet' has no attribute/.test(error.message)) {
     return "Ese nombre no existe en Flet 1.0 o el simulador del curso no lo incluye. Revisa las mayúsculas: los controles empiezan por mayúscula (ft.Text, ft.Button) y las constantes van en mayúsculas (ft.Colors.BLUE).";
   }

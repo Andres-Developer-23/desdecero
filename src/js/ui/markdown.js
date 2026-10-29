@@ -1,7 +1,10 @@
 /*
  * Markdown reducido para el texto de las lecciones:
- *   párrafos, listas con "- " o "1. ", **negrita**, *cursiva*, `código`
- *   y bloques ``` (```py se muestra como ejemplo ejecutable).
+ *   párrafos, listas con "- " o "1. ", **negrita**, *cursiva*, `código`,
+ *   [enlaces](https://...) y bloques ``` (```py se muestra como ejemplo ejecutable).
+ *
+ * Los enlaces a los sitios de práctica (*.example) llevan data-web-link: la
+ * lección los abre en su pestaña «web» en lugar de salir a internet.
  */
 
 import { usesFlet } from "../flet/detect.js";
@@ -54,7 +57,7 @@ export function renderMarkdown(source, { runnableCode = true } = {}) {
   return html.join("\n");
 }
 
-/** Formato dentro de una línea: `código`, **negrita** y *cursiva*. */
+/** Formato dentro de una línea: `código`, **negrita**, *cursiva* y [enlaces](https://...). */
 export function renderInline(text) {
   return text
     .split("`")
@@ -62,10 +65,19 @@ export function renderInline(text) {
       index % 2
         ? `<code>${escapeHtml(part)}</code>`
         : escapeHtml(part)
+            .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, linkHtml)
             .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
             .replace(/\*(?=\S)(.+?)(?<=\S)\*/g, "<em>$1</em>"),
     )
     .join("");
+}
+
+/** Enlace de la teoría (el texto y la URL ya llegan escapados). */
+function linkHtml(match, label, url) {
+  const host = url.replace(/^https?:\/\//, "").split(/[/?#]/)[0];
+  return host.endsWith(".example")
+    ? `<a href="${url}" data-web-link>${label}</a>`
+    : `<a href="${url}" target="_blank" rel="noopener noreferrer">${label}</a>`;
 }
 
 function outputBlockHtml(text) {
