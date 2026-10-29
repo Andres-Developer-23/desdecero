@@ -1,6 +1,6 @@
 /*
- * Navegador de la web de prácticas (pestaña «web» de las lecciones de
- * scraping). Enseña las páginas como se verían en un navegador o como su
+ * Navegador de la web de prácticas (pestaña «web» de las lecciones del
+ * simulador web). Enseña las páginas como se verían en un navegador o como su
  * código HTML, que es lo que recibe requests, y lista las peticiones que
  * hizo el último programa.
  *
@@ -14,7 +14,7 @@ const MAX_LISTED_REQUESTS = 60;
 
 /**
  * @param {HTMLElement} host
- * @param {{web: () => ReturnType<import("./web.js").createVirtualWeb>}} options
+ * @param {{web: () => ReturnType<import("./virtual-web.js").createVirtualWeb>}} options
  */
 export function createWebViewer(host, { web }) {
   host.classList.add("web-viewer");

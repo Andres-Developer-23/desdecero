@@ -7,7 +7,7 @@
 import { beginFletSession, usesFlet } from "../flet/runtime.js";
 import { isPythonEngineReady } from "../python/libraries.js";
 import { isRunning, runPython } from "../python/engine.js";
-import { lastRun } from "../scraping/runtime.js";
+import { lastRun } from "../web/runtime.js";
 
 /** Líneas de cada archivo guardado que se enseñan en la consola. */
 const FILE_PREVIEW_LINES = 8;

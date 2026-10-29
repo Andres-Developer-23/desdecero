@@ -140,23 +140,23 @@ scripts/
 
 ### Código de la aplicación (`src/js/`)
 
-| Carpeta / archivo | Responsabilidad                                                                           |
-| ----------------- | ----------------------------------------------------------------------------------------- |
-| `main.js`         | Punto de entrada: crea el curso, el progreso y las vistas, y los conecta.                 |
-| `config.js`       | Versiones, URLs de CDN, límites de tiempo y claves de guardado.                           |
-| `router.js`       | Cambia de vista según el hash de la URL.                                                  |
-| `hash-routes.js`  | Traduce el hash a una vista: `#panel`, `#rutas`, `#ruta-<id>`, `#l-<id>`, `#playground`.  |
-| `lib/`            | Utilidades sin estado: DOM, fechas, eventos, `localStorage` y carga de scripts.           |
-| `course/`         | Modelo del curso: rutas, módulos, numeración y navegación entre lecciones.                |
-| `progress/`       | Lecciones completadas, racha y sincronización opcional con la cuenta.                     |
-| `python/`         | Carga de Skulpt y CodeMirror, ejecución de Python y explicación de errores.               |
-| `exercises/`      | Comprobación automática de los ejercicios.                                                |
-| `flet/`           | Simulador de Flet: sesiones y eventos, dibujo de la vista previa y colores de Material.   |
-| `scraping/`       | Simulador de scraping: web de prácticas, puente con Python y navegador de la pestaña web. |
-| `ui/`             | Piezas de interfaz: terminal, editor, Markdown, ejemplos y cabecera.                      |
-| `views/`          | Las pantallas: panel, ruta, lección y playground.                                         |
+| Carpeta / archivo | Responsabilidad                                                                          |
+| ----------------- | ---------------------------------------------------------------------------------------- |
+| `main.js`         | Punto de entrada: crea el curso, el progreso y las vistas, y los conecta.                |
+| `config.js`       | Versiones, URLs de CDN, límites de tiempo y claves de guardado.                          |
+| `router.js`       | Cambia de vista según el hash de la URL.                                                 |
+| `hash-routes.js`  | Traduce el hash a una vista: `#panel`, `#rutas`, `#ruta-<id>`, `#l-<id>`, `#playground`. |
+| `lib/`            | Utilidades sin estado: DOM, fechas, eventos, `localStorage` y carga de scripts.          |
+| `course/`         | Modelo del curso: rutas, módulos, numeración y navegación entre lecciones.               |
+| `progress/`       | Lecciones completadas, racha y sincronización opcional con la cuenta.                    |
+| `python/`         | Carga de Skulpt y CodeMirror, ejecución de Python y explicación de errores.              |
+| `exercises/`      | Comprobación automática de los ejercicios.                                               |
+| `flet/`           | Simulador de Flet: sesiones y eventos, dibujo de la vista previa y colores de Material.  |
+| `web/`            | Simulador web: web de prácticas, APIs, puente con Python y navegador de la pestaña web.  |
+| `ui/`             | Piezas de interfaz: terminal, editor, Markdown, ejemplos y cabecera.                     |
+| `views/`          | Las pantallas: panel, ruta, lección y playground.                                        |
 
-Las dependencias van en un solo sentido: `views` usa `ui`, `exercises`, `flet`, `scraping`, `python`, `progress` y `course`, y todos ellos pueden usar `lib` y `config`. Ningún módulo de `python/` o `progress/` toca el DOM.
+Las dependencias van en un solo sentido: `views` usa `ui`, `exercises`, `flet`, `web`, `python`, `progress` y `course`, y todos ellos pueden usar `lib` y `config`. Ningún módulo de `python/` o `progress/` toca el DOM.
 
 ### Simulador de Flet
 
@@ -176,7 +176,7 @@ Desde la página no se puede descargar una web real: el navegador bloquea las pe
 - `src/python/bs4/` es BeautifulSoup 4: el HTML lo analiza el `DOMParser` del navegador y Python recorre el árbol con `find`, `find_all`, `get_text`, atributos, padres y hermanos. `select` y `select_one` usan `querySelectorAll`, así que admiten cualquier selector CSS.
 - También están `urllib.parse`, `urllib.robotparser` y `csv`, que Skulpt no trae, y un `open()` con un disco simulado que empieza vacío en cada ejecución. Al terminar, la consola enseña los archivos guardados.
 - Al importar requests, `time.sleep()` avanza un reloj simulado en lugar de esperar. Cada petición queda anotada con su hora, sus cabeceras y su estado.
-- `src/js/scraping/web-viewer.js` es el navegador de la pestaña **web** de las lecciones (y del playground). Lista las peticiones del último programa y enseña cada página tal como se ve o como su código HTML.
+- `src/js/web/web-viewer.js` es el navegador de la pestaña **web** de las lecciones (y del playground). Lista las peticiones del último programa y enseña cada página tal como se ve o como su código HTML.
 
 ## Escribir lecciones
 

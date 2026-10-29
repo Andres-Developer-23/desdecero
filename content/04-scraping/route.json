@@ -2,6 +2,6 @@
   "title": "Web scraping con Python",
   "description": "Extrae datos de páginas web con requests y BeautifulSoup: busca en el HTML, limpia los datos, recorre sitios sin molestar al servidor y guarda el resultado en un CSV.",
   "level": "Intermedio",
-  "runtime": "scraping",
+  "runtime": "web",
   "requires": "python"
 }

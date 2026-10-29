@@ -19,12 +19,12 @@ import { createLessonView } from "./views/lesson.js";
 import { createPanelView } from "./views/panel.js";
 import { createPlaygroundView } from "./views/playground.js";
 import { createRouteView } from "./views/route.js";
-import { installScrapingRuntime } from "./scraping/runtime.js";
+import { installWebRuntime } from "./web/runtime.js";
 
 const courseData = readCourseData($("#course-data"));
 installStandardLibraryExtras();
 installFletRuntime();
-installScrapingRuntime(courseData.web ?? {});
+installWebRuntime(courseData.web ?? {});
 
 const course = createCourse(courseData);
 const progress = createProgress(course.lessons.map((lesson) => lesson.id));

@@ -1,5 +1,6 @@
 /*
- * Conecta el simulador de web scraping (Python, src/python/) con la página.
+ * Conecta el simulador web (Python, src/python/) con la página: las
+ * librerías para hacer scraping y usar APIs.
  *
  * - requests pide las páginas a la web de prácticas (web.js) con
  *   _web.fetch(). Cada petición queda anotada con su hora en un reloj
@@ -22,7 +23,7 @@ import robotparserSource from "../../python/urllib/robotparser.py";
 import websimSource from "../../python/websim.py";
 import { createEmitter } from "../lib/events.js";
 import { addRunSetup, onRunningChange, registerPythonFiles } from "../python/engine.js";
-import { createVirtualWeb } from "./web.js";
+import { createVirtualWeb } from "./virtual-web.js";
 
 /** Lo que tarda cada petición en el reloj simulado, en segundos. */
 const REQUEST_SECONDS = 0.2;
@@ -71,7 +72,7 @@ function newState() {
  * Se llama una vez al arrancar.
  * @param {Record<string, {type: string, body: string}>} pages
  */
-export function installScrapingRuntime(pages) {
+export function installWebRuntime(pages) {
   web = createVirtualWeb(pages);
 
   registerPythonFiles({
@@ -122,7 +123,7 @@ export function lastRun() {
 }
 
 /** Avisa al terminar cada ejecución: listener(lastRun()). */
-export const onScrapingRun = (listener) => emitter.on("run", listener);
+export const onWebRun = (listener) => emitter.on("run", listener);
 
 /** Antes de cada programa: vacía la web y el disco, y pone el open() simulado. */
 async function prepareRun(Sk) {

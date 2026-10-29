@@ -179,7 +179,7 @@ describe("carga del contenido", () => {
       () => loadCourse(dir),
       (error) => {
         const text = error.problems.join("\n");
-        assert.match(text, /route\.json: "runtime" debe ser uno de: python, flet, scraping/);
+        assert.match(text, /route\.json: "runtime" debe ser uno de: python, flet, web/);
         assert.match(text, /route\.json: "requires" apunta a una ruta que no existe/);
         return true;
       },

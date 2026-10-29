@@ -1,7 +1,7 @@
 /*
  * Lee el curso desde content/ y comprueba que esté completo.
  *
- *   content/web/<sitio>.example/...            web de prácticas para el scraping (opcional)
+ *   content/web/<sitio>.example/...            web de prácticas del simulador web (opcional)
  *   content/NN-ruta/route.json                 título, descripción, nivel y motor
  *   content/NN-ruta/NN-modulo/module.json      título y descripción del módulo
  *   content/NN-ruta/NN-modulo/NN-leccion/
@@ -24,7 +24,7 @@ const LESSON_SECTIONS = { Ejercicio: "exercise", Pista: "hint" };
 const CHECK_KEYS = new Set(["requires", "forbids", "ignore", "runs"]);
 const RUN_KEYS = new Set(["inputs", "output", "contains", "test"]);
 /** Motores con los que se ejecutan los ejercicios de una ruta. */
-export const RUNTIMES = new Set(["python", "flet", "scraping"]);
+export const RUNTIMES = new Set(["python", "flet", "web"]);
 /** Tipos de archivo de la web de prácticas, por extensión. */
 const WEB_TYPES = {
   ".html": "text/html; charset=utf-8",
@@ -111,7 +111,7 @@ function loadRoute(dir, id, context) {
 /**
  * Lee la web de prácticas: content/web/libreria.example/catalogo/pagina-2.html
  * se sirve en https://libreria.example/catalogo/pagina-2.html. Cada index.html
- * responde también en la URL de su carpeta (eso lo resuelve src/js/scraping/web.js).
+ * responde también en la URL de su carpeta (eso lo resuelve src/js/web/virtual-web.js).
  */
 function loadWeb(dir, problems) {
   const pages = {};

@@ -9,8 +9,8 @@ import { $, escapeHtml } from "../lib/dom.js";
 import { formatDayKey, pad2 } from "../lib/dates.js";
 import { storage } from "../lib/storage.js";
 import { isRunning, stopPython } from "../python/engine.js";
-import { onScrapingRun, virtualWeb } from "../scraping/runtime.js";
-import { createWebViewer } from "../scraping/web-viewer.js";
+import { onWebRun, virtualWeb } from "../web/runtime.js";
+import { createWebViewer } from "../web/web-viewer.js";
 import { createEditor, needsNewEditor, waitForEditorLibrary } from "../ui/editor.js";
 import { highlightExamples } from "../ui/examples.js";
 import { renderInline, renderMarkdown } from "../ui/markdown.js";
@@ -136,15 +136,15 @@ export function createLessonView({ course, progress }) {
   }
 
   /**
-   * Las lecciones de Flet tienen la vista previa de la app; las de scraping,
+   * Las lecciones de Flet tienen la vista previa de la app; las del simulador web,
    * el navegador de la web de prácticas; las de Python, solo la salida.
    */
   const isFletLesson = () => lesson.route.runtime === "flet";
-  const isScrapingLesson = () => lesson?.route.runtime === "scraping";
+  const isWebLesson = () => lesson?.route.runtime === "web";
 
   function resetExercisePanel() {
     const flet = isFletLesson();
-    const scraping = isScrapingLesson();
+    const web = isWebLesson();
     elements.hint.hidden = true;
     elements.success.hidden = true;
     disarmSolutionButton();
@@ -155,28 +155,28 @@ export function createLessonView({ course, progress }) {
         : "# pulsa ▶ ejecutar (Ctrl + Enter) para ver aquí la salida,",
       "system",
     );
-    if (scraping) terminal.line("# en «web», las páginas que pida tu programa,", "system");
+    if (web) terminal.line("# en «web», las páginas que pida tu programa,", "system");
     terminal.line("# y ✓ comprobar cuando creas que el ejercicio está resuelto.", "system");
 
     // Se elige la pestaña después de escribir, para no marcar "salida" como pendiente.
     elements.workbench.classList.toggle("workbench--flet", flet);
-    elements.workbench.classList.toggle("workbench--web", scraping);
-    elements.tabs.hidden = !flet && !scraping;
-    elements.outputTitle.hidden = flet || scraping;
-    tabs.show(flet ? ["preview", "output"] : scraping ? ["web", "output"] : ["output"]);
+    elements.workbench.classList.toggle("workbench--web", web);
+    elements.tabs.hidden = !flet && !web;
+    elements.outputTitle.hidden = flet || web;
+    tabs.show(flet ? ["preview", "output"] : web ? ["web", "output"] : ["output"]);
     if (flet) {
       preview.showMessage("▶ ejecuta el código para ver tu app aquí");
       tabs.select("preview");
     } else {
       preview.clear();
-      if (scraping) webViewer.reset(lesson.web);
-      tabs.select(scraping && lesson.web ? "web" : "output");
+      if (web) webViewer.reset(lesson.web);
+      tabs.select(web && lesson.web ? "web" : "output");
     }
   }
 
   /** Al terminar un programa, el navegador enseña las páginas que pidió. */
-  onScrapingRun((lastRun) => {
-    if (!isScrapingLesson() || root.hidden) return;
+  onWebRun((lastRun) => {
+    if (!isWebLesson() || root.hidden) return;
     webViewer.showRun(lastRun);
     if (lastRun.requests.length) tabs.markUnread("web");
   });
@@ -184,7 +184,7 @@ export function createLessonView({ course, progress }) {
   /** Los enlaces de la teoría a los sitios de práctica se abren en la pestaña «web». */
   elements.body.addEventListener("click", (event) => {
     const link = event.target.closest("a[data-web-link]");
-    if (!link || !isScrapingLesson()) return;
+    if (!link || !isWebLesson()) return;
     event.preventDefault();
     tabs.select("web");
     webViewer.open(link.href);
@@ -197,7 +197,7 @@ export function createLessonView({ course, progress }) {
     if (!editor) return;
     const flet = isFletLesson();
     if (flet) tabs.select("preview");
-    if (isScrapingLesson()) tabs.select("output");
+    if (isWebLesson()) tabs.select("output");
     runInTerminal(editor.getValue(), terminal, {
       fileName: "ejercicio.py",
       timeLimitMs: TIME_LIMIT_MS.lesson,
