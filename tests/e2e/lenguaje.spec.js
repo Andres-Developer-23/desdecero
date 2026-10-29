@@ -60,6 +60,39 @@ raise Agotado("pan")
   expect(result.log).toContain("No quedan unidades de pan");
 });
 
+test("super() funciona aunque la clase base tenga __str__", async ({ page }) => {
+  const result = await run(
+    page,
+    `class Cuenta:
+    def __init__(self, numero):
+        self.numero = numero
+
+    def __str__(self):
+        return f"Cuenta {self.numero}"
+
+class CuentaAhorro(Cuenta):
+    def __init__(self, numero, tasa):
+        super().__init__(numero)
+        self.tasa = tasa
+
+    def __str__(self):
+        return super().__str__() + f" al {self.tasa * 100:.0f} %"
+
+assert str(CuentaAhorro(7, 0.02)) == "Cuenta 7 al 2 %", str(CuentaAhorro(7, 0.02))
+
+def fuera_de_una_clase():
+    return super()
+
+try:
+    fuera_de_una_clase()
+    assert False, "super() fuera de un método debería fallar"
+except RuntimeError:
+    pass
+`,
+  );
+  expect(result.passed, result.log).toBe(true);
+});
+
 test("las anotaciones sin valor y list[str] se pueden escribir", async ({ page }) => {
   const result = await run(
     page,

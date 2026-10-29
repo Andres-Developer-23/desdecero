@@ -6,6 +6,7 @@
 export function applySkulptPatches(Sk) {
   fixStrTitle(Sk);
   avoidPausingImports(Sk);
+  fixZeroArgumentSuper(Sk);
   fixExceptionInit(Sk);
   allowBareAnnotations(Sk);
   allowGenericAliases(Sk);
@@ -59,6 +60,32 @@ function avoidPausingImports(Sk) {
   };
   patched.$patched = true;
   Sk.builtin.__import__ = patched;
+}
+
+/**
+ * Para super() sin argumentos, el código que genera Skulpt comprueba si
+ * existe self llamando a self.toString(), que ejecuta el __str__ de la
+ * clase. Si __str__ usa un atributo que todavía no existe (lo normal dentro
+ * de __init__, antes de llamar a super().__init__), el programa fallaba con
+ * un AttributeError sin sentido. La comprobación se cambia por otra que no
+ * toca el objeto.
+ */
+const SUPER_SELF_CHECK = 'self.toString().indexOf("Window") > 0';
+const SAFE_SUPER_SELF_CHECK = '(typeof window !== "undefined" && self === window)';
+
+function fixZeroArgumentSuper(Sk) {
+  const compile = Sk?.compile;
+  if (!compile || compile.$patched) return;
+
+  const patched = function compile_(...args) {
+    const result = compile.apply(this, args);
+    if (typeof result?.code === "string" && result.code.includes(SUPER_SELF_CHECK)) {
+      result.code = result.code.split(SUPER_SELF_CHECK).join(SAFE_SUPER_SELF_CHECK);
+    }
+    return result;
+  };
+  patched.$patched = true;
+  Sk.compile = patched;
 }
 
 /**

@@ -281,4 +281,4 @@ Cada cambio empieza con un issue, se hace en su propia rama y entra en `main` co
 
 Skulpt implementa la mayor parte de Python 3, pero no todo. Por ejemplo, no admite `match` / `case`, `nonlocal` ni `eval`, y no trae los módulos `json`, `abc`, `typing`, `dataclasses`, `csv` ni `urllib.parse`. El curso aporta versiones propias de `abc`, `dataclasses` y `typing` (en todas las rutas) y de `csv`, `urllib.parse` y `urllib.robotparser` (simulador de scraping).
 
-`src/js/python/skulpt-patches.js` corrige además algunas diferencias con CPython: `str.title()` con tildes, el mensaje de las excepciones propias (`super().__init__(mensaje)`), las anotaciones sin valor (`nombre: str`), `list[str]` y un fallo por el que un `import` podía perder el módulo si Skulpt hacía una pausa en mitad.
+`src/js/python/skulpt-patches.js` corrige además algunas diferencias con CPython: `str.title()` con tildes, el mensaje de las excepciones propias (`super().__init__(mensaje)`), `super()` cuando la clase base tiene `__str__`, las anotaciones sin valor (`nombre: str`), `list[str]` y un fallo por el que un `import` podía perder el módulo si Skulpt hacía una pausa en mitad.
