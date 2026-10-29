@@ -4,6 +4,25 @@ Todos los cambios importantes del proyecto se anotan aquí. El formato sigue [Ke
 
 ## [Sin publicar]
 
+## [1.4.0] - 2026-10-29
+
+### Añadido
+
+- Ruta «Programación orientada a objetos»: 12 lecciones en 5 módulos, de la primera clase a un banco completo con clases de datos, propiedades, herencia, clases abstractas, composición y excepciones propias.
+- Módulo `abc` (`ABC` y `@abstractmethod`) y `dataclasses` completo: `__repr__`, `__eq__`, `order=True`, `frozen=True`, herencia de campos, `__post_init__`, `fields`, `asdict`, `astuple` y `replace`. Están disponibles en todas las rutas.
+- Las anotaciones sin valor (`nombre: str`) y `list[str]` se pueden escribir.
+
+### Cambiado
+
+- El panel ordena las rutas así: Python, programación orientada a objetos, Flet y scraping. El progreso guardado y los enlaces no cambian.
+- Las pruebas ejecutan los ejemplos de la teoría de todas las rutas salvo la de Python.
+
+### Corregido
+
+- `super()` sin argumentos fallaba con un `AttributeError` si la clase base tenía `__str__`.
+- En una excepción propia, `super().__init__(mensaje)` no cambiaba el mensaje.
+- Un `import` podía perder el módulo si Skulpt hacía una pausa en mitad, y `import flet as ft` fallaba con `NameError` de vez en cuando.
+
 ## [1.3.0] - 2026-10-28
 
 ### Añadido
@@ -82,7 +101,8 @@ Todos los cambios importantes del proyecto se anotan aquí. El formato sigue [Ke
 - Consola con `input()` interactivo y errores explicados en español.
 - Playground libre y progreso guardado en el navegador.
 
-[Sin publicar]: https://github.com/Andres-Developer-23/desdecero/compare/v1.3.0...HEAD
+[Sin publicar]: https://github.com/Andres-Developer-23/desdecero/compare/v1.4.0...HEAD
+[1.4.0]: https://github.com/Andres-Developer-23/desdecero/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/Andres-Developer-23/desdecero/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/Andres-Developer-23/desdecero/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/Andres-Developer-23/desdecero/compare/v1.0.0...v1.1.0
