@@ -4,6 +4,23 @@ Todos los cambios importantes del proyecto se anotan aquí. El formato sigue [Ke
 
 ## [Sin publicar]
 
+## [1.3.0] - 2026-10-28
+
+### Añadido
+
+- Ruta «Web scraping con Python»: 12 lecciones en 5 módulos para extraer datos de páginas web con requests y BeautifulSoup, de la primera petición a un scraper que recorre un catálogo entero y lo guarda en un CSV.
+- Web de prácticas con cuatro sitios inventados (`libreria.example`, `refranes.example`, `clima.example` y `noticias.example`), con paginación, `robots.txt` y errores 404.
+- Simulador de web scraping: `requests`, `bs4.BeautifulSoup` (con selectores CSS), `urllib.parse`, `urllib.robotparser`, `csv` y un `open()` con disco simulado, todo dentro del navegador. `time.sleep()` avanza un reloj simulado y cada petición queda registrada.
+- Pestaña «web» en las lecciones de scraping y navegador en el playground: lista las peticiones del programa y enseña cada página como se ve o como su código HTML.
+- La consola enseña los archivos que guarda el programa.
+- Módulo `websim` para que las comprobaciones revisen peticiones, cabeceras, pausas y archivos.
+- El Markdown de las lecciones admite enlaces y subtítulos `###`.
+- Explicaciones en español para los errores típicos del scraping.
+
+### Corregido
+
+- Una prueba de Flet medía la vista previa antes de que terminara de dibujarse.
+
 ## [1.2.0] - 2026-10-27
 
 ### Añadido
@@ -65,7 +82,8 @@ Todos los cambios importantes del proyecto se anotan aquí. El formato sigue [Ke
 - Consola con `input()` interactivo y errores explicados en español.
 - Playground libre y progreso guardado en el navegador.
 
-[Sin publicar]: https://github.com/Andres-Developer-23/desdecero/compare/v1.2.0...HEAD
+[Sin publicar]: https://github.com/Andres-Developer-23/desdecero/compare/v1.3.0...HEAD
+[1.3.0]: https://github.com/Andres-Developer-23/desdecero/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/Andres-Developer-23/desdecero/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/Andres-Developer-23/desdecero/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/Andres-Developer-23/desdecero/releases/tag/v1.0.0
