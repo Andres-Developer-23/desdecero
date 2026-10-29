@@ -1,0 +1,31 @@
+{
+  "requires": [
+    {
+      "pattern": "\\.patch\\(",
+      "message": "Marca las tareas como hechas con PATCH."
+    },
+    {
+      "pattern": "\\.put\\(",
+      "message": "Cambia el título con PUT."
+    },
+    {
+      "pattern": "\\.delete\\(",
+      "message": "Borra las tareas con DELETE."
+    },
+    {
+      "pattern": "204",
+      "message": "Comprueba que DELETE respondió 204."
+    }
+  ],
+  "forbids": [
+    {
+      "pattern": "tareas/[23]\\b",
+      "message": "Saca de la API qué tareas están pendientes o hechas en lugar de escribir sus ids."
+    }
+  ],
+  "runs": [
+    {
+      "output": "Completada: Terminar el curso de Python\nRenombrada: Comprar pan integral (baja)\nBorrada: 2\nBorrada: 3\nTareas que quedan:\n[ ] 1 Comprar pan integral (baja)"
+    }
+  ]
+}

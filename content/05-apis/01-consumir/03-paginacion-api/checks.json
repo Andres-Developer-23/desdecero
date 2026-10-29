@@ -1,0 +1,23 @@
+{
+  "requires": [
+    {
+      "pattern": "\\bwhile\\b",
+      "message": "Recorre las páginas con un bucle while."
+    },
+    {
+      "pattern": "siguiente",
+      "message": "Sigue el enlace «siguiente» que da la API."
+    }
+  ],
+  "forbids": [
+    {
+      "pattern": "Cartas desde el páramo",
+      "message": "Saca los títulos de las respuestas de la API."
+    }
+  ],
+  "runs": [
+    {
+      "output": "Páginas: 4\nLibros: 18\nValoración media: 3.7\nAgotados: Cartas desde el páramo, Mapas de un planeta sin nombre, Algoritmos para la vida diaria"
+    }
+  ]
+}

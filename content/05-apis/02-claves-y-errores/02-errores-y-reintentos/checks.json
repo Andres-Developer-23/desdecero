@@ -1,0 +1,31 @@
+{
+  "requires": [
+    {
+      "pattern": "def\\s+pedir\\(",
+      "message": "Escribe la función pedir()."
+    },
+    {
+      "pattern": "Retry-After",
+      "message": "Usa la cabecera Retry-After para saber cuánto esperar."
+    },
+    {
+      "pattern": "time\\.sleep\\(",
+      "message": "Espera con time.sleep() antes de reintentar."
+    },
+    {
+      "pattern": "raise_for_status\\(",
+      "message": "Llama a raise_for_status() con las demás respuestas."
+    }
+  ],
+  "forbids": [
+    {
+      "pattern": "Reintentos:\\s*5",
+      "message": "Cuenta los reintentos en la función en lugar de escribirlos."
+    }
+  ],
+  "runs": [
+    {
+      "output": "Alertas en Leticia: Tormentas eléctricas fuertes por la tarde.\nBogotá: 15 °C\nMedellín: 23 °C\nCali: 26 °C\nBarranquilla: 30 °C\nCartagena: 29 °C\nPasto: 14 °C\nReintentos: 5"
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "requires": [
+    {
+      "pattern": "\\.json\\(\\)",
+      "message": "Convierte la respuesta con .json()."
+    },
+    {
+      "pattern": "\\bfor\\b",
+      "message": "Recorre las categorías con un bucle for."
+    }
+  ],
+  "forbids": [
+    {
+      "pattern": "Total: 18",
+      "message": "Calcula el total con los datos de la respuesta."
+    }
+  ],
+  "runs": [
+    {
+      "output": "Ciencia ficción: 3\nEnsayo: 1\nHistoria: 2\nInfantil: 2\nNaturaleza: 1\nNovela: 4\nPoesía: 2\nProgramación: 3\nTotal: 18 libros en 8 categorías"
+    }
+  ]
+}

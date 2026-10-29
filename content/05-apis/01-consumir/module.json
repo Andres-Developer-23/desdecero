@@ -1,0 +1,4 @@
+{
+  "title": "Consumir una API",
+  "description": "Pide datos a una API con requests: rutas, parámetros de consulta y paginación."
+}

@@ -1,0 +1,27 @@
+{
+  "requires": [
+    {
+      "pattern": "except\\s+(json\\.)?(JSONDecodeError|ValueError)",
+      "message": "Captura el error del pedido mal escrito con except json.JSONDecodeError."
+    },
+    {
+      "pattern": "json\\.dump\\(",
+      "message": "Guarda los resúmenes con json.dump()."
+    },
+    {
+      "pattern": "json\\.load\\(",
+      "message": "Vuelve a leer el archivo con json.load()."
+    }
+  ],
+  "forbids": [
+    {
+      "pattern": "99000",
+      "message": "Calcula los totales sumando los items en lugar de escribirlos."
+    }
+  ],
+  "runs": [
+    {
+      "output": "Pedido 101 · Ana (Cali) · total 99000\nPedido en la posición 2: JSON no válido (Illegal trailing comma before end of array, columna 145)\nPedido 103 · Marta (Bogotá) · total 68500\nGuardados: 2"
+    }
+  ]
+}

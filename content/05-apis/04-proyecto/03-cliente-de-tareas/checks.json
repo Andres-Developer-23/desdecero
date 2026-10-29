@@ -1,0 +1,27 @@
+{
+  "requires": [
+    {
+      "pattern": "raise\\s+ErrorDeApi\\(",
+      "message": "Lanza ErrorDeApi en _pedir() cuando la respuesta tiene un error."
+    },
+    {
+      "pattern": "self\\._pedir\\(",
+      "message": "Haz que los métodos usen self._pedir()."
+    }
+  ],
+  "forbids": [
+    {
+      "pattern": "tk-ana",
+      "message": "Consigue el token con iniciar_sesion() en lugar de escribirlo."
+    },
+    {
+      "pattern": "print\\(\\s*[\\\"']Error 404",
+      "message": "El mensaje de error tiene que venir de la API."
+    }
+  ],
+  "runs": [
+    {
+      "output": "Sesión iniciada como ana\nCreada: 6 Repasar los métodos HTTP\nCreada: 7 Escribir el informe\nCompletada: 6\nBorrada: 1\nError 404: No tienes ninguna tarea con id 99\nPendientes:\n- 2 Terminar el curso de Python (alta)\n- 7 Escribir el informe (media)"
+    }
+  ]
+}

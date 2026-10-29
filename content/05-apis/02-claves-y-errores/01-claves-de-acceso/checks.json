@@ -1,0 +1,27 @@
+{
+  "requires": [
+    {
+      "pattern": "requests\\.Session\\(",
+      "message": "Usa una sesión con requests.Session()."
+    },
+    {
+      "pattern": "X-RateLimit-Remaining",
+      "message": "Lee las peticiones restantes de la cabecera X-RateLimit-Remaining."
+    }
+  ],
+  "forbids": [
+    {
+      "pattern": "restantes:\\s*1",
+      "message": "Saca las peticiones restantes de la cabecera de la respuesta."
+    },
+    {
+      "pattern": "15 °C",
+      "message": "Saca las temperaturas de las respuestas de la API."
+    }
+  ],
+  "runs": [
+    {
+      "output": "Ciudades con datos: 12\nBogotá: 15 °C, Lluvioso\nCartagena: 29 °C, Soleado\nLeticia: 28 °C, Tormentas\nPeticiones restantes: 1"
+    }
+  ]
+}

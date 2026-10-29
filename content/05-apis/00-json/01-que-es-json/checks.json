@@ -1,0 +1,23 @@
+{
+  "requires": [
+    {
+      "pattern": "json\\.loads\\(",
+      "message": "Convierte el texto con json.loads()."
+    },
+    {
+      "pattern": "json\\.dumps\\(",
+      "message": "Muestra el resultado con json.dumps()."
+    }
+  ],
+  "forbids": [
+    {
+      "pattern": "61650",
+      "message": "Calcula el precio final con la fórmula en lugar de escribirlo."
+    }
+  ],
+  "runs": [
+    {
+      "output": "Título: Python para curiosos\nEtiquetas: 2\n{\n  \"titulo\": \"Python para curiosos\",\n  \"autor\": \"Andrés Quintero\",\n  \"precio\": 68500,\n  \"disponible\": true,\n  \"etiquetas\": [\n    \"programación\",\n    \"principiantes\"\n  ],\n  \"descuento\": 10,\n  \"precio_final\": 61650\n}"
+    }
+  ]
+}
