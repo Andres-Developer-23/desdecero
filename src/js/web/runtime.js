@@ -10,22 +10,39 @@
  *   en Python el árbol que devuelve _web.parse_html(). select() usa
  *   querySelectorAll sobre ese mismo documento.
  * - open() escribe en un disco simulado.
+ * - flask: app.run() deja el servidor del alumno en marcha
+ *   (local-server.js) y la pestaña «web» le envía peticiones.
  *
- * Las peticiones, el estado de las APIs, los documentos y el disco se
- * vacían antes de cada ejecución.
+ * Las peticiones, el estado de las APIs, los documentos, el disco y el
+ * servidor de Flask se reinician antes de cada ejecución.
  */
 
 import archivosSource from "../../python/_archivos.py";
 import bs4Source from "../../python/bs4/__init__.py";
 import csvSource from "../../python/csv.py";
+import flaskSource from "../../python/flask/__init__.py";
 import requestsSource from "../../python/requests/__init__.py";
 import requestsExceptionsSource from "../../python/requests/exceptions.py";
 import parseSource from "../../python/urllib/parse.py";
 import robotparserSource from "../../python/urllib/robotparser.py";
 import websimSource from "../../python/websim.py";
+import werkzeugSource from "../../python/werkzeug/__init__.py";
+import werkzeugExceptionsSource from "../../python/werkzeug/exceptions.py";
+import werkzeugHttpSource from "../../python/werkzeug/http.py";
 import { createEmitter } from "../lib/events.js";
 import { addRunSetup, onRunningChange, registerPythonFiles } from "../python/engine.js";
 import { createInternet } from "./internet.js";
+import {
+  isLocalUrl,
+  logTime,
+  reportServerError,
+  requestLocal,
+  runningServer,
+  startServer,
+  stopServer,
+} from "./local-server.js";
+
+export { beginServerSession as beginWebSession } from "./local-server.js";
 
 /** Lo que tarda cada petición en el reloj simulado, en segundos. */
 const REQUEST_SECONDS = 0.2;
@@ -59,6 +76,16 @@ var $builtinmodule = function (name) {
   expose("file_read", host.fileRead);
   expose("file_write", host.fileWrite);
   expose("file_names", host.fileNames);
+  expose("log_time", host.logTime);
+  // Estas dos reciben objetos de Python (la aplicación y la excepción) sin convertir.
+  mod.serve = new Sk.builtin.func(function (dispatch, address, port) {
+    host.serve(dispatch, Sk.ffi.remapToJs(address), Sk.ffi.remapToJs(port));
+    return Sk.builtin.none.none$;
+  });
+  mod.report_error = new Sk.builtin.func(function (exception) {
+    host.reportError(exception);
+    return Sk.builtin.none.none$;
+  });
   return mod;
 };
 `;
@@ -96,6 +123,10 @@ export function installWebRuntime(sources) {
     "src/lib/csv.py": csvSource,
     "src/lib/_archivos.py": archivosSource,
     "src/lib/websim.py": websimSource,
+    "src/lib/flask/__init__.py": flaskSource,
+    "src/lib/werkzeug/__init__.py": werkzeugSource,
+    "src/lib/werkzeug/exceptions.py": werkzeugExceptionsSource,
+    "src/lib/werkzeug/http.py": werkzeugHttpSource,
     "src/lib/_web.js": BRIDGE_SOURCE,
   });
 
@@ -113,6 +144,9 @@ export function installWebRuntime(sources) {
       state.files.set(name, String(text));
     },
     fileNames: () => [...state.files.keys()],
+    logTime,
+    serve: startServer,
+    reportError: reportServerError,
   };
 
   addRunSetup(prepareRun);
@@ -138,14 +172,26 @@ export const virtualInternet = () => internet;
  */
 
 /**
- * Peticiones y archivos de la última ejecución.
- * @returns {{requests: LoggedRequest[], files: Map<string, string>}}
+ * Peticiones, archivos y servidor de Flask de la última ejecución.
+ * @returns {{requests: LoggedRequest[], files: Map<string, string>, server: {origin: string} | null}}
  */
 export function lastRun() {
   return {
     requests: state.requests.map((request) => ({ ...request })),
     files: new Map(state.files),
+    server: runningServer(),
   };
+}
+
+/**
+ * Las peticiones de la pestaña «web»: van al servidor de Flask del alumno o
+ * al internet de prácticas, con la sesión del navegador (no la del programa).
+ * @param {{method?: string, url: string, headers?: Record<string, string>, body?: string | null}} request
+ * @param {ReturnType<ReturnType<typeof createInternet>["newSession"]>} session
+ */
+export async function viewerRequest(request, session) {
+  if (isLocalUrl(request.url)) return requestLocal(request);
+  return internet.request(request, { session });
 }
 
 /** Avisa al terminar cada ejecución: listener(lastRun()). */
@@ -154,6 +200,7 @@ export const onWebRun = (listener) => emitter.on("run", listener);
 /** Antes de cada programa: vacía la web, las APIs y el disco, y pone el open() simulado. */
 async function prepareRun(Sk) {
   Object.assign(state, newState());
+  stopServer();
   if (!virtualFileApi) {
     const module = await Sk.misceval.asyncToPromise(() =>
       Sk.importModule("_archivos", false, true),
@@ -170,6 +217,15 @@ async function prepareRun(Sk) {
 
 /** La petición que hace requests: la responde internet.js y queda anotada. */
 function fetch(method, url, headers, body, timeout) {
+  if (isLocalUrl(String(url))) {
+    return {
+      error: "host",
+      message:
+        `No se pudo conectar con ${new URL(String(url)).host}. En tu ordenador, app.run() se ` +
+        "queda esperando peticiones y el programa no sigue; aquí, prueba tu servidor desde la " +
+        "pestaña web cuando el programa termine, o dentro del programa con app.test_client().",
+    };
+  }
   const sent = { ...(headers ?? {}) };
   const response = internet.request(
     { method, url: String(url), headers: sent, body: body ?? null },

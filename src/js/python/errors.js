@@ -85,6 +85,12 @@ export function explainError(error) {
   if (/'ResultSet' object has no attribute/.test(error.message)) {
     return "find_all() y select() devuelven una lista de etiquetas, no una sola. Recórrela con un for, o usa find() o select_one() si solo quieres la primera.";
   }
+  if (/did not return a valid response/.test(error.message)) {
+    return "Tu vista no devolvió nada (o devolvió algo que Flask no sabe enviar). Termina la función con return y un texto, un diccionario, una lista o una tupla como (datos, 201).";
+  }
+  if (/Working outside of (request|application) context/.test(error.message)) {
+    return "request, jsonify y url_for solo funcionan mientras Flask atiende una petición: úsalos dentro de una vista, o prueba la vista con app.test_client().";
+  }
   if (/module 'flet' has no attribute/.test(error.message)) {
     return "Ese nombre no existe en Flet 1.0 o el simulador del curso no lo incluye. Revisa las mayúsculas: los controles empiezan por mayúscula (ft.Text, ft.Button) y las constantes van en mayúsculas (ft.Colors.BLUE).";
   }

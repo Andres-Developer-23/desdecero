@@ -68,11 +68,13 @@ export function loadCourse(contentDir) {
     }
   }
 
-  // La página inicial de la pestaña «web» de una lección tiene que existir (o ser de una API).
+  // La página inicial de la pestaña «web» de una lección tiene que existir (o ser de una API
+  // o del servidor de Flask del alumno, http://127.0.0.1:5000).
   for (const route of routes) {
     for (const lesson of route.modules.flatMap((module) => module.lessons)) {
       const page = lesson.web?.endsWith("/") ? `${lesson.web}index.html` : lesson.web;
-      if (lesson.web != null && !web[page] && !(apiHost(lesson.web) in apis)) {
+      const known = web[page] || apiHost(lesson.web) in apis || isLocalServer(lesson.web);
+      if (lesson.web != null && !known) {
         problems.push(
           `${rel(lesson.dir)}/lesson.md: "web" apunta a una página que no existe: ${lesson.web}`,
         );
@@ -84,6 +86,14 @@ export function loadCourse(contentDir) {
 
   if (problems.length) throw new CourseError(problems);
   return { routes, web, apis };
+}
+
+function isLocalServer(url) {
+  try {
+    return /^http:\/\/(127\.0\.0\.1|localhost):5000\//.test(new URL(url).href);
+  } catch {
+    return false;
+  }
 }
 
 function apiHost(url) {
