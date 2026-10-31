@@ -1,6 +1,7 @@
 /*
  * Python que Skulpt no traía o hacía distinto de CPython: excepciones
- * propias, anotaciones sin valor, list[str], abc, dataclasses y json.
+ * propias, anotaciones sin valor, list[str], abc, dataclasses, json y
+ * comparaciones con métodos especiales que tienen bucles.
  */
 
 import { expect, openApp, test } from "./fixtures.js";
@@ -264,6 +265,36 @@ try:
     assert False
 except ValueError as error:
     assert str(error).startswith("Expecting property name enclosed in double quotes")
+`,
+  );
+  expect(result.passed, result.log).toBe(true);
+});
+
+test("in y == funcionan con __contains__ y __eq__ propios que tienen bucles", async ({ page }) => {
+  const result = await run(
+    page,
+    `class Cabeceras:
+    def __init__(self, pares):
+        self.pares = pares
+
+    def __contains__(self, nombre):
+        for clave, valor in self.pares:
+            if clave.lower() == nombre.lower():
+                return True
+        return False
+
+    def __eq__(self, otra):
+        return sorted(k.lower() for k, v in self.pares) == sorted(k.lower() for k, v in otra.pares)
+
+
+c = Cabeceras([("Host", "localhost"), ("Accept", "*/*")])
+assert "host" in c
+assert "User-Agent" not in c
+assert ("x" in c) is False
+encontradas = [n for n in ["Host", "Cookie", "accept"] if n in c]
+assert encontradas == ["Host", "accept"], encontradas
+assert c == Cabeceras([("accept", "1"), ("HOST", "2")])
+assert not (c == Cabeceras([("Host", "1")]))
 `,
   );
   expect(result.passed, result.log).toBe(true);
