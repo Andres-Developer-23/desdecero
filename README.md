@@ -182,9 +182,9 @@ Las dependencias van en un solo sentido: `views` usa `ui`, `exercises`, `flet`, 
 
 Lo que no está implementado da un error claro en español, y los nombres que Flet 1.0 eliminó (`ft.app`, `ft.ElevatedButton`, `ft.padding.all`, `ft.alignment.center`…) explican cómo se escriben ahora. Fuera del alcance del simulador quedan la navegación entre vistas, los diálogos, las imágenes y el empaquetado.
 
-### Simulador web: scraping y APIs
+### Simulador web: scraping, APIs y Flask
 
-Desde la página no se puede descargar una web real: el navegador bloquea las peticiones a otros dominios. Las rutas de scraping y de APIs usan un **internet de prácticas** con el dominio reservado `.example`, que nunca apunta a una web real:
+Desde la página no se puede descargar una web real: el navegador bloquea las peticiones a otros dominios. Las rutas de scraping, de APIs y de Flask usan un **internet de prácticas** con el dominio reservado `.example`, que nunca apunta a una web real:
 
 - **Sitios de práctica**: los archivos de `content/web/` se sirven como si fueran sitios de verdad (`content/web/libreria.example/catalogo/pagina-2.html` responde en `https://libreria.example/catalogo/pagina-2.html`). Solo admiten `GET` y `HEAD`.
 - **APIs de práctica** (`src/js/web/apis/`, con sus datos en `content/api/`), que responden JSON con los códigos y cabeceras de una API REST real:
@@ -206,7 +206,11 @@ En Python:
 - También están `urllib.parse`, `urllib.robotparser` y `csv`, que Skulpt no trae, y un `open()` con un disco simulado que empieza vacío en cada ejecución. Al terminar, la consola enseña los archivos guardados.
 - Al importar requests, `time.sleep()` avanza un reloj simulado en lugar de esperar. Cada petición queda anotada con su método, su hora, sus cabeceras, sus datos y su estado.
 
-`src/js/web/web-viewer.js` es el navegador de la pestaña **web** de las lecciones (y del playground). Lista las peticiones del último programa y, para cada una, enseña lo que se envió y lo que respondió el servidor: la página tal como se ve o como su código HTML, o el JSON con sangría y colores. La barra de dirección hace peticiones `GET` con una sesión aparte, así que explorar no cambia lo que vio el programa.
+**Flask** (`src/python/flask/` y `src/python/werkzeug/`) tiene la API de Flask 3 para crear APIs: `Flask`, `@app.route` y `@app.get`/`post`/`put`/`patch`/`delete`, convertidores (`<int:id>`, `<float:x>`, `<path:p>`), `request` (`args`, `get_json()`, `form`, `headers`, `authorization`), respuestas desde `str`, `dict`, `list`, tuplas y `Response`, `jsonify`, `abort`, `@app.errorhandler`, `url_for`, `redirect`, `make_response` y `app.test_client()`. Da los mismos códigos, cabeceras, JSON (claves ordenadas, `ensure_ascii` y sangría en modo debug) y páginas de error que Flask 3.1: se comprobó comparando las respuestas con las de Flask en dos baterías de casos.
+
+La diferencia está en `app.run()`: no se queda esperando. Deja el servidor en marcha en `http://127.0.0.1:5000` hasta la siguiente ejecución (`src/js/web/local-server.js`), y la pestaña **web** le envía las peticiones. La consola muestra el registro de cada una, como el servidor de desarrollo, y un error en una vista responde 500 y se explica en español con su línea. Dentro del programa, el servidor se prueba con `app.test_client()`, que es también lo que usan las comprobaciones.
+
+`src/js/web/web-viewer.js` es el navegador de la pestaña **web** de las lecciones (y del playground). Lista las peticiones del último programa y, para cada una, enseña lo que se envió y lo que respondió el servidor: la página tal como se ve o como su código HTML, o el JSON con sangría y colores. Su barra de dirección hace peticiones con cualquier método, y con datos JSON y cabeceras, usando una sesión aparte: explorar no cambia lo que vio el programa.
 
 ## Escribir lecciones
 
@@ -248,7 +252,7 @@ Una pista corta.
 
 Se admite un Markdown reducido: párrafos, subtítulos con `### `, listas con `- ` o `1. ` (sin anidar), `**negrita**`, `*cursiva*`, `` `código` ``, `[enlaces](https://...)` y bloques de código. Un bloque ` ```py ` se muestra con botón de ejecutar; ` ```txt ` se muestra como texto fijo, por ejemplo la salida esperada. Los enlaces a la web de prácticas (`https://libreria.example/`) se abren en la pestaña web de la lección.
 
-En las rutas del simulador web, la clave opcional `web` de los metadatos indica la página o la dirección de una API que se abre al entrar en la lección (`web: https://libreria.example/` o `web: https://api.libreria.example/v1/libros`).
+En las rutas del simulador web, la clave opcional `web` de los metadatos indica la página o la dirección de una API que se abre al entrar en la lección (`web: https://libreria.example/` o `web: https://api.libreria.example/v1/libros`). En las de Flask puede ser una dirección del servidor del alumno (`web: http://127.0.0.1:5000/tareas`): se abre cuando su programa lo arranca.
 
 ### `checks.json`
 
@@ -324,6 +328,6 @@ Cada cambio empieza con un issue, se hace en su propia rama y entra en `main` co
 - [esbuild](https://esbuild.github.io) empaqueta el JavaScript y los estilos.
 - Tipografías de Google Fonts: Martian Mono, IBM Plex Sans y JetBrains Mono.
 
-Skulpt implementa la mayor parte de Python 3, pero no todo. Por ejemplo, no admite `match` / `case`, `nonlocal` ni `eval`, y no trae los módulos `json`, `abc`, `typing`, `dataclasses`, `csv` ni `urllib.parse`. El curso aporta versiones propias de `json`, `abc`, `dataclasses` y `typing` (en todas las rutas) y de `csv`, `urllib.parse` y `urllib.robotparser` (simulador web).
+Skulpt implementa la mayor parte de Python 3, pero no todo. Por ejemplo, no admite `match` / `case`, `nonlocal` ni `eval`, y no trae los módulos `json`, `abc`, `typing`, `dataclasses`, `csv` ni `urllib.parse`. El curso aporta versiones propias de `json`, `abc`, `dataclasses` y `typing` (en todas las rutas) y de `csv`, `urllib.parse`, `urllib.robotparser`, `flask` y `werkzeug` (simulador web).
 
-`src/js/python/skulpt-patches.js` corrige además algunas diferencias con CPython: `str.title()` con tildes, el mensaje de las excepciones propias (`super().__init__(mensaje)`), `super()` cuando la clase base tiene `__str__`, las anotaciones sin valor (`nombre: str`), `list[str]` y un fallo por el que un `import` podía perder el módulo si Skulpt hacía una pausa en mitad.
+`src/js/python/skulpt-patches.js` corrige además algunas diferencias con CPython: `str.title()` con tildes, el mensaje de las excepciones propias (`super().__init__(mensaje)`), `super()` cuando la clase base tiene `__str__`, las anotaciones sin valor (`nombre: str`), `list[str]`, un fallo por el que un `import` podía perder el módulo si Skulpt hacía una pausa en mitad y otro por el que `x in objeto` daba siempre `True` si el `__contains__` del objeto tenía un bucle.
