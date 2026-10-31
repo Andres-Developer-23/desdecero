@@ -9,7 +9,7 @@ import { $, escapeHtml } from "../lib/dom.js";
 import { formatDayKey, pad2 } from "../lib/dates.js";
 import { storage } from "../lib/storage.js";
 import { isRunning, stopPython } from "../python/engine.js";
-import { onWebRun, virtualInternet } from "../web/runtime.js";
+import { onWebRun, viewerRequest, virtualInternet } from "../web/runtime.js";
 import { createWebViewer } from "../web/web-viewer.js";
 import { createEditor, needsNewEditor, waitForEditorLibrary } from "../ui/editor.js";
 import { highlightExamples } from "../ui/examples.js";
@@ -58,7 +58,10 @@ export function createLessonView({ course, progress }) {
     onWrite: () => tabs.markUnread("output"),
   });
   const preview = createFletRenderer(elements.preview, { onEvent: sendFletEvent });
-  const webViewer = createWebViewer(elements.web, { internet: virtualInternet });
+  const webViewer = createWebViewer(elements.web, {
+    internet: virtualInternet,
+    send: viewerRequest,
+  });
   const tabs = createTabs(
     elements.tabs,
     { preview: elements.preview, web: elements.web, output: elements.output },
@@ -155,7 +158,7 @@ export function createLessonView({ course, progress }) {
         : "# pulsa ▶ ejecutar (Ctrl + Enter) para ver aquí la salida,",
       "system",
     );
-    if (web) terminal.line("# en «web», las páginas que pida tu programa,", "system");
+    if (web) terminal.line("# en «web», las páginas que pida tu programa o tu servidor,", "system");
     terminal.line("# y ✓ comprobar cuando creas que el ejercicio está resuelto.", "system");
 
     // Se elige la pestaña después de escribir, para no marcar "salida" como pendiente.
@@ -174,11 +177,14 @@ export function createLessonView({ course, progress }) {
     }
   }
 
-  /** Al terminar un programa, el navegador enseña las páginas que pidió. */
+  /**
+   * Al terminar un programa, el navegador enseña las páginas que pidió o, si
+   * dejó un servidor de Flask en marcha, la página de la lección en él.
+   */
   onWebRun((lastRun) => {
     if (!isWebLesson() || root.hidden) return;
-    webViewer.showRun(lastRun);
-    if (lastRun.requests.length) tabs.markUnread("web");
+    webViewer.showRun(lastRun, { serverUrl: lesson.web });
+    if (lastRun.requests.length || lastRun.server) tabs.markUnread("web");
   });
 
   /** Los enlaces de la teoría a los sitios de práctica se abren en la pestaña «web». */

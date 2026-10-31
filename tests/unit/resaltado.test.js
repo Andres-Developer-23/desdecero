@@ -19,6 +19,10 @@ describe("resaltado de la pestaña «web»", () => {
 
   test("escapa el HTML de los textos y no toca lo que no es JSON", () => {
     assert.equal(highlightJson('"<b>"'), '<span class="hl-string">&quot;&lt;b&gt;&quot;</span>');
+    assert.equal(
+      highlightJson('{"a\\u00f1o": "Bogot\\u00e1 \\/ \\"x\\""}'),
+      '{\n  <span class="hl-key">&quot;año&quot;</span>: <span class="hl-string">&quot;Bogotá / \\&quot;x\\&quot;&quot;</span>\n}',
+    );
     assert.equal(highlightJson("<h1>Hola</h1>"), null);
     assert.equal(highlightJson('{"a": 1,}'), null);
   });

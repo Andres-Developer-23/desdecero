@@ -7,7 +7,7 @@
 import { beginFletSession, usesFlet } from "../flet/runtime.js";
 import { isPythonEngineReady } from "../python/libraries.js";
 import { isRunning, runPython } from "../python/engine.js";
-import { lastRun } from "../web/runtime.js";
+import { beginWebSession, lastRun } from "../web/runtime.js";
 
 /** Líneas de cada archivo guardado que se enseñan en la consola. */
 const FILE_PREVIEW_LINES = 8;
@@ -33,6 +33,14 @@ export async function runInTerminal(code, terminal, options = {}) {
   terminal.clear();
   const session = beginFletSession({
     renderer: preview,
+    terminal,
+    timeLimitMs: options.timeLimitMs,
+    onError: (error) => {
+      options.editor?.markErrorLine(error.line);
+      options.onError?.(error);
+    },
+  });
+  beginWebSession({
     terminal,
     timeLimitMs: options.timeLimitMs,
     onError: (error) => {
@@ -79,6 +87,11 @@ export async function runInTerminal(code, terminal, options = {}) {
             "system",
           );
         }
+      } else if (lastRun().server) {
+        terminal.line(
+          `# tu servidor está en marcha en ${lastRun().server.origin}: pruébalo en la pestaña web`,
+          "system",
+        );
       } else if (!result.stdout) {
         terminal.line("(el programa no imprimió nada)", "system");
       }

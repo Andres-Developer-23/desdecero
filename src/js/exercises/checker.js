@@ -12,6 +12,7 @@ import { TIME_LIMIT_MS } from "../config.js";
 import { beginFletSession } from "../flet/runtime.js";
 import { isSyntaxError } from "../python/errors.js";
 import { runPython } from "../python/engine.js";
+import { beginWebSession } from "../web/runtime.js";
 import { countLines, indentLines, normalizeOutput, stripComments } from "./text.js";
 
 /**
@@ -42,6 +43,7 @@ export async function checkExercise(lesson, code, terminal) {
 
   // Las comprobaciones no dibujan nada: la vista previa anterior se detiene.
   beginFletSession({ renderer: null, terminal });
+  beginWebSession({ terminal, timeLimitMs: TIME_LIMIT_MS.check });
 
   const studentCode = checks.ignore ? code.replace(new RegExp(checks.ignore, "gm"), "") : code;
   const studentLines = countLines(studentCode);

@@ -6,7 +6,7 @@
 export function applySkulptPatches(Sk) {
   fixStrTitle(Sk);
   avoidPausingImports(Sk);
-  fixZeroArgumentSuper(Sk);
+  fixCompiler(Sk);
   fixExceptionInit(Sk);
   allowBareAnnotations(Sk);
   allowGenericAliases(Sk);
@@ -63,25 +63,43 @@ function avoidPausingImports(Sk) {
 }
 
 /**
- * Para super() sin argumentos, el código que genera Skulpt comprueba si
- * existe self llamando a self.toString(), que ejecuta el __str__ de la
- * clase. Si __str__ usa un atributo que todavía no existe (lo normal dentro
- * de __init__, antes de llamar a super().__init__), el programa fallaba con
- * un AttributeError sin sentido. La comprobación se cambia por otra que no
- * toca el objeto.
+ * Arreglos en el JavaScript que genera el compilador de Skulpt.
+ *
+ * - super() sin argumentos comprobaba si existe self llamando a
+ *   self.toString(), que ejecuta el __str__ de la clase. Si __str__ usa un
+ *   atributo que todavía no existe (lo normal dentro de __init__, antes de
+ *   llamar a super().__init__), el programa fallaba con un AttributeError
+ *   sin sentido. La comprobación se cambia por otra que no toca el objeto.
+ *
+ * - Las comparaciones (in, ==, <...) convertían el resultado en bool antes
+ *   de mirar si el motor había hecho una pausa. Si un __contains__ propio
+ *   tenía un bucle (y por tanto una pausa), "x in objeto" daba siempre
+ *   True. Ahora se convierte después de atender la pausa.
  */
 const SUPER_SELF_CHECK = 'self.toString().indexOf("Window") > 0';
 const SAFE_SUPER_SELF_CHECK = '(typeof window !== "undefined" && self === window)';
+const EAGER_COMPARE =
+  /\$ret = Sk\.builtin\.bool\(Sk\.misceval\.richCompareBool\(([^;]*?), true\)\);/g;
+const COMPARE_RESULT = /(\$compareres\d+)=\$ret;/g;
 
-function fixZeroArgumentSuper(Sk) {
+/** Aplica los arreglos al código compilado. Se exporta para probarlo. */
+export function fixCompiledCode(code) {
+  let fixed = code;
+  if (fixed.includes(SUPER_SELF_CHECK)) {
+    fixed = fixed.split(SUPER_SELF_CHECK).join(SAFE_SUPER_SELF_CHECK);
+  }
+  return fixed
+    .replace(EAGER_COMPARE, "$ret = Sk.misceval.richCompareBool($1, true);")
+    .replace(COMPARE_RESULT, "$ret = Sk.builtin.bool($ret);$1=$ret;");
+}
+
+function fixCompiler(Sk) {
   const compile = Sk?.compile;
   if (!compile || compile.$patched) return;
 
   const patched = function compile_(...args) {
     const result = compile.apply(this, args);
-    if (typeof result?.code === "string" && result.code.includes(SUPER_SELF_CHECK)) {
-      result.code = result.code.split(SUPER_SELF_CHECK).join(SAFE_SUPER_SELF_CHECK);
-    }
+    if (typeof result?.code === "string") result.code = fixCompiledCode(result.code);
     return result;
   };
   patched.$patched = true;

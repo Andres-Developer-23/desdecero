@@ -161,6 +161,21 @@ describe("carga del contenido", () => {
     assert.deepEqual(course.apis, { "api.tienda.example": { productos: [] } });
   });
 
+  test("admite lecciones que empiezan en el servidor de Flask del alumno", () => {
+    const lesson = (url) => ({
+      ...VALID_LESSON,
+      "lesson.md": VALID_LESSON["lesson.md"].replace("summary:", `web: ${url}\nsummary:`),
+    });
+    const course = loadCourse(
+      makeCourse("flask", { "01-hola": lesson("http://127.0.0.1:5000/tareas") }),
+    );
+    assert.equal(course.routes[0].modules[0].lessons[0].web, "http://127.0.0.1:5000/tareas");
+    assert.throws(
+      () => loadCourse(makeCourse("flask-mal", { "01-hola": lesson("http://127.0.0.1:8000/") })),
+      /"web" apunta a una página que no existe/,
+    );
+  });
+
   test("valida los archivos de las APIs: nombre api.<nombre>.example.json y JSON válido", () => {
     const dir = makeCourse("apis-rotas", { "01-hola": VALID_LESSON });
     mkdirSync(path.join(dir, "api"));

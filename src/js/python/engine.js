@@ -162,8 +162,10 @@ let handlingEvent = false;
 
 /**
  * Llama a una función de Python ya definida (por ejemplo, un manejador de
- * eventos de una app de Flet) cuando el programa principal ya terminó.
- * @returns {Promise<{status: "ok" | "error" | "busy", error?: ReturnType<typeof parseSkulptError>}>}
+ * eventos de una app de Flet o el servidor de Flask) cuando el programa
+ * principal ya terminó. Si va bien, value es lo que devolvió, convertido a
+ * JavaScript.
+ * @returns {Promise<{status: "ok" | "error" | "busy", value?: unknown, error?: ReturnType<typeof parseSkulptError>}>}
  */
 export async function callPython(fn, args, { onOutput, timeLimitMs } = {}) {
   if (running || handlingEvent) return { status: "busy" };
@@ -174,8 +176,10 @@ export async function callPython(fn, args, { onOutput, timeLimitMs } = {}) {
   Sk.execStart = Date.now();
   try {
     const pyArgs = args.map((value) => Sk.ffi.remapToPy(value));
-    await Sk.misceval.asyncToPromise(() => Sk.misceval.callsimOrSuspendArray(fn, pyArgs));
-    return { status: "ok" };
+    const result = await Sk.misceval.asyncToPromise(() =>
+      Sk.misceval.callsimOrSuspendArray(fn, pyArgs),
+    );
+    return { status: "ok", value: Sk.ffi.remapToJs(result) };
   } catch (error) {
     return { status: "error", error: parseSkulptError(error) };
   } finally {

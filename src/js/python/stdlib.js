@@ -1,6 +1,6 @@
 /*
  * Módulos de la biblioteca estándar que Skulpt no trae, escritos en Python
- * (src/python/): abc, dataclasses, json y typing. Están disponibles en
+ * (src/python/): abc, dataclasses, functools, json y typing. Están disponibles en
  * todas las rutas, en el playground y en los ejemplos.
  *
  * json analiza el texto en JavaScript (json-parse.js) a través del módulo
@@ -9,6 +9,7 @@
 
 import abcSource from "../../python/abc.py";
 import dataclassesSource from "../../python/dataclasses.py";
+import functoolsSource from "../../python/functools.py";
 import jsonSource from "../../python/json/__init__.py";
 import typingSource from "../../python/typing.py";
 import { registerPythonFiles } from "./engine.js";
@@ -40,6 +41,7 @@ export function installStandardLibraryExtras() {
   registerPythonFiles({
     "src/lib/abc.py": abcSource,
     "src/lib/dataclasses.py": dataclassesSource,
+    "src/lib/functools.py": functoolsSource,
     "src/lib/json/__init__.py": jsonSource,
     "src/lib/_json.js": JSON_BRIDGE_SOURCE,
     "src/lib/typing.py": typingSource,
