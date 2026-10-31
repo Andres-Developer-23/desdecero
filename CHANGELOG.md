@@ -4,6 +4,25 @@ Todos los cambios importantes del proyecto se anotan aquí. El formato sigue [Ke
 
 ## [Sin publicar]
 
+## [1.6.0] - 2026-10-30
+
+### Añadido
+
+- Ruta «Crea tu propia API con Flask»: 12 lecciones en 5 módulos, de un primer servidor a una API de tareas completa con token, validación, CRUD, errores en JSON y pruebas automáticas.
+- Simulador de Flask: los módulos `flask` y `werkzeug` con la API de Flask 3 (rutas, `request`, respuestas JSON, `abort`, `errorhandler`, `url_for`, `test_client`...) y las mismas respuestas que Flask 3.1. `app.run()` deja el servidor en marcha en `http://127.0.0.1:5000` hasta la siguiente ejecución, y la consola muestra su registro.
+- La pestaña «web» puede enviar peticiones con cualquier método, datos JSON y cabeceras, para probar el servidor del alumno y las APIs de práctica.
+- Módulo `functools` (`wraps`, `partial`, `reduce`, `lru_cache`...) en todas las rutas.
+- Explicaciones en español de los errores típicos de Flask: una vista sin `return` y `request` fuera de una petición.
+
+### Cambiado
+
+- La pestaña «web» enseña el JSON sin escapes `\uXXXX` y su panel de detalles se llama «detalles de la petición y la respuesta».
+
+### Corregido
+
+- `x in objeto` daba siempre `True` si el `__contains__` del objeto tenía un bucle.
+- La barra de dirección de la pestaña «web» no aceptaba direcciones sin `https://`.
+
 ## [1.5.0] - 2026-10-29
 
 ### Añadido
@@ -118,7 +137,8 @@ Todos los cambios importantes del proyecto se anotan aquí. El formato sigue [Ke
 - Consola con `input()` interactivo y errores explicados en español.
 - Playground libre y progreso guardado en el navegador.
 
-[Sin publicar]: https://github.com/Andres-Developer-23/desdecero/compare/v1.5.0...HEAD
+[Sin publicar]: https://github.com/Andres-Developer-23/desdecero/compare/v1.6.0...HEAD
+[1.6.0]: https://github.com/Andres-Developer-23/desdecero/compare/v1.5.0...v1.6.0
 [1.5.0]: https://github.com/Andres-Developer-23/desdecero/compare/v1.4.0...v1.5.0
 [1.4.0]: https://github.com/Andres-Developer-23/desdecero/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/Andres-Developer-23/desdecero/compare/v1.2.0...v1.3.0
