@@ -1,0 +1,12 @@
+{
+  "requires": [
+    {
+      "pattern": "isinstance\\(",
+      "message": "Comprueba los tipos con isinstance()."
+    },
+    {
+      "pattern": "422",
+      "message": "Responde 422 cuando los datos no son válidos."
+    }
+  ]
+}

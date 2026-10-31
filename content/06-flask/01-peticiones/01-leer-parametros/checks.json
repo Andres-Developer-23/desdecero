@@ -1,0 +1,12 @@
+{
+  "requires": [
+    {
+      "pattern": "request\\.args\\.get\\(",
+      "message": "Lee los parámetros con request.args.get()."
+    },
+    {
+      "pattern": "type\\s*=\\s*int",
+      "message": "Convierte los números con type=int."
+    }
+  ]
+}

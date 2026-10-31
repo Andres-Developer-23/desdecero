@@ -1,0 +1,12 @@
+{
+  "requires": [
+    {
+      "pattern": "<int:id>",
+      "message": "Usa el convertidor <int:id> en la ruta de un libro."
+    },
+    {
+      "pattern": "abort\\(404\\)",
+      "message": "Responde 404 con abort(404) cuando el libro no existe."
+    }
+  ]
+}

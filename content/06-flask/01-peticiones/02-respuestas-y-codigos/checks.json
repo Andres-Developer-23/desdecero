@@ -1,0 +1,8 @@
+{
+  "requires": [
+    {
+      "pattern": "app\\.json\\.ensure_ascii\\s*=\\s*False",
+      "message": "Configura app.json.ensure_ascii = False."
+    }
+  ]
+}

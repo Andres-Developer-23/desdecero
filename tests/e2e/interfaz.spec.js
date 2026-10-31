@@ -17,13 +17,17 @@ test("el panel muestra las rutas y el siguiente paso", async ({ page }) => {
   const apis = page.getByRole("article", { name: "APIs y JSON" });
   await expect(apis).toContainText("0/12");
   await expect(apis).toContainText("Antes conviene terminar «Programación orientada a objetos»");
-  // Las rutas siguen el orden de las carpetas: Python, POO, Flet, scraping y APIs.
+  const flask = page.getByRole("article", { name: "Crea tu propia API con Flask" });
+  await expect(flask).toContainText("0/12");
+  await expect(flask).toContainText("Antes conviene terminar «APIs y JSON»");
+  // Las rutas siguen el orden de las carpetas: Python, POO, Flet, scraping, APIs y Flask.
   await expect(page.locator(".route-card h3")).toHaveText([
     /Python desde cero/,
     /Programación orientada a objetos/,
     /Apps con Flet/,
     /Web scraping con Python/,
     /APIs y JSON/,
+    /Crea tu propia API con Flask/,
   ]);
   await expect(page.locator("#panel-actions .cta--primary")).toContainText(
     "empezar: Tu primer programa",

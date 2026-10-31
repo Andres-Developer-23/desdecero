@@ -1,0 +1,8 @@
+{
+  "requires": [
+    {
+      "pattern": "url_for\\(",
+      "message": "Construye la cabecera Location con url_for()."
+    }
+  ]
+}

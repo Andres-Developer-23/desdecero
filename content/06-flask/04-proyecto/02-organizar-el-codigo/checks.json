@@ -1,0 +1,8 @@
+{
+  "forbids": [
+    {
+      "pattern": "catalogo\\.productos",
+      "message": "Las vistas no deben tocar catalogo.productos: usa los métodos del catálogo."
+    }
+  ]
+}

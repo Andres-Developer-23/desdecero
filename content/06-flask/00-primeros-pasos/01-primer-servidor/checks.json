@@ -1,0 +1,8 @@
+{
+  "requires": [
+    {
+      "pattern": "app\\.run\\(",
+      "message": "Arranca el servidor con app.run() al final."
+    }
+  ]
+}

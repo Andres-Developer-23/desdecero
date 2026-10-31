@@ -4,7 +4,7 @@
 
 **Pruébalo en [andres-developer-23.github.io/desdecero](https://andres-developer-23.github.io/desdecero/)**
 
-Rutas interactivas para aprender **Python desde cero, en español**, y después **programación orientada a objetos**, apps con interfaz gráfica con **Flet**, extracción de datos de la web con **web scraping** y uso de **APIs y JSON**. Cada ruta se divide en módulos y lecciones cortas: cada lección explica una idea, trae ejemplos que se ejecutan con un clic y termina con un ejercicio que se corrige solo.
+Rutas interactivas para aprender **Python desde cero, en español**, y después **programación orientada a objetos**, apps con interfaz gráfica con **Flet**, extracción de datos de la web con **web scraping**, uso de **APIs y JSON** y creación de **APIs propias con Flask**. Cada ruta se divide en módulos y lecciones cortas: cada lección explica una idea, trae ejemplos que se ejecutan con un clic y termina con un ejercicio que se corrige solo.
 
 Todo funciona en el navegador. No hace falta instalar Python ni crear una cuenta.
 
@@ -78,6 +78,18 @@ El progreso y el código que escribes se guardan en el navegador.
 | 02 · Claves y errores | Claves de acceso · Errores, límites y reintentos                                     |
 | 03 · Enviar datos     | Crear datos con `POST` · Modificar y borrar: `PUT`, `PATCH` y `DELETE`               |
 | 04 · Proyecto final   | Modelar respuestas con clases · Combinar varias APIs · Proyecto: un cliente completo |
+
+### Ruta «Crea tu propia API con Flask»
+
+5 módulos y 12 lecciones (unas 3 horas y media) para pasar al otro lado: crear APIs web con [Flask](https://flask.palletsprojects.com). Conviene haber terminado antes la ruta de APIs y JSON. El programa del alumno arranca su servidor con `app.run()` y lo prueba en la pestaña **web**, que puede enviar peticiones con cualquier método, datos JSON y cabeceras; la consola muestra el registro del servidor. Las comprobaciones usan `app.test_client()`, como las pruebas de un proyecto real, y en la lección de pruebas comprueban que las del alumno detectan versiones rotas de la API.
+
+| Módulo                       | Lecciones                                                                              |
+| ---------------------------- | -------------------------------------------------------------------------------------- |
+| 00 · Primeros pasos          | Tu primer servidor con Flask · Rutas con variables                                     |
+| 01 · Peticiones y respuestas | Leer parámetros de consulta · Respuestas JSON y códigos de estado                      |
+| 02 · Recibir datos           | Recibir datos con `POST` · Validar los datos                                           |
+| 03 · Una API completa        | Una API CRUD completa · Errores en JSON · Probar la API con `test_client`              |
+| 04 · Proyecto final          | Proteger la API con un token · Organizar el código · Proyecto: tu propia API de tareas |
 
 ## Desarrollo local
 
