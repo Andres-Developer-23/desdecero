@@ -1,0 +1,7 @@
+{
+  "title": "Crea tu propia API con Flask",
+  "description": "Pasa al otro lado: crea APIs web con Flask. Rutas, parámetros, respuestas JSON y códigos de estado, datos con POST, validación, un CRUD completo, errores en JSON, pruebas automáticas y tokens.",
+  "level": "Intermedio",
+  "runtime": "web",
+  "requires": "apis"
+}

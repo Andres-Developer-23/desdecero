@@ -173,3 +173,27 @@ test("sin ejecutar el programa, el servidor no está en marcha", async ({ page }
   expect(result.log).toContain("ConnectionError");
   expect(result.log).toContain("app.test_client()");
 });
+
+test("las lecciones de Flask abren el servidor del alumno en la pestaña web", async ({ page }) => {
+  await openApp(page, "#l-recibir-json");
+  const tabs = page.locator("#exercise-tabs");
+  const viewer = page.locator("#exercise-web");
+  await expect(tabs.locator("[data-tab='web']")).toHaveAttribute("aria-selected", "true");
+  // Antes de ejecutar, el servidor no está en marcha.
+  await expect(viewer.locator(".web-viewer__address")).toHaveValue("http://127.0.0.1:5000/notas");
+  await expect(viewer.locator(".web-viewer__status")).toHaveText("sin conexión");
+
+  await page.evaluate(() => {
+    const { course } = window.__desdecero;
+    document
+      .querySelector("#exercise-editor .CodeMirror")
+      .CodeMirror.setValue(course.getLesson("recibir-json").solution);
+  });
+  await page.locator("#view-lesson [data-action='run']").first().click();
+  await expect(page.locator("#exercise-output")).toContainText("tu servidor está en marcha");
+  await expect(tabs.locator("[data-tab='web'] .tabs__dot")).toBeVisible();
+  await tabs.locator("[data-tab='web']").click();
+  await expect(viewer.locator(".web-viewer__status")).toHaveText("200 OK");
+  await expect(viewer.locator(".web-viewer__source")).toContainText('"titulo": "Compras"');
+  await expect(page.locator("#exercise-output")).toContainText('"GET /notas HTTP/1.1" 200 -');
+});

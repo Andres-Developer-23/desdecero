@@ -1,0 +1,13 @@
+{
+  "requires": [
+    {
+      "pattern": "def\\s+probar_api\\(\\s*cliente\\s*\\)",
+      "message": "Escribe la función probar_api(cliente)."
+    }
+  ],
+  "runs": [
+    {
+      "contains": ["Todas las pruebas pasan"]
+    }
+  ]
+}

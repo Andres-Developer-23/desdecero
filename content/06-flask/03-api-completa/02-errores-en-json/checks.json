@@ -1,0 +1,12 @@
+{
+  "requires": [
+    {
+      "pattern": "@app\\.errorhandler\\(\\s*HTTPException\\s*\\)",
+      "message": "Añade un manejador con @app.errorhandler(HTTPException)."
+    },
+    {
+      "pattern": "@app\\.errorhandler\\(\\s*500\\s*\\)",
+      "message": "Añade un manejador con @app.errorhandler(500)."
+    }
+  ]
+}

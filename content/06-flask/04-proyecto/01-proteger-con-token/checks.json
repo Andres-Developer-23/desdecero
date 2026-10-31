@@ -1,0 +1,12 @@
+{
+  "requires": [
+    {
+      "pattern": "@wraps\\(",
+      "message": "Usa @wraps(vista) en el decorador."
+    },
+    {
+      "pattern": "@requiere_token",
+      "message": "Protege las rutas de /entradas con @requiere_token."
+    }
+  ]
+}

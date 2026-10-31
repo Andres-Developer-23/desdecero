@@ -1,0 +1,16 @@
+{
+  "requires": [
+    {
+      "pattern": "@app\\.(put|route)\\(",
+      "message": "Añade la vista de PUT."
+    },
+    {
+      "pattern": "@app\\.(patch|route)\\(",
+      "message": "Añade la vista de PATCH."
+    },
+    {
+      "pattern": "@app\\.(delete|route)\\(",
+      "message": "Añade la vista de DELETE."
+    }
+  ]
+}

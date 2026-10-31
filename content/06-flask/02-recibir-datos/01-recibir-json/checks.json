@@ -1,0 +1,12 @@
+{
+  "requires": [
+    {
+      "pattern": "get_json\\(",
+      "message": "Lee los datos con request.get_json()."
+    },
+    {
+      "pattern": "url_for\\(",
+      "message": "Construye la dirección de Location con url_for()."
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+{
+  "title": "Peticiones y respuestas",
+  "description": "Lee los parámetros de la consulta y responde con el JSON y el código de estado adecuados."
+}
