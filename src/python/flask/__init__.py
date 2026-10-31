@@ -982,7 +982,14 @@ class Flask:
             return error.get_response()
         raise error
 
-    def _handle_exception(self, error, request):
+    def _propagate_exceptions(self):
+        """Como Flask: con debug o testing, los errores llegan al cliente de pruebas."""
+        value = self.config.get("PROPAGATE_EXCEPTIONS")
+        if value is not None:
+            return bool(value)
+        return bool(self.testing or self.debug)
+
+    def _handle_exception(self, error, request, from_server):
         """Una excepción que no es HTTP: se registra en la consola y se responde 500."""
         handler = self._find_error_handler(error)
         if handler is not None:
@@ -992,11 +999,8 @@ class Flask:
             + request.path + " [" + request.method + "]"
         )
         _web.report_error(error)
-        server_error = InternalServerError(original_exception=error)
-        handler = self._find_error_handler(server_error)
-        if handler is not None:
-            return self.make_response(handler(server_error))
-        if self.debug:
+        if from_server and self._propagate_exceptions():
+            # En modo debug, el depurador de Werkzeug enseña el error en lugar del manejador de 500.
             body = (
                 "<!doctype html>\n<html lang=en>\n<title>" + type(error).__name__
                 + " // Werkzeug Debugger</title>\n<h1>" + type(error).__name__ + "</h1>\n<p>"
@@ -1004,10 +1008,18 @@ class Flask:
                 + "</p>\n<p>Mira la consola: ahí está la línea del error.</p>\n"
             )
             return self.response_class(body, 500)
+        server_error = InternalServerError(original_exception=error)
+        handler = self._find_error_handler(server_error)
+        if handler is not None:
+            return self.make_response(handler(server_error))
         return server_error.get_response()
 
-    def _dispatch(self, request):
-        """Atiende una petición y devuelve la respuesta (nunca lanza excepciones)."""
+    def _dispatch(self, request, from_server=False):
+        """
+        Atiende una petición y devuelve la respuesta. Un error en una vista se
+        convierte en 500, salvo con debug o testing en el cliente de pruebas,
+        que lo recibe como excepción (como en Flask).
+        """
         self._got_first_request = True
         _request_stack.append(request)
         _app_stack.append(self)
@@ -1027,8 +1039,14 @@ class Flask:
                 except HTTPException as error:
                     response = self._handle_user_exception(error)
             except Exception as error:
+                if (
+                    not from_server
+                    and self._find_error_handler(error) is None
+                    and self._propagate_exceptions()
+                ):
+                    raise
                 try:
-                    response = self._handle_exception(error, request)
+                    response = self._handle_exception(error, request, from_server)
                 except Exception as second:
                     _web.report_error(second)
                     response = InternalServerError().get_response()
@@ -1089,7 +1107,7 @@ class Flask:
     def _serve(self, method, path, query, headers, body):
         """Puente con la pestaña «web»: atiende una petición y la devuelve como diccionario."""
         request = Request(method, path, query or "", headers or {}, body or "", self._running)
-        response = self._dispatch(request)
+        response = self._dispatch(request, from_server=True)
         response.headers.set("Server", "Werkzeug/3.1.9 Python/3.13.5")
         response.headers.set("Date", _web.log_time(False))
         response.headers.set("Connection", "close")

@@ -97,6 +97,14 @@ assert cliente.get("/tareas/uno").status_code == 404
 r = cliente.get("/falla")
 assert r.status_code == 500
 assert "Internal Server Error" in r.get_data(as_text=True)
+
+# Con debug o testing, como en Flask, el error llega al cliente de pruebas.
+app.testing = True
+try:
+    cliente.get("/falla")
+    assert False, "debería lanzar KeyError"
+except KeyError:
+    pass
 `,
   );
   expect(result.passed, result.log).toBe(true);
