@@ -27,7 +27,7 @@ print(respuesta.status_code)
 print(respuesta.json())
 ```
 
-En la pestaña **web**, al desplegar *cabeceras y datos enviados*, verás `X-API-Key` entre las cabeceras de la petición.
+En la pestaña **web**, al desplegar *detalles de la petición y la respuesta*, verás `X-API-Key` entre las cabeceras de la petición.
 
 ### 401 y 403
 

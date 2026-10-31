@@ -63,7 +63,7 @@ export function createWebViewer(host, { internet, send }) {
       </label>
     </details>
     <details class="web-viewer__details" hidden>
-      <summary>cabeceras y datos enviados</summary>
+      <summary>detalles de la petición y la respuesta</summary>
       <div class="web-viewer__exchange"></div>
     </details>
     <div class="web-viewer__view">
