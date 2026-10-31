@@ -328,6 +328,6 @@ Cada cambio empieza con un issue, se hace en su propia rama y entra en `main` co
 - [esbuild](https://esbuild.github.io) empaqueta el JavaScript y los estilos.
 - Tipografías de Google Fonts: Martian Mono, IBM Plex Sans y JetBrains Mono.
 
-Skulpt implementa la mayor parte de Python 3, pero no todo. Por ejemplo, no admite `match` / `case`, `nonlocal` ni `eval`, y no trae los módulos `json`, `abc`, `typing`, `dataclasses`, `csv` ni `urllib.parse`. El curso aporta versiones propias de `json`, `abc`, `dataclasses` y `typing` (en todas las rutas) y de `csv`, `urllib.parse`, `urllib.robotparser`, `flask` y `werkzeug` (simulador web).
+Skulpt implementa la mayor parte de Python 3, pero no todo. Por ejemplo, no admite `match` / `case`, `nonlocal` ni `eval`, y no trae los módulos `json`, `abc`, `typing`, `dataclasses`, `functools`, `csv` ni `urllib.parse`. El curso aporta versiones propias de `json`, `abc`, `dataclasses`, `functools` y `typing` (en todas las rutas) y de `csv`, `urllib.parse`, `urllib.robotparser`, `flask` y `werkzeug` (simulador web).
 
 `src/js/python/skulpt-patches.js` corrige además algunas diferencias con CPython: `str.title()` con tildes, el mensaje de las excepciones propias (`super().__init__(mensaje)`), `super()` cuando la clase base tiene `__str__`, las anotaciones sin valor (`nombre: str`), `list[str]`, un fallo por el que un `import` podía perder el módulo si Skulpt hacía una pausa en mitad y otro por el que `x in objeto` daba siempre `True` si el `__contains__` del objeto tenía un bucle.
