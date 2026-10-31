@@ -126,7 +126,7 @@ requests.post("https://api.tareas.example/v1/tareas", json={"titulo": "Probar la
   await expect(items).toHaveCount(2);
   await expect(items.nth(1)).toContainText("POST");
   await expect(items.nth(1)).toContainText("201");
-  await expect(viewer.locator(".web-viewer__method")).toHaveText("POST");
+  await expect(viewer.locator(".web-viewer__method")).toHaveValue("POST");
   await expect(viewer.locator(".web-viewer__status")).toHaveText("201 Created");
   await expect(viewer.locator(".web-viewer__source")).toContainText(
     '"titulo": "Probar la pestaña web"',
@@ -140,7 +140,7 @@ requests.post("https://api.tareas.example/v1/tareas", json={"titulo": "Probar la
 
   // La primera petición sigue ahí, con la lista de tareas que vio el programa.
   await items.first().click();
-  await expect(viewer.locator(".web-viewer__method")).toBeHidden();
+  await expect(viewer.locator(".web-viewer__method")).toHaveValue("GET");
   await expect(viewer.locator(".web-viewer__source")).toContainText('"Comprar pan"');
 
   // La barra de dirección usa una sesión aparte: no ve la tarea creada ni pasa el token.

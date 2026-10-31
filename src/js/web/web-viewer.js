@@ -6,8 +6,9 @@
  *   elegir una, enseña lo que se envió y lo que respondió el servidor.
  * - Las páginas HTML se ven como en un navegador o como su código, que es
  *   lo que recibe requests; el JSON de las APIs, con sangría y colores.
- * - La barra de dirección hace peticiones GET con una sesión aparte, así
- *   que explorar no cambia el estado que vio el programa.
+ * - La barra de dirección hace peticiones con cualquier método, datos y
+ *   cabeceras, con una sesión aparte: explorar no cambia el estado que vio
+ *   el programa. Así se prueba también el servidor de Flask del alumno.
  *
  * Las páginas se dibujan en un iframe sin scripts (sandbox) con srcdoc; las
  * hojas de estilo enlazadas se toman de la misma web de prácticas.
@@ -18,27 +19,49 @@ import { highlightHtml, highlightJson } from "./highlight.js";
 
 const MAX_LISTED_REQUESTS = 60;
 
+const METHODS = ["GET", "POST", "PUT", "PATCH", "DELETE"];
+const VIEWER_HEADERS = { "User-Agent": "Mozilla/5.0 (navegador de desdecero)", Accept: "*/*" };
+
 /**
  * @param {HTMLElement} host
- * @param {{internet: () => ReturnType<import("./internet.js").createInternet>}} options
+ * @param {object} options
+ * @param {() => ReturnType<import("./internet.js").createInternet>} options.internet
+ * @param {(request: object, session: object) => Promise<object>} options.send
+ *   Hace una petición de la barra de dirección (runtime.viewerRequest).
  */
-export function createWebViewer(host, { internet }) {
+export function createWebViewer(host, { internet, send }) {
   host.classList.add("web-viewer");
   host.innerHTML = `
     <div class="web-viewer__requests" hidden>
       <span class="web-viewer__requests-title"></span>
       <ol class="web-viewer__request-list"></ol>
     </div>
-    <form class="web-viewer__bar" autocomplete="off">
+    <form class="web-viewer__bar" autocomplete="off" novalidate>
       <button type="button" class="web-viewer__back" aria-label="Página anterior" disabled>←</button>
-      <span class="web-viewer__method" hidden></span>
+      <select class="web-viewer__method" aria-label="Método de la petición">
+        ${METHODS.map((method) => `<option>${method}</option>`).join("")}
+      </select>
       <input class="web-viewer__address" type="url" spellcheck="false" aria-label="Dirección" />
+      <button type="submit" class="web-viewer__send">enviar</button>
       <span class="web-viewer__status"></span>
       <div class="web-viewer__modes" role="group" aria-label="Cómo ver la página">
         <button type="button" data-mode="page" aria-pressed="true">página</button>
         <button type="button" data-mode="source" aria-pressed="false">código</button>
       </div>
     </form>
+    <details class="web-viewer__compose">
+      <summary>datos y cabeceras para enviar</summary>
+      <label>
+        <span>cabeceras, una por línea (Nombre: valor)</span>
+        <textarea class="web-viewer__compose-headers" rows="2" spellcheck="false"
+          placeholder="Authorization: Bearer tk-ana-5f2b9c"></textarea>
+      </label>
+      <label>
+        <span>datos (JSON) para POST, PUT y PATCH</span>
+        <textarea class="web-viewer__compose-body" rows="3" spellcheck="false"
+          placeholder='{"titulo": "Probar mi API"}'></textarea>
+      </label>
+    </details>
     <details class="web-viewer__details" hidden>
       <summary>cabeceras y datos enviados</summary>
       <div class="web-viewer__exchange"></div>
@@ -57,6 +80,8 @@ export function createWebViewer(host, { internet }) {
     back: host.querySelector(".web-viewer__back"),
     method: host.querySelector(".web-viewer__method"),
     address: host.querySelector(".web-viewer__address"),
+    composeHeaders: host.querySelector(".web-viewer__compose-headers"),
+    composeBody: host.querySelector(".web-viewer__compose-body"),
     status: host.querySelector(".web-viewer__status"),
     modes: host.querySelector(".web-viewer__modes"),
     details: host.querySelector(".web-viewer__details"),
@@ -75,12 +100,25 @@ export function createWebViewer(host, { internet }) {
   /** Lo que se ve ahora: {method, url, sent, response, index}. */
   let current = null;
   let recorded = [];
+  let session = internet().newSession();
+  let ticket = 0;
   const history = [];
 
-  /** Pide una dirección con GET (sesión aparte) y la enseña. */
-  function open(url, { remember = true } = {}) {
-    const response = internet().request({ method: "GET", url });
-    show({ method: "GET", url, sent: null, response, index: -1 }, { remember });
+  /**
+   * Hace una petición desde el navegador (GET si no se indica otra cosa) y
+   * enseña la respuesta. Devuelve una promesa que se cumple al enseñarla.
+   */
+  async function open(url, { remember = true, method = "GET", headers = {}, body = null } = {}) {
+    const mine = ++ticket;
+    parts.empty.hidden = true;
+    parts.address.value = url;
+    parts.method.value = method;
+    parts.status.textContent = "…";
+    delete parts.status.dataset.state;
+    const sent = { ...VIEWER_HEADERS, ...headers };
+    const response = await send({ method, url, headers: sent, body }, session);
+    if (mine !== ticket) return;
+    show({ method, url, sent: { headers: sent, body }, response, index: -1 }, { remember });
   }
 
   /** Enseña una petición del último programa: lo enviado y lo recibido. */
@@ -100,14 +138,14 @@ export function createWebViewer(host, { internet }) {
   }
 
   function show(exchange, { remember }) {
+    ticket++;
     if (remember && current) history.push(current);
     parts.back.disabled = !history.length;
     parts.empty.hidden = true;
     current = exchange;
     const { response } = exchange;
 
-    parts.method.hidden = exchange.method === "GET";
-    parts.method.textContent = exchange.method;
+    parts.method.value = METHODS.includes(exchange.method) ? exchange.method : "GET";
     parts.method.dataset.method = exchange.method;
     for (const button of parts.requestList.querySelectorAll("button")) {
       button.classList.toggle("is-current", Number(button.dataset.index) === exchange.index);
@@ -157,35 +195,73 @@ export function createWebViewer(host, { internet }) {
     if (current) show(current, { remember: false });
   }
 
-  /** Muestra las peticiones de la última ejecución, y la última de ellas. */
-  function showRun(run) {
+  /**
+   * Muestra las peticiones de la última ejecución, y la última de ellas. Si
+   * el programa dejó un servidor de Flask en marcha, abre su página
+   * (serverUrl, si es de ese servidor, o su raíz).
+   */
+  function showRun(run, { serverUrl = null } = {}) {
     recorded = run.requests;
     parts.requests.hidden = !recorded.length;
-    if (!recorded.length) return;
-    parts.requestsTitle.textContent =
-      recorded.length === 1
-        ? "tu programa hizo 1 petición:"
-        : `tu programa hizo ${recorded.length} peticiones:`;
-    const first = Math.max(0, recorded.length - MAX_LISTED_REQUESTS);
-    parts.requestList.innerHTML = recorded
-      .slice(first)
-      .map(
-        (request, i) => `<li><button type="button" data-index="${first + i}">
+    if (recorded.length) {
+      parts.requestsTitle.textContent =
+        recorded.length === 1
+          ? "tu programa hizo 1 petición:"
+          : `tu programa hizo ${recorded.length} peticiones:`;
+      const first = Math.max(0, recorded.length - MAX_LISTED_REQUESTS);
+      parts.requestList.innerHTML = recorded
+        .slice(first)
+        .map(
+          (request, i) => `<li><button type="button" data-index="${first + i}">
           <span class="web-viewer__time">${request.time.toFixed(1)} s</span>
           <span class="web-viewer__verb" data-method="${escapeHtml(request.method)}">${escapeHtml(request.method)}</span>
           <span class="web-viewer__code" data-state="${request.status < 400 ? "ok" : "error"}">${request.status}</span>
           <span class="web-viewer__url">${escapeHtml(shortUrl(request.url))}</span>
         </button></li>`,
-      )
-      .join("");
+        )
+        .join("");
+    }
+    if (run.server) {
+      const url = serverUrl?.startsWith(`${run.server.origin}/`)
+        ? serverUrl
+        : `${run.server.origin}/`;
+      return open(url, { remember: Boolean(current) });
+    }
+    if (!recorded.length) return Promise.resolve();
     showRecorded(recorded.length - 1);
     parts.requestList.querySelector("li:last-child button")?.scrollIntoView({ block: "nearest" });
+    return Promise.resolve();
+  }
+
+  /** Cabeceras escritas en el navegador: «Nombre: valor» por línea. */
+  function composedHeaders() {
+    const headers = {};
+    for (const line of parts.composeHeaders.value.split("\n")) {
+      const colon = line.indexOf(":");
+      if (colon > 0) headers[line.slice(0, colon).trim()] = line.slice(colon + 1).trim();
+    }
+    return headers;
   }
 
   parts.form.addEventListener("submit", (event) => {
     event.preventDefault();
     const value = parts.address.value.trim();
-    if (value) open(/^[a-z]+:\/\//i.test(value) ? value : `https://${value}`);
+    if (!value) return;
+    const method = parts.method.value;
+    const headers = composedHeaders();
+    let body = null;
+    if (method !== "GET" && parts.composeBody.value.trim()) {
+      body = parts.composeBody.value;
+      const hasType = Object.keys(headers).some((name) => name.toLowerCase() === "content-type");
+      if (!hasType)
+        headers["Content-Type"] = looksLikeJson(body) ? "application/json" : "text/plain";
+    }
+    const local = /^(localhost|127\.0\.0\.1)(:|\/|$)/.test(value);
+    const url = /^[a-z]+:\/\//i.test(value) ? value : `${local ? "http" : "https"}://${value}`;
+    open(url, { method, headers, body });
+  });
+  parts.method.addEventListener("change", () => {
+    parts.method.dataset.method = parts.method.value;
   });
   parts.back.addEventListener("click", () => {
     const previous = history.pop();
@@ -221,6 +297,8 @@ export function createWebViewer(host, { internet }) {
     reset(url) {
       history.length = 0;
       recorded = [];
+      session = internet().newSession();
+      ticket++;
       parts.back.disabled = true;
       parts.requests.hidden = true;
       parts.requestList.innerHTML = "";
@@ -233,7 +311,7 @@ export function createWebViewer(host, { internet }) {
       else {
         parts.address.value = "";
         parts.status.textContent = "";
-        parts.method.hidden = true;
+        parts.method.value = "GET";
         parts.details.hidden = true;
         parts.frame.hidden = true;
         parts.source.hidden = true;
@@ -283,6 +361,15 @@ function withInlineStyles(html, pageUrl, internet) {
     const response = internet.request({ url: new URL(href, pageUrl).href });
     return "error" in response || response.status !== 200 ? "" : `<style>${response.body}</style>`;
   });
+}
+
+function looksLikeJson(text) {
+  try {
+    JSON.parse(text);
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 function shortUrl(url) {

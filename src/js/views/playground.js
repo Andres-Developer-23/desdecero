@@ -7,7 +7,7 @@ import { $ } from "../lib/dom.js";
 import { storage } from "../lib/storage.js";
 import { stopPython } from "../python/engine.js";
 import { usesWeb } from "../web/detect.js";
-import { onWebRun, virtualInternet } from "../web/runtime.js";
+import { onWebRun, viewerRequest, virtualInternet } from "../web/runtime.js";
 import { createWebViewer } from "../web/web-viewer.js";
 import { createEditor, needsNewEditor, waitForEditorLibrary } from "../ui/editor.js";
 import { runInTerminal } from "../ui/run-in-terminal.js";
@@ -42,7 +42,7 @@ export function createPlaygroundView({ progress }) {
   const results = $("#playground-results");
   const preview = createFletRenderer($("#playground-preview"), { onEvent: sendFletEvent });
   const webHost = $("#playground-web");
-  const webViewer = createWebViewer(webHost, { internet: virtualInternet });
+  const webViewer = createWebViewer(webHost, { internet: virtualInternet, send: viewerRequest });
   let showsWeb = false;
   let editor = null;
   let saveTimer = null;

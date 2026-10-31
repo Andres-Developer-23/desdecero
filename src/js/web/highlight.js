@@ -25,7 +25,8 @@ const JSON_TOKEN = /"(?:[^"\\]|\\.)*"|-?\d+(?:\.\d+)?(?:[eE][-+]?\d+)?|true|fals
 
 /**
  * JSON con sangría de 2 espacios y colores, o null si el texto no es JSON.
- * Respeta los números tal como vienen (2.0 sigue siendo 2.0).
+ * Respeta los números tal como vienen (2.0 sigue siendo 2.0) y enseña los
+ * textos sin escapes \uXXXX.
  */
 export function highlightJson(text) {
   try {
@@ -56,7 +57,9 @@ export function highlightJson(text) {
     } else if (token === ":") {
       html += ": ";
     } else {
-      html += `<span class="${tokenClass(token, next)}">${escapeHtml(token)}</span>`;
+      // Los textos se enseñan sin escapes: "a\u00f1o" (como lo envía Flask) se ve "año".
+      const shown = token.startsWith('"') ? JSON.stringify(JSON.parse(token)) : token;
+      html += `<span class="${tokenClass(token, next)}">${escapeHtml(shown)}</span>`;
     }
   }
   return html;
