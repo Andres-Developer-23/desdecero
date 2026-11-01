@@ -198,3 +198,66 @@ app.run()
   await expect(viewer.locator(".db-viewer__databases")).toHaveValue("notas.db");
   await expect(viewer.locator(".db-viewer__grid tbody td")).toHaveText(["1", "Comprar pan"]);
 });
+
+test("las lecciones de SQL abren la base de práctica en la pestaña «datos»", async ({ page }) => {
+  await openApp(page, "#l-que-es-una-base-de-datos");
+  const tabs = page.locator("#exercise-tabs");
+  const viewer = page.locator("#exercise-db");
+  await expect(tabs.locator("[data-tab='db']")).toHaveAttribute("aria-selected", "true");
+  await expect(tabs.locator("[data-tab='web']")).toBeHidden();
+  await expect(viewer.locator(".db-viewer__databases")).toHaveValue("libreria.db");
+  await expect(viewer.locator(".db-viewer__tables button")).toHaveText([
+    "autores 11",
+    "clientes 10",
+    "libros 18",
+    "ventas 40",
+  ]);
+  await viewer.locator(".db-viewer__sql").fill("SELECT nombre FROM autores WHERE pais = 'Chile'");
+  await viewer.locator(".db-viewer__run").click();
+  await expect(viewer.locator(".db-viewer__grid tbody td")).toHaveText(["Sofía Cárdenas"]);
+
+  // Al ejecutar, la consola enseña la salida; la base de práctica no cuenta como creada.
+  await page.evaluate(() => {
+    const { course } = window.__desdecero;
+    document
+      .querySelector("#exercise-editor .CodeMirror")
+      .CodeMirror.setValue(course.getLesson("que-es-una-base-de-datos").solution);
+  });
+  await page.locator("#view-lesson [data-action='run']").first().click();
+  const output = page.locator("#exercise-output");
+  await expect(output).toContainText("11 autores");
+  await expect(output).not.toContainText("# base de datos:");
+});
+
+test("el proyecto final tiene a la vez el navegador y los datos", async ({ page }) => {
+  await openApp(page, "#l-api-con-base-de-datos");
+  const tabs = page.locator("#exercise-tabs");
+  await expect(tabs.locator("[data-tab='db']")).toBeVisible();
+  await expect(tabs.locator("[data-tab='web']")).toBeVisible();
+  await page.evaluate(() => {
+    const { course } = window.__desdecero;
+    document
+      .querySelector("#exercise-editor .CodeMirror")
+      .CodeMirror.setValue(course.getLesson("api-con-base-de-datos").solution);
+  });
+  await page.locator("#view-lesson [data-action='run']").first().click();
+  await expect(page.locator("#exercise-output")).toContainText("tu servidor está en marcha");
+
+  // Una venta desde el navegador cambia la base de datos: «datos» avisa con un punto.
+  await tabs.locator("[data-tab='web']").click();
+  const web = page.locator("#exercise-web");
+  await expect(web.locator(".web-viewer__status")).toHaveText("200 OK");
+  await web.locator(".web-viewer__address").fill("http://127.0.0.1:5000/ventas");
+  await web.locator(".web-viewer__compose summary").click();
+  await web
+    .locator(".web-viewer__compose-body")
+    .fill('{"cliente_id": 3, "libro_id": 7, "cantidad": 2}');
+  await web.locator(".web-viewer__method").selectOption("POST");
+  await web.locator(".web-viewer__send").click();
+  await expect(web.locator(".web-viewer__status")).toHaveText("201 CREATED");
+  await expect(tabs.locator("[data-tab='db'] .tabs__dot")).toBeVisible();
+
+  await tabs.locator("[data-tab='db']").click();
+  const viewer = page.locator("#exercise-db");
+  await expect(viewer.locator(".db-viewer__tables button")).toContainText(["ventas 41"]);
+});

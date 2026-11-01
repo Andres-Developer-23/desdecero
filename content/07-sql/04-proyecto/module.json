@@ -1,0 +1,4 @@
+{
+  "title": "Proyecto final",
+  "description": "Relaciona tablas con claves foráneas, ordena el acceso a los datos en un repositorio y conecta una API de Flask con su base de datos."
+}

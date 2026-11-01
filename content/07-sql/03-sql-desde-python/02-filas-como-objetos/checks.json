@@ -1,0 +1,8 @@
+{
+  "requires": [
+    {
+      "pattern": "sqlite3\\.Row",
+      "message": "Usa conexion.row_factory = sqlite3.Row para pedir las columnas por su nombre."
+    }
+  ]
+}

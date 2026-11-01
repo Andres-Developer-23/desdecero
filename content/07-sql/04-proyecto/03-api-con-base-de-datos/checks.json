@@ -1,0 +1,8 @@
+{
+  "requires": [
+    {
+      "pattern": "with\\s+(db|conexion|obtener_db\\(\\))\\s*:|\\.commit\\(\\)",
+      "message": "Guarda la venta en una transacción (with db:) para que quede confirmada."
+    }
+  ]
+}

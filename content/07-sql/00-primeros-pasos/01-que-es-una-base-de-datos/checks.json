@@ -1,0 +1,17 @@
+{
+  "requires": [
+    {
+      "pattern": "sqlite3\\.connect\\(",
+      "message": "Conecta con la base de datos con sqlite3.connect(\"libreria.db\")."
+    },
+    {
+      "pattern": "[Ss][Ee][Ll][Ee][Cc][Tt]",
+      "message": "Consulta los autores con una sentencia SELECT."
+    }
+  ],
+  "runs": [
+    {
+      "output": "Marta Ibáñez (Colombia)\nAndrés Quintero (Colombia)\nLucía Restrepo (Colombia)\nTomás Beltrán (Argentina)\nClara Montoya (México)\nJulián Ortega (Perú)\nSofía Cárdenas (Chile)\nElena Vargas (España)\nDiego Salazar (México)\nPaula Méndez (Argentina)\nNatalia Rojas (Colombia)\n11 autores"
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "requires": [
+    {
+      "pattern": "[Ii][Ff]\\s+[Nn][Oo][Tt]\\s+[Ee][Xx][Ii][Ss][Tt][Ss]",
+      "message": "Usa CREATE TABLE IF NOT EXISTS para que el programa se pueda ejecutar más de una vez."
+    },
+    {
+      "pattern": "[Pp][Rr][Aa][Gg][Mm][Aa]\\s+[Tt][Aa][Bb][Ll][Ee]_[Ii][Nn][Ff][Oo]",
+      "message": "Muestra las columnas con PRAGMA table_info(peliculas)."
+    }
+  ],
+  "runs": [
+    {
+      "output": "id INTEGER\ntitulo TEXT\nanio INTEGER\nduracion INTEGER\nnota REAL"
+    }
+  ]
+}
