@@ -35,6 +35,22 @@ jobs:
       - name: Instalar Chromium para Playwright
         run: npx playwright install --with-deps chromium
 
+      # Las pruebas sirven Pyodide en local: se descarga de las releases de GitHub una vez por versión.
+      - name: Versión de Pyodide
+        id: pyodide
+        run: echo "version=$(node -p "require('./package.json').devDependencies.pyodide")" >> "$GITHUB_OUTPUT"
+
+      - name: Pyodide en caché
+        id: cache-pyodide
+        uses: actions/cache@v6
+        with:
+          path: .cache/pyodide
+          key: pyodide-${{ steps.pyodide.outputs.version }}-${{ hashFiles('scripts/download-pyodide.js') }}
+
+      - name: Descargar Pyodide
+        if: steps.cache-pyodide.outputs.cache-hit != 'true'
+        run: node scripts/download-pyodide.js
+
       - name: Formato
         run: npm run format:check
 
