@@ -144,6 +144,8 @@ content/                      contenido del curso: rutas, módulos y lecciones
     libreria.example/         sitios de práctica para el web scraping (HTML, CSS y robots.txt)
   api/
     api.libreria.example.json datos de las APIs de práctica (su código está en src/js/web/apis/)
+  db/
+    libreria.sql              script que crea la base de datos de práctica libreria.db
   01-python/
     route.json                título, descripción, nivel y motor de la ruta
     00-primeros-pasos/
@@ -179,10 +181,11 @@ scripts/
 | `exercises/`      | Comprobación automática de los ejercicios.                                               |
 | `flet/`           | Simulador de Flet: sesiones y eventos, dibujo de la vista previa y colores de Material.  |
 | `web/`            | Simulador web: web de prácticas, APIs, puente con Python y navegador de la pestaña web.  |
+| `sql/`            | Simulador de sqlite3: SQLite (sql.js), puente con Python y explorador de «datos».        |
 | `ui/`             | Piezas de interfaz: terminal, editor, Markdown, ejemplos y cabecera.                     |
 | `views/`          | Las pantallas: panel, ruta, lección y playground.                                        |
 
-Las dependencias van en un solo sentido: `views` usa `ui`, `exercises`, `flet`, `web`, `python`, `progress` y `course`, y todos ellos pueden usar `lib` y `config`. Ningún módulo de `python/` o `progress/` toca el DOM.
+Las dependencias van en un solo sentido: `views` usa `ui`, `exercises`, `flet`, `web`, `sql`, `python`, `progress` y `course`, y todos ellos pueden usar `lib` y `config`. Ningún módulo de `python/` o `progress/` toca el DOM.
 
 ### Simulador de Flet
 
@@ -224,6 +227,17 @@ La diferencia está en `app.run()`: no se queda esperando. Deja el servidor en m
 
 `src/js/web/web-viewer.js` es el navegador de la pestaña **web** de las lecciones (y del playground). Lista las peticiones del último programa y, para cada una, enseña lo que se envió y lo que respondió el servidor: la página tal como se ve o como su código HTML, o el JSON con sangría y colores. Su barra de dirección hace peticiones con cualquier método, y con datos JSON y cabeceras, usando una sesión aparte: explorar no cambia lo que vio el programa.
 
+### Simulador de SQLite
+
+Para las bases de datos no hace falta imitar nada: [sql.js](https://sql.js.org) es SQLite compilado a WebAssembly, el mismo motor que usa Python, y se carga desde un CDN la primera vez que un programa importa `sqlite3`. Encima, `src/python/sqlite3/` tiene la API del módulo `sqlite3` de Python (DB-API 2.0): `connect`, `execute`, `executemany` y `executescript`, parámetros `?` y `:nombre`, `fetchone`, `fetchmany`, `fetchall`, recorrer el cursor, `description`, `rowcount`, `lastrowid`, `sqlite3.Row`, `commit`, `rollback`, `with conexion:` y las mismas excepciones (`IntegrityError`, `OperationalError`, `ProgrammingError`…). `src/js/sql/databases.js` guarda las bases de cada ejecución y sigue las reglas de transacciones de Python: antes de un `INSERT`, `UPDATE`, `DELETE` o `REPLACE` se abre una transacción que hay que confirmar con `commit()`, y lo que no se confirma se pierde al cerrar. Los resultados se compararon con los de Python 3.13 en dos baterías de casos.
+
+- Un archivo (`sqlite3.connect("tienda.db")`) dura hasta la siguiente ejecución, como el disco simulado; `:memory:` es una base nueva en cada conexión.
+- Las **bases de práctica** de `content/db/` (`libreria.sql` crea `libreria.db`: autores, libros, clientes y ventas) se crean de nuevo en cada ejecución, así que se pueden modificar sin miedo.
+- La pestaña **datos** (`src/js/sql/db-viewer.js`) enseña las bases del último programa y las de práctica: sus tablas, la estructura de cada una y sus filas, y tiene una consola para lanzar SQL. Lo que se cambia desde ella cambia la base de verdad hasta la siguiente ejecución. Con un servidor de Flask, se actualiza después de cada petición.
+- Al terminar, la consola resume las bases que creó el programa, y los errores de SQLite se explican en español (una tabla o columna que no existe, un error de sintaxis, una restricción `UNIQUE` o `NOT NULL`, el número de parámetros…).
+
+Diferencias con Python: los enteros de más de 32 bits que se pasan como parámetro se guardan bien en las columnas `INTEGER`, pero en una expresión sin tipo (`SELECT ?`) vuelven como texto; `create_function`, `detect_types` y los adaptadores no están, y los `float` se escriben con la precisión de Skulpt (`50366.66666666666` en lugar de `50366.666666666664`), por eso las lecciones redondean con `round()`.
+
 ## Escribir lecciones
 
 El contenido se organiza en tres niveles de carpetas `NN-id`: rutas, módulos y lecciones. El número da el orden y el resto es el identificador. El de la ruta aparece en su URL (`#ruta-python`) y el de la lección en la suya (`#l-hola-mundo`); los identificadores de lección no se pueden repetir, tampoco entre rutas. El build se detiene con un mensaje claro si falta un archivo o algo no es válido.
@@ -240,7 +254,7 @@ El contenido se organiza en tres niveles de carpetas `NN-id`: rutas, módulos y 
 }
 ```
 
-`runtime` indica con qué se ejecutan los ejercicios de la ruta. `requires` es opcional: el identificador de una ruta que conviene terminar antes, y aparece como recomendación en el panel.
+`runtime` indica con qué se ejecutan los ejercicios de la ruta y qué pestañas tienen sus lecciones: `python` (solo la consola), `flet` (la vista previa), `web` (el navegador de la pestaña **web**) o `sqlite` (la pestaña **datos**, y también **web** en las lecciones con `web`). `requires` es opcional: el identificador de una ruta que conviene terminar antes, y aparece como recomendación en el panel.
 
 ### `lesson.md`
 
@@ -265,6 +279,8 @@ Una pista corta.
 Se admite un Markdown reducido: párrafos, subtítulos con `### `, listas con `- ` o `1. ` (sin anidar), `**negrita**`, `*cursiva*`, `` `código` ``, `[enlaces](https://...)` y bloques de código. Un bloque ` ```py ` se muestra con botón de ejecutar; ` ```txt ` se muestra como texto fijo, por ejemplo la salida esperada. Los enlaces a la web de prácticas (`https://libreria.example/`) se abren en la pestaña web de la lección.
 
 En las rutas del simulador web, la clave opcional `web` de los metadatos indica la página o la dirección de una API que se abre al entrar en la lección (`web: https://libreria.example/` o `web: https://api.libreria.example/v1/libros`). En las de Flask puede ser una dirección del servidor del alumno (`web: http://127.0.0.1:5000/tareas`): se abre cuando su programa lo arranca.
+
+En las rutas de SQLite, la clave opcional `db` indica la base de práctica que enseña la pestaña **datos** al entrar en la lección (`db: libreria.db`).
 
 ### `checks.json`
 
@@ -336,10 +352,11 @@ Cada cambio empieza con un issue, se hace en su propia rama y entra en `main` co
 
 - [Skulpt](https://skulpt.org) 1.2 ejecuta Python 3 dentro del navegador, sin servidor.
 - [CodeMirror](https://codemirror.net/5/) 5 es el editor con resaltado de sintaxis.
+- [sql.js](https://sql.js.org) 1.14 es SQLite compilado a WebAssembly, para el módulo `sqlite3`.
 - La vista previa de Flet usa Roboto y Material Icons de Google Fonts.
 - [esbuild](https://esbuild.github.io) empaqueta el JavaScript y los estilos.
 - Tipografías de Google Fonts: Martian Mono, IBM Plex Sans y JetBrains Mono.
 
-Skulpt implementa la mayor parte de Python 3, pero no todo. Por ejemplo, no admite `match` / `case`, `nonlocal` ni `eval`, y no trae los módulos `json`, `abc`, `typing`, `dataclasses`, `functools`, `csv` ni `urllib.parse`. El curso aporta versiones propias de `json`, `abc`, `dataclasses`, `functools` y `typing` (en todas las rutas) y de `csv`, `urllib.parse`, `urllib.robotparser`, `flask` y `werkzeug` (simulador web).
+Skulpt implementa la mayor parte de Python 3, pero no todo. Por ejemplo, no admite `match` / `case`, `nonlocal` ni `eval`, y no trae los módulos `json`, `abc`, `typing`, `dataclasses`, `functools`, `csv` ni `urllib.parse`. El curso aporta versiones propias de `json`, `abc`, `dataclasses`, `functools` y `typing` (en todas las rutas) y de `csv`, `urllib.parse`, `urllib.robotparser`, `flask` y `werkzeug` (simulador web) y `sqlite3` (simulador de SQLite).
 
 `src/js/python/skulpt-patches.js` corrige además algunas diferencias con CPython: `str.title()` con tildes, el mensaje de las excepciones propias (`super().__init__(mensaje)`), `super()` cuando la clase base tiene `__str__`, las anotaciones sin valor (`nombre: str`), `list[str]`, un fallo por el que un `import` podía perder el módulo si Skulpt hacía una pausa en mitad y otro por el que `x in objeto` daba siempre `True` si el `__contains__` del objeto tenía un bucle.
