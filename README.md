@@ -4,7 +4,7 @@
 
 **Pruébalo en [andres-developer-23.github.io/desdecero](https://andres-developer-23.github.io/desdecero/)**
 
-Rutas interactivas para aprender **Python desde cero, en español**, y después **programación orientada a objetos**, apps con interfaz gráfica con **Flet**, extracción de datos de la web con **web scraping**, uso de **APIs y JSON** y creación de **APIs propias con Flask**. Cada ruta se divide en módulos y lecciones cortas: cada lección explica una idea, trae ejemplos que se ejecutan con un clic y termina con un ejercicio que se corrige solo.
+Rutas interactivas para aprender **Python desde cero, en español**, y después **programación orientada a objetos**, apps con interfaz gráfica con **Flet**, extracción de datos de la web con **web scraping**, uso de **APIs y JSON**, creación de **APIs propias con Flask** y **bases de datos con SQL**. Cada ruta se divide en módulos y lecciones cortas: cada lección explica una idea, trae ejemplos que se ejecutan con un clic y termina con un ejercicio que se corrige solo.
 
 Todo funciona en el navegador. No hace falta instalar Python ni crear una cuenta.
 
@@ -90,6 +90,18 @@ El progreso y el código que escribes se guardan en el navegador.
 | 02 · Recibir datos           | Recibir datos con `POST` · Validar los datos                                           |
 | 03 · Una API completa        | Una API CRUD completa · Errores en JSON · Probar la API con `test_client`              |
 | 04 · Proyecto final          | Proteger la API con un token · Organizar el código · Proyecto: tu propia API de tareas |
+
+### Ruta «Bases de datos con SQL»
+
+5 módulos y 12 lecciones (algo más de 3 horas) para guardar y consultar datos con SQL desde Python, con el módulo `sqlite3` y SQLite de verdad. Conviene haber terminado antes la ruta de Flask, porque el proyecto final es una API con su base de datos. Las lecciones trabajan sobre `libreria.db`, la base de datos de una librería (autores, libros, clientes y ventas) que vuelve a su estado inicial en cada ejecución, y la pestaña **datos** enseña las tablas del programa, su estructura y sus filas, con una consola para probar consultas. Las comprobaciones miran la salida, consultan las tablas que crea el alumno y prueban sus funciones con casos límite, como textos con apóstrofos o intentos de inyección de SQL.
+
+| Módulo                    | Lecciones                                                                                     |
+| ------------------------- | --------------------------------------------------------------------------------------------- |
+| 00 · Primeros pasos       | Qué es una base de datos · Consultas con `SELECT`                                             |
+| 01 · Resumir y relacionar | Contar, sumar y agrupar · Unir tablas con `JOIN`                                              |
+| 02 · Crear y modificar    | Crear tablas · Insertar datos · Actualizar, borrar y transacciones                            |
+| 03 · SQL desde Python     | Parámetros e inyección de SQL · Filas como objetos                                            |
+| 04 · Proyecto final       | Relaciones y claves foráneas · Un repositorio con SQL · Proyecto: una API de Flask con SQLite |
 
 ## Desarrollo local
 
