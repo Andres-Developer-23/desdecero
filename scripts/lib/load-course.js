@@ -3,6 +3,7 @@
  *
  *   content/web/<sitio>.example/...            web de prácticas del simulador web (opcional)
  *   content/api/<api>.example.json             datos de las APIs de práctica (opcional)
+ *   content/db/<base>.sql                      bases de datos de práctica de sqlite3 (opcional)
  *   content/NN-ruta/route.json                 título, descripción, nivel y motor
  *   content/NN-ruta/NN-modulo/module.json      título y descripción del módulo
  *   content/NN-ruta/NN-modulo/NN-leccion/
@@ -25,7 +26,7 @@ const LESSON_SECTIONS = { Ejercicio: "exercise", Pista: "hint" };
 const CHECK_KEYS = new Set(["requires", "forbids", "ignore", "runs"]);
 const RUN_KEYS = new Set(["inputs", "output", "contains", "test"]);
 /** Motores con los que se ejecutan los ejercicios de una ruta. */
-export const RUNTIMES = new Set(["python", "flet", "web"]);
+export const RUNTIMES = new Set(["python", "flet", "web", "sqlite"]);
 /** Tipos de archivo de la web de prácticas, por extensión. */
 const WEB_TYPES = {
   ".html": "text/html; charset=utf-8",
@@ -37,6 +38,7 @@ const WEB_TYPES = {
 /** Los sitios de práctica usan el dominio reservado .example: nunca apuntan a una web real. */
 const WEB_HOST = /^[a-z0-9]+(?:-[a-z0-9]+)*\.example$/;
 const API_FILE = /^(api\.[a-z0-9]+(?:-[a-z0-9]+)*\.example)\.json$/;
+const DB_FILE = /^([a-z0-9]+(?:-[a-z0-9]+)*)\.sql$/;
 
 export class CourseError extends Error {
   constructor(problems) {
@@ -47,18 +49,20 @@ export class CourseError extends Error {
   }
 }
 
-/** Devuelve { routes: [...], web: {...}, apis: {...} } listo para incrustar en la página. */
+/** Devuelve { routes, web, apis, databases } listo para incrustar en la página. */
 export function loadCourse(contentDir) {
   const problems = [];
   const seenLessonIds = new Map();
 
-  const routes = numberedDirs(contentDir, problems, { ignore: ["web", "api"] }).map(
+  const routes = numberedDirs(contentDir, problems, { ignore: ["web", "api", "db"] }).map(
     ({ dir, slug }) => loadRoute(dir, slug, { problems, seenLessonIds }),
   );
   const webDir = path.join(contentDir, "web");
   const web = existsSync(webDir) ? loadWeb(webDir, problems) : {};
   const apiDir = path.join(contentDir, "api");
   const apis = existsSync(apiDir) ? loadApis(apiDir, problems) : {};
+  const dbDir = path.join(contentDir, "db");
+  const databases = existsSync(dbDir) ? loadDatabases(dbDir, problems) : {};
 
   if (!routes.length) problems.push(`${rel(contentDir)}: no hay rutas`);
   const routeIds = new Set(routes.map((route) => route.id));
@@ -79,13 +83,18 @@ export function loadCourse(contentDir) {
           `${rel(lesson.dir)}/lesson.md: "web" apunta a una página que no existe: ${lesson.web}`,
         );
       }
+      if (lesson.db != null && !(lesson.db in databases)) {
+        problems.push(
+          `${rel(lesson.dir)}/lesson.md: "db" apunta a una base de práctica que no existe: ${lesson.db}`,
+        );
+      }
       delete lesson.dir;
     }
     delete route.dir;
   }
 
   if (problems.length) throw new CourseError(problems);
-  return { routes, web, apis };
+  return { routes, web, apis, databases };
 }
 
 function isLocalServer(url) {
@@ -175,6 +184,24 @@ function loadApis(dir, problems) {
   return apis;
 }
 
+/**
+ * Lee las bases de datos de práctica: content/db/libreria.sql es el script
+ * que crea libreria.db cada vez que un programa la abre.
+ */
+function loadDatabases(dir, problems) {
+  const databases = {};
+  for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    const file = path.join(dir, entry.name);
+    const name = entry.isFile() ? entry.name.match(DB_FILE)?.[1] : null;
+    if (!name) {
+      problems.push(`${rel(file)}: cada base de práctica es un archivo <nombre>.sql`);
+      continue;
+    }
+    databases[`${name}.db`] = readFileSync(file, "utf8");
+  }
+  return databases;
+}
+
 function listFiles(dir) {
   return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
     const full = path.join(dir, entry.name);
@@ -210,6 +237,9 @@ function loadLesson(dir, id, problems) {
   if (!Number.isInteger(meta.minutes) || meta.minutes <= 0) {
     problems.push(`${rel(file("lesson.md"))}: "minutes" debe ser un número entero positivo`);
   }
+  if (meta.db !== undefined && typeof meta.db !== "string") {
+    problems.push(`${rel(file("lesson.md"))}: "db" debe ser el nombre de una base de práctica`);
+  }
   if (meta.web !== undefined && typeof meta.web !== "string") {
     problems.push(`${rel(file("lesson.md"))}: "web" debe ser la URL de una página de prácticas`);
   }
@@ -230,6 +260,7 @@ function loadLesson(dir, id, problems) {
     test: existsSync(file("test.py")) ? readText(file("test.py"), problems).trimEnd() : "",
     checks,
     web: meta.web ?? null,
+    db: meta.db ?? null,
   };
 }
 
