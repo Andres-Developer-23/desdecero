@@ -12,6 +12,9 @@
  *
  * Los valores van como en sql.js con useBigInt: los enteros, BigInt; los
  * reales, number; los textos, string; los BLOB, Uint8Array; NULL, null.
+ * Al enlazar parámetros, un float de Python llega como {real: número}:
+ * sql.js enlazaría 2.0 como el entero 2, y en SQLite no es lo mismo (2.0 / 4
+ * da 0.5, pero 2 / 4 da 0).
  *
  * No depende del navegador: se prueba en tests/unit con sql.js.
  */
@@ -114,6 +117,8 @@ export function createDatabases(SQL, { practice = {} } = {}) {
   /**
    * Prepara los parámetros como los pide sql.js, con los errores de sqlite3.
    * values es una lista (para ?) o un objeto {nombre: valor} (para :nombre).
+   * @returns {{bound: unknown[] | Record<string, unknown>, reals: Array<[number, number]>}}
+   *   reals: las posiciones (desde 1) de los float, que hay que enlazar como REAL.
    */
   function bindings(sql, values) {
     const slots = sqlParameters(sql);
@@ -127,6 +132,7 @@ export function createDatabases(SQL, { practice = {} } = {}) {
     }
     // sql.js recibe una lista para los "?" (por posición) o un objeto {":nombre": valor}.
     const result = named ? {} : [];
+    const reals = [];
     slots.forEach((slot, index) => {
       let value;
       if (named) {
@@ -153,10 +159,24 @@ export function createDatabases(SQL, { practice = {} } = {}) {
           `Error binding parameter ${index + 1}: type '${value.unsupported}' is not supported`,
         );
       }
+      if (value !== null && typeof value === "object" && "real" in value) {
+        value = value.real;
+        reals.push([index + 1, value]);
+      }
       if (named) result[slot] = value;
       else result.push(value);
     });
-    return result;
+    return { bound: result, reals };
+  }
+
+  /** Vuelve a enlazar los float como REAL: sql.js enlaza como entero todo número sin decimales. */
+  function bindReals(statement, reals) {
+    if (!reals.length || typeof SQL._sqlite3_bind_double !== "function") return;
+    // El puntero de la sentencia es la primera propiedad del objeto Statement de sql.js (antes de db).
+    const keys = Object.keys(statement);
+    const pointer = keys[1] === "db" ? statement[keys[0]] : null;
+    if (typeof pointer !== "number") return;
+    for (const [position, value] of reals) SQL._sqlite3_bind_double(pointer, position, value);
   }
 
   /**
@@ -167,7 +187,7 @@ export function createDatabases(SQL, { practice = {} } = {}) {
   function execute(handle, sql, values = null, { implicitTransactions = true } = {}) {
     const { entry } = connection(handle);
     const { db } = entry;
-    const bound = bindings(sql, values);
+    const { bound, reals } = bindings(sql, values);
     if (isBlankSql(sql)) return { columns: null, rows: [], rowcount: -1, lastrowid: null };
 
     return guard(() => {
@@ -186,7 +206,10 @@ export function createDatabases(SQL, { practice = {} } = {}) {
           entry.inTransaction = true;
           entry.owner = handle;
         }
-        if (Array.isArray(bound) ? bound.length : Object.keys(bound).length) statement.bind(bound);
+        if (Array.isArray(bound) ? bound.length : Object.keys(bound).length) {
+          statement.bind(bound);
+          bindReals(statement, reals);
+        }
         const columns = statement.getColumnNames();
         const rows = [];
         while (statement.step()) rows.push(statement.get(null, { useBigInt: true }));
@@ -246,6 +269,7 @@ export function createDatabases(SQL, { practice = {} } = {}) {
     for (const entry of files.values()) entry.db.close();
     files = new Map();
     connections = new Map();
+    nextHandle = 1;
   }
 
   /* ---- Para la pestaña «datos» ---- */
