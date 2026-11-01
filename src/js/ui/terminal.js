@@ -12,6 +12,7 @@ import { explainError } from "../python/errors.js";
 const KIND_CLASS = {
   output: "",
   system: "out--system",
+  warning: "out--warning",
   input: "out--input",
   error: "out--error",
   explanation: "out--explanation",
@@ -119,6 +120,20 @@ export function createTerminal(element, { onWrite } = {}) {
     /** Quita los campos de entrada que hayan quedado sin responder. */
     dropPrompts() {
       element.querySelectorAll(".console__stdin").forEach((form) => form.remove());
+    },
+
+    /** Muestra un gráfico (PNG en base64) dentro de la salida, como en un cuaderno. */
+    image(base64, label) {
+      ensureNewline();
+      const figure = document.createElement("img");
+      figure.className = "console__figure";
+      figure.src = `data:image/png;base64,${base64}`;
+      figure.alt = label;
+      element.appendChild(figure);
+      // La imagen cierra el fragmento: lo siguiente va en uno nuevo, debajo.
+      element.appendChild(document.createTextNode(""));
+      figure.addEventListener("load", scrollToEnd, { once: true });
+      scrollToEnd();
     },
 
     /** Explica un error de Python: tipo, línea, mensaje y una ayuda en español. */
