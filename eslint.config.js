@@ -24,6 +24,7 @@ export default [
         // Inyectadas por esbuild desde package.json (ver scripts/build.js)
         __SKULPT_VERSION__: "readonly",
         __CODEMIRROR_VERSION__: "readonly",
+        __SQLJS_VERSION__: "readonly",
       },
     },
   },

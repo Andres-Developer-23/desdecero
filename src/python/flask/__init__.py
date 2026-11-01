@@ -36,6 +36,7 @@ __all__ = [
     "Response",
     "abort",
     "current_app",
+    "g",
     "jsonify",
     "make_response",
     "redirect",
@@ -668,6 +669,8 @@ class RequestRedirect(HTTPException):
 
 _request_stack = []
 _app_stack = []
+_g_stack = []
+_MISSING = object()
 
 
 def _current_app_or_none():
@@ -700,27 +703,114 @@ class _AppProxy:
         return getattr(_app_stack[-1], name)
 
 
+class _AppCtxGlobals:
+    """flask.g: un sitio donde guardar datos mientras dura una petición (como la conexión a la base)."""
+
+    def __init__(self):
+        object.__setattr__(self, "_data", {})
+
+    def __getattr__(self, name):
+        data = object.__getattribute__(self, "_data")
+        if name in data:
+            return data[name]
+        raise AttributeError(name)
+
+    def __setattr__(self, name, value):
+        self._data[name] = value
+
+    def __delattr__(self, name):
+        if name not in self._data:
+            raise AttributeError(name)
+        del self._data[name]
+
+    def get(self, name, default=None):
+        return self._data.get(name, default)
+
+    def pop(self, name, default=_MISSING):
+        if default is _MISSING:
+            return self._data.pop(name)
+        return self._data.pop(name, default)
+
+    def setdefault(self, name, default=None):
+        return self._data.setdefault(name, default)
+
+    def __contains__(self, item):
+        return item in self._data
+
+    def __iter__(self):
+        return iter(self._data)
+
+
+class _GlobalsProxy:
+    """El objeto g: apunta al de la petición (o el contexto de aplicación) en curso."""
+
+    def _target(self):
+        if not _g_stack:
+            raise RuntimeError(
+                "Working outside of application context. Usa g dentro de una vista, mientras "
+                "Flask atiende una petición, o dentro de «with app.app_context():»."
+            )
+        return _g_stack[-1]
+
+    def __getattr__(self, name):
+        return getattr(self._target(), name)
+
+    def __setattr__(self, name, value):
+        setattr(self._target(), name, value)
+
+    def __delattr__(self, name):
+        delattr(self._target(), name)
+
+    def get(self, name, default=None):
+        return self._target().get(name, default)
+
+    def pop(self, name, default=_MISSING):
+        return self._target().pop(name, default)
+
+    def setdefault(self, name, default=None):
+        return self._target().setdefault(name, default)
+
+    def __contains__(self, item):
+        return item in self._target()
+
+    def __iter__(self):
+        return iter(self._target())
+
+    def __repr__(self):
+        if not _g_stack:
+            return "<LocalProxy unbound>"
+        return "<flask.g of '" + _app_stack[-1].name + "'>"
+
+
 request = _RequestProxy()
 current_app = _AppProxy()
+g = _GlobalsProxy()
 
 
 class _AppContext:
+    """El contexto de la aplicación: «with app.app_context():» permite usar g y current_app."""
+
     def __init__(self, app):
         self.app = app
 
     def __enter__(self):
-        _app_stack.append(self.app)
+        self.push()
         return self
 
-    def __exit__(self, *args):
-        _app_stack.pop()
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.pop(exc_value)
         return False
 
     def push(self):
         _app_stack.append(self.app)
+        _g_stack.append(_AppCtxGlobals())
 
-    def pop(self):
-        _app_stack.pop()
+    def pop(self, exc=None):
+        try:
+            self.app.do_teardown_appcontext(exc)
+        finally:
+            _g_stack.pop()
+            _app_stack.pop()
 
 
 # ---------------------------------------------------------------------------
@@ -800,6 +890,7 @@ class Flask:
         self._error_handlers = []
         self._running = None
         self._got_first_request = False
+        self.teardown_appcontext_funcs = []
 
     def _check_setup(self, name):
         if self._got_first_request:
@@ -895,10 +986,22 @@ class Flask:
                     return handler
         return None
 
-    # ---- Atender una petición ----
+    # ---- Contexto de la aplicación ----
+
+    def teardown_appcontext(self, f):
+        """Registra una función que se llama al terminar cada petición (para cerrar la base de datos)."""
+        self._check_setup("teardown_appcontext")
+        self.teardown_appcontext_funcs.append(f)
+        return f
+
+    def do_teardown_appcontext(self, exc=None):
+        for function in reversed(self.teardown_appcontext_funcs):
+            function(exc)
 
     def app_context(self):
         return _AppContext(self)
+
+    # ---- Atender una petición ----
 
     def make_response(self, rv):
         """Convierte lo que devuelve una vista en un objeto Response."""
@@ -1022,7 +1125,9 @@ class Flask:
         """
         self._got_first_request = True
         _request_stack.append(request)
-        _app_stack.append(self)
+        context = self.app_context()
+        context.push()
+        failure = None
         try:
             try:
                 try:
@@ -1039,6 +1144,7 @@ class Flask:
                 except HTTPException as error:
                     response = self._handle_user_exception(error)
             except Exception as error:
+                failure = error
                 if (
                     not from_server
                     and self._find_error_handler(error) is None
@@ -1058,8 +1164,9 @@ class Flask:
                     response.headers.set("Content-Length", length)
             return response
         finally:
+            # Al terminar la petición, también con error, se llaman los teardown_appcontext.
             _request_stack.pop()
-            _app_stack.pop()
+            context.pop(failure)
 
     def url_for(self, endpoint, **values):
         external = values.pop("_external", False)

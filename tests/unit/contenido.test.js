@@ -84,10 +84,12 @@ describe("carga del contenido", () => {
         test: "",
         checks: { runs: [{ output: "hola" }] },
         web: null,
+        db: null,
       },
     );
     assert.deepEqual(course.web, {});
     assert.deepEqual(course.apis, {});
+    assert.deepEqual(course.databases, {});
   });
 
   test("lee la web de prácticas: cada archivo en su URL", () => {
@@ -195,6 +197,38 @@ describe("carga del contenido", () => {
     );
   });
 
+  test("lee las bases de datos de práctica y las lecciones que empiezan con una", () => {
+    const lesson = {
+      ...VALID_LESSON,
+      "lesson.md": VALID_LESSON["lesson.md"].replace("summary:", "db: tienda.db\nsummary:"),
+    };
+    const dir = makeCourse("db", { "01-hola": lesson });
+    mkdirSync(path.join(dir, "db"));
+    writeFileSync(path.join(dir, "db", "tienda.sql"), "CREATE TABLE t (x);\n");
+    const course = loadCourse(dir);
+    assert.deepEqual(course.databases, { "tienda.db": "CREATE TABLE t (x);\n" });
+    assert.equal(course.routes[0].modules[0].lessons[0].db, "tienda.db");
+  });
+
+  test("valida las bases de práctica: archivos <nombre>.sql y lecciones que apunten a una que exista", () => {
+    const lesson = {
+      ...VALID_LESSON,
+      "lesson.md": VALID_LESSON["lesson.md"].replace("summary:", "db: otra.db\nsummary:"),
+    };
+    const dir = makeCourse("db-rota", { "01-hola": lesson });
+    mkdirSync(path.join(dir, "db"));
+    writeFileSync(path.join(dir, "db", "Tienda.db"), "");
+    assert.throws(
+      () => loadCourse(dir),
+      (error) => {
+        const text = error.problems.join("\n");
+        assert.match(text, /db\/Tienda\.db: cada base de práctica es un archivo <nombre>\.sql/);
+        assert.match(text, /"db" apunta a una base de práctica que no existe: otra\.db/);
+        return true;
+      },
+    );
+  });
+
   test("informa de todos los problemas a la vez, con la ruta del archivo", () => {
     const dir = makeCourse("roto", {
       "01-hola": { ...VALID_LESSON, "checks.json": '{ "runs": [{ "salida": "x" }] }' },
@@ -229,7 +263,7 @@ describe("carga del contenido", () => {
       () => loadCourse(dir),
       (error) => {
         const text = error.problems.join("\n");
-        assert.match(text, /route\.json: "runtime" debe ser uno de: python, flet, web/);
+        assert.match(text, /route\.json: "runtime" debe ser uno de: python, flet, web, sqlite/);
         assert.match(text, /route\.json: "requires" apunta a una ruta que no existe/);
         return true;
       },

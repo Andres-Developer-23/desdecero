@@ -9,6 +9,8 @@ import { $, escapeHtml } from "../lib/dom.js";
 import { formatDayKey, pad2 } from "../lib/dates.js";
 import { storage } from "../lib/storage.js";
 import { isRunning, stopPython } from "../python/engine.js";
+import { createDbViewer } from "../sql/db-viewer.js";
+import { loadSqlRuntime, onSqlRun, sqlDatabases } from "../sql/runtime.js";
 import { onWebRun, viewerRequest, virtualInternet } from "../web/runtime.js";
 import { createWebViewer } from "../web/web-viewer.js";
 import { createEditor, needsNewEditor, waitForEditorLibrary } from "../ui/editor.js";
@@ -48,6 +50,7 @@ export function createLessonView({ course, progress }) {
     tabs: $("#exercise-tabs"),
     preview: $("#exercise-preview"),
     web: $("#exercise-web"),
+    db: $("#exercise-db"),
     workbench: $(".workbench"),
     success: $("#exercise-success"),
     successLink: $("#exercise-success-link"),
@@ -60,13 +63,25 @@ export function createLessonView({ course, progress }) {
   const preview = createFletRenderer(elements.preview, { onEvent: sendFletEvent });
   const webViewer = createWebViewer(elements.web, {
     internet: virtualInternet,
-    send: viewerRequest,
+    // Un POST, PUT o DELETE al servidor puede cambiar la base de datos: se avisa en «datos».
+    send: async (request, session) => {
+      const response = await viewerRequest(request, session);
+      if (isSqlLesson() && !["GET", "HEAD"].includes(request.method ?? "GET")) {
+        tabs.markUnread("db");
+      }
+      return response;
+    },
   });
+  const dbViewer = createDbViewer(elements.db, { databases: sqlDatabases, load: loadSqlRuntime });
   const tabs = createTabs(
     elements.tabs,
-    { preview: elements.preview, web: elements.web, output: elements.output },
+    { preview: elements.preview, web: elements.web, db: elements.db, output: elements.output },
     { initial: "output" },
   );
+  // Al volver a «datos» se releen las tablas: el servidor de Flask puede haberlas cambiado.
+  elements.tabs.addEventListener("click", (event) => {
+    if (event.target.closest("[data-tab='db']")) dbViewer.refresh();
+  });
   const drafts = createDraftStore();
   let lesson = null;
   let editor = null;
@@ -140,14 +155,19 @@ export function createLessonView({ course, progress }) {
 
   /**
    * Las lecciones de Flet tienen la vista previa de la app; las del simulador web,
-   * el navegador de la web de prácticas; las de Python, solo la salida.
+   * el navegador de la web de prácticas; las de SQL, el explorador de la base de
+   * datos (y el navegador, si la lección empieza en una dirección); las de
+   * Python, solo la salida.
    */
   const isFletLesson = () => lesson.route.runtime === "flet";
-  const isWebLesson = () => lesson?.route.runtime === "web";
+  const isSqlLesson = () => lesson?.route.runtime === "sqlite";
+  const isWebLesson = () =>
+    lesson?.route.runtime === "web" || (isSqlLesson() && lesson.web != null);
 
   function resetExercisePanel() {
     const flet = isFletLesson();
     const web = isWebLesson();
+    const sql = isSqlLesson();
     elements.hint.hidden = true;
     elements.success.hidden = true;
     disarmSolutionButton();
@@ -158,23 +178,28 @@ export function createLessonView({ course, progress }) {
         : "# pulsa ▶ ejecutar (Ctrl + Enter) para ver aquí la salida,",
       "system",
     );
+    if (sql) terminal.line("# en «datos», las tablas de tus bases de datos,", "system");
     if (web) terminal.line("# en «web», las páginas que pida tu programa o tu servidor,", "system");
     terminal.line("# y ✓ comprobar cuando creas que el ejercicio está resuelto.", "system");
 
     // Se elige la pestaña después de escribir, para no marcar "salida" como pendiente.
+    const visible = flet
+      ? ["preview", "output"]
+      : [...(sql ? ["db"] : []), ...(web ? ["web"] : []), "output"];
     elements.workbench.classList.toggle("workbench--flet", flet);
-    elements.workbench.classList.toggle("workbench--web", web);
-    elements.tabs.hidden = !flet && !web;
-    elements.outputTitle.hidden = flet || web;
-    tabs.show(flet ? ["preview", "output"] : web ? ["web", "output"] : ["output"]);
+    elements.workbench.classList.toggle("workbench--web", web || sql);
+    elements.tabs.hidden = visible.length === 1;
+    elements.outputTitle.hidden = visible.length > 1;
+    tabs.show(visible);
     if (flet) {
       preview.showMessage("▶ ejecuta el código para ver tu app aquí");
       tabs.select("preview");
-    } else {
-      preview.clear();
-      if (web) webViewer.reset(lesson.web);
-      tabs.select(web && lesson.web ? "web" : "output");
+      return;
     }
+    preview.clear();
+    if (web) webViewer.reset(lesson.web);
+    if (sql) dbViewer.reset(lesson.db);
+    tabs.select(sql ? "db" : web && lesson.web ? "web" : "output");
   }
 
   /**
@@ -185,6 +210,18 @@ export function createLessonView({ course, progress }) {
     if (!isWebLesson() || root.hidden) return;
     webViewer.showRun(lastRun, { serverUrl: lesson.web });
     if (lastRun.requests.length || lastRun.server) tabs.markUnread("web");
+  });
+
+  /** Y el explorador de datos enseña cómo dejó las bases de datos. */
+  onSqlRun(() => {
+    if (!isSqlLesson() || root.hidden) return;
+    dbViewer.refresh();
+    if (
+      sqlDatabases()
+        ?.list()
+        .some((item) => item.kind !== "practice")
+    )
+      tabs.markUnread("db");
   });
 
   /** Los enlaces de la teoría a los sitios de práctica se abren en la pestaña «web». */
@@ -203,7 +240,7 @@ export function createLessonView({ course, progress }) {
     if (!editor) return;
     const flet = isFletLesson();
     if (flet) tabs.select("preview");
-    if (isWebLesson()) tabs.select("output");
+    if (isWebLesson() || isSqlLesson()) tabs.select("output");
     runInTerminal(editor.getValue(), terminal, {
       fileName: "ejercicio.py",
       timeLimitMs: TIME_LIMIT_MS.lesson,

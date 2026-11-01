@@ -26,6 +26,9 @@ function localLibraryFile(url) {
     return path.join(MODULES, "codemirror", `${part}.js`);
   }
 
+  const sqljs = url.match(/\/sql\.js@[^/]+\/dist\/(.+)$/);
+  if (sqljs) return path.join(MODULES, "sql.js/dist", sqljs[1]);
+
   const jsdelivr = url.match(/\/codemirror@[^/]+\/(.+)$/);
   if (jsdelivr) return path.join(MODULES, "codemirror", jsdelivr[1]);
   return null;
@@ -43,7 +46,8 @@ export async function servePage(page, baseURL) {
     }
     const file = localLibraryFile(url);
     if (file && existsSync(file)) {
-      return route.fulfill({ body: readFileSync(file), contentType: "application/javascript" });
+      const contentType = file.endsWith(".wasm") ? "application/wasm" : "application/javascript";
+      return route.fulfill({ body: readFileSync(file), contentType });
     }
     return route.abort(); // fuentes y cualquier otra cosa externa
   });

@@ -28,6 +28,7 @@ async function build() {
       define: {
         __SKULPT_VERSION__: JSON.stringify(pkg.devDependencies.skulpt),
         __CODEMIRROR_VERSION__: JSON.stringify(pkg.devDependencies.codemirror),
+        __SQLJS_VERSION__: JSON.stringify(pkg.devDependencies["sql.js"]),
       },
     }),
     bundle(path.join(SRC, "styles/main.css")),

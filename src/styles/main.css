@@ -21,6 +21,7 @@
 @import "./components/tabs.css";
 @import "./components/flet.css";
 @import "./components/web-viewer.css";
+@import "./components/db-viewer.css";
 
 @import "./layout/header.css";
 @import "./layout/footer.css";

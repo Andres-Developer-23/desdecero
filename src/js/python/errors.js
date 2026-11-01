@@ -30,7 +30,106 @@ export const ERROR_EXPLANATIONS = {
     "Lo que pasaste en json= no se puede convertir a JSON: usa diccionarios, listas, textos, números, True, False o None.",
   FileNotFoundError:
     "Ese archivo no existe. En el simulador, cada ejecución empieza con el disco vacío: el programa tiene que guardarlo antes de leerlo.",
+  OperationalError:
+    "La base de datos no pudo ejecutar la sentencia. El mensaje dice qué tabla, columna o palabra falla; compáralo con lo que hay en la pestaña «datos».",
+  IntegrityError:
+    "Los datos incumplen una regla de la tabla: un valor repetido en una columna UNIQUE, uno que falta en una NOT NULL o uno que no cumple su CHECK.",
+  ProgrammingError:
+    "sqlite3 se está usando de una forma que no admite. Revisa los parámetros que pasas a execute() y que la conexión siga abierta.",
 };
+
+/** Explicaciones de los errores de SQLite más habituales, por su mensaje (en inglés, como en Python). */
+const SQL_EXPLANATIONS = [
+  [
+    /^no such table/,
+    "Esa tabla no existe en la base de datos. ¿Está bien escrito el nombre? ¿Se ejecutó antes el CREATE TABLE? En la pestaña «datos» ves las tablas que hay.",
+  ],
+  [
+    /^no such column/,
+    "Esa columna no existe en la tabla: revisa su nombre en la pestaña «datos» (estructura de la tabla). Si querías escribir un texto, va entre comillas simples: 'Bogotá'.",
+  ],
+  [
+    /has no column named/,
+    "El INSERT nombra una columna que la tabla no tiene. Revisa los nombres en la pestaña «datos» (estructura de la tabla).",
+  ],
+  [
+    /has \d+ columns but \d+ values were supplied|\d+ values for \d+ columns/,
+    "El número de valores no coincide con el de columnas. Escribe las columnas en el INSERT: INSERT INTO tabla (a, b) VALUES (?, ?).",
+  ],
+  [
+    /already exists/,
+    "Esa tabla ya existe. Si el programa puede ejecutarse más de una vez, escribe CREATE TABLE IF NOT EXISTS.",
+  ],
+  [
+    /^ambiguous column name/,
+    "Esa columna está en más de una tabla del JOIN: escribe de cuál es, como libros.id o autores.id.",
+  ],
+  [
+    /^misuse of aggregate/,
+    "COUNT, SUM, AVG, MIN y MAX no van en el WHERE (que filtra filas antes de agrupar): para filtrar grupos, usa HAVING después del GROUP BY.",
+  ],
+  [
+    /^incomplete input/,
+    "La sentencia SQL está incompleta: falta cerrar un paréntesis o una comilla, o termina a medias.",
+  ],
+  [
+    /syntax error/,
+    "SQL no entiende la sentencia cerca de la palabra que indica el mensaje. Revisa las comas entre columnas, las comillas simples de los textos y el orden: SELECT … FROM … WHERE … GROUP BY … ORDER BY … LIMIT.",
+  ],
+  [
+    /^UNIQUE constraint failed/,
+    "Ya hay una fila con ese valor en una columna UNIQUE o en la clave primaria, y no se puede repetir.",
+  ],
+  [
+    /^NOT NULL constraint failed/,
+    "Esa columna es NOT NULL: hay que darle un valor al insertar la fila (None se guarda como NULL).",
+  ],
+  [
+    /^CHECK constraint failed/,
+    "El valor no cumple la condición CHECK de la tabla (mírala en la estructura de la tabla, en «datos»).",
+  ],
+  [
+    /^FOREIGN KEY constraint failed/,
+    "La fila apunta a otra que no existe (un id que no está en la tabla relacionada), o se borra una fila a la que otras todavía apuntan.",
+  ],
+  [/^datatype mismatch/, "Una columna INTEGER PRIMARY KEY solo admite números enteros."],
+  [
+    /^Incorrect number of bindings/,
+    "El número de ? de la sentencia no coincide con el de valores. Si es uno solo, pásalo en una tupla con su coma: (valor,).",
+  ],
+  [
+    /^parameters are of unsupported type/,
+    "Los valores van en una tupla o una lista, aunque sea uno solo: execute(sql, (valor,)).",
+  ],
+  [
+    /^You did not supply a value for binding parameter/,
+    "La sentencia usa un parámetro :nombre que no está en el diccionario de valores.",
+  ],
+  [
+    /^Error binding parameter/,
+    "SQLite solo guarda None, int, float, str y bytes. Convierte el valor antes (por ejemplo, una lista con json.dumps()).",
+  ],
+  [
+    /^You can only execute one statement at a time/,
+    "execute() ejecuta una sola sentencia. Para varias separadas por punto y coma, usa executescript().",
+  ],
+  [
+    /^executemany\(\) can only execute DML/,
+    "executemany() es para INSERT, UPDATE o DELETE con muchos grupos de valores. Para consultar, usa execute().",
+  ],
+  [
+    /^Cannot operate on a closed/,
+    "La conexión (o el cursor) ya está cerrada. Haz las consultas antes de llamar a close().",
+  ],
+];
+
+const SQL_ERRORS = new Set([
+  "OperationalError",
+  "IntegrityError",
+  "ProgrammingError",
+  "DataError",
+  "DatabaseError",
+]);
 
 /** Qué significa cada código de error de una API, para los HTTPError de raise_for_status(). */
 const HTTP_STATUS_EXPLANATIONS = {
@@ -74,7 +173,7 @@ export const isSyntaxError = (error) =>
 
 /** Mensajes de error que ya se explican solos (los escribe el simulador de Flet en español). */
 const SELF_EXPLANATORY =
-  /Flet 1\.0|simulador del curso|necesita content o icon|solo acepta controles|todavía no está en la página|no llamó a ft\.run/;
+  /Flet 1\.0|simulador del curso|necesita content o icon|solo acepta controles|todavía no está en la página|no llamó a ft\.run|motor de SQLite/;
 
 /** Explicación para principiantes de un error, o null si el mensaje ya basta. */
 export function explainError(error) {
@@ -89,10 +188,14 @@ export function explainError(error) {
     return "Tu vista no devolvió nada (o devolvió algo que Flask no sabe enviar). Termina la función con return y un texto, un diccionario, una lista o una tupla como (datos, 201).";
   }
   if (/Working outside of (request|application) context/.test(error.message)) {
-    return "request, jsonify y url_for solo funcionan mientras Flask atiende una petición: úsalos dentro de una vista, o prueba la vista con app.test_client().";
+    return "request, g, jsonify y url_for solo funcionan mientras Flask atiende una petición: úsalos dentro de una vista, o prueba la vista con app.test_client(). Fuera de una petición, g y current_app funcionan dentro de «with app.app_context():».";
   }
   if (/module 'flet' has no attribute/.test(error.message)) {
     return "Ese nombre no existe en Flet 1.0 o el simulador del curso no lo incluye. Revisa las mayúsculas: los controles empiezan por mayúscula (ft.Text, ft.Button) y las constantes van en mayúsculas (ft.Colors.BLUE).";
+  }
+  if (SQL_ERRORS.has(error.type)) {
+    const found = SQL_EXPLANATIONS.find(([pattern]) => pattern.test(error.message));
+    if (found) return found[1];
   }
   if (error.type === "HTTPError") {
     const status = Number(error.message.match(/^(\d{3}) /)?.[1]);

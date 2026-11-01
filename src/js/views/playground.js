@@ -6,6 +6,9 @@ import { sendFletEvent, usesFlet } from "../flet/runtime.js";
 import { $ } from "../lib/dom.js";
 import { storage } from "../lib/storage.js";
 import { stopPython } from "../python/engine.js";
+import { createDbViewer } from "../sql/db-viewer.js";
+import { usesSqlite } from "../sql/detect.js";
+import { loadSqlRuntime, onSqlRun, sqlDatabases } from "../sql/runtime.js";
 import { usesWeb } from "../web/detect.js";
 import { onWebRun, viewerRequest, virtualInternet } from "../web/runtime.js";
 import { createWebViewer } from "../web/web-viewer.js";
@@ -41,9 +44,20 @@ export function createPlaygroundView({ progress }) {
   const terminal = createTerminal($("#playground-output"));
   const results = $("#playground-results");
   const preview = createFletRenderer($("#playground-preview"), { onEvent: sendFletEvent });
-  const webHost = $("#playground-web");
-  const webViewer = createWebViewer(webHost, { internet: virtualInternet, send: viewerRequest });
   let showsWeb = false;
+  let showsDb = false;
+  const webHost = $("#playground-web");
+  const dbHost = $("#playground-db");
+  const dbViewer = createDbViewer(dbHost, { databases: sqlDatabases, load: loadSqlRuntime });
+  const webViewer = createWebViewer(webHost, {
+    internet: virtualInternet,
+    // Cada petición al servidor puede cambiar la base de datos: los datos se actualizan solos.
+    send: async (request, session) => {
+      const response = await viewerRequest(request, session);
+      if (showsDb) dbViewer.refresh();
+      return response;
+    },
+  });
   let editor = null;
   let saveTimer = null;
   let showing = false;
@@ -93,13 +107,17 @@ export function createPlaygroundView({ progress }) {
   function run() {
     if (!editor) return;
     const code = editor.getValue();
-    // La vista previa aparece cuando el programa usa Flet, y el navegador cuando pide páginas.
+    // La vista previa aparece cuando el programa usa Flet; el navegador, cuando pide
+    // páginas o crea un servidor, y el explorador de datos, cuando usa sqlite3.
     const flet = usesFlet(code);
     showsWeb = !flet && usesWeb(code);
-    results.classList.toggle("pane--with-preview", flet || showsWeb);
+    showsDb = !flet && usesSqlite(code);
+    results.classList.toggle("pane--with-preview", flet || showsWeb || showsDb);
+    results.classList.toggle("pane--with-two-previews", showsWeb && showsDb);
     if (!flet) preview.clear();
     if (showsWeb) webViewer.reset(null);
     webHost.hidden = !showsWeb;
+    dbHost.hidden = !showsDb;
     runInTerminal(code, terminal, {
       fileName: "playground.py",
       timeLimitMs: TIME_LIMIT_MS.playground,
@@ -112,6 +130,9 @@ export function createPlaygroundView({ progress }) {
 
   onWebRun((lastRun) => {
     if (showing && showsWeb) webViewer.showRun(lastRun);
+  });
+  onSqlRun(() => {
+    if (showing && showsDb) dbViewer.reset(null);
   });
 
   const actions = {
