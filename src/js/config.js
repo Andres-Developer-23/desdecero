@@ -1,18 +1,30 @@
 /*
  * Configuración central de la aplicación.
  *
- * Las versiones de Skulpt y CodeMirror se inyectan en el build desde
- * package.json, así solo hay un sitio donde cambiarlas.
+ * Las versiones de Skulpt, CodeMirror y sql.js se inyectan en el build
+ * desde package.json, así solo hay un sitio donde cambiarlas.
  */
 
 export const SKULPT_VERSION = __SKULPT_VERSION__;
 export const CODEMIRROR_VERSION = __CODEMIRROR_VERSION__;
+export const SQLJS_VERSION = __SQLJS_VERSION__;
 
 /** URLs de un archivo de Skulpt: CDN principal y alternativo. */
 export function skulptUrls(file) {
   return [
     `https://cdn.jsdelivr.net/npm/skulpt@${SKULPT_VERSION}/dist/${file}`,
     `https://unpkg.com/skulpt@${SKULPT_VERSION}/dist/${file}`,
+  ];
+}
+
+/**
+ * Carpetas de sql.js (SQLite compilado a WebAssembly) en los CDN: de ahí se
+ * cargan sql-wasm.js y sql-wasm.wasm.
+ */
+export function sqlJsBaseUrls() {
+  return [
+    `https://cdn.jsdelivr.net/npm/sql.js@${SQLJS_VERSION}/dist/`,
+    `https://unpkg.com/sql.js@${SQLJS_VERSION}/dist/`,
   ];
 }
 
