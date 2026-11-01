@@ -1,0 +1,4 @@
+{
+  "title": "Crear y modificar",
+  "description": "Crea tus propias tablas, inserta filas y cámbialas con UPDATE y DELETE dentro de transacciones."
+}

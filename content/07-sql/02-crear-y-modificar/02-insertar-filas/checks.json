@@ -1,0 +1,27 @@
+{
+  "requires": [
+    {
+      "pattern": "\\.executemany\\(",
+      "message": "Inserta la lista de contactos con executemany()."
+    },
+    {
+      "pattern": "\\.lastrowid",
+      "message": "Escribe el id del contacto nuevo con cursor.lastrowid."
+    },
+    {
+      "pattern": "\\.commit\\(\\)",
+      "message": "Confirma los cambios con conexion.commit()."
+    }
+  ],
+  "forbids": [
+    {
+      "pattern": "\\bf\\\"\\\"\\\"\\s*INSERT|\\bf\\\"INSERT|\\bf'INSERT",
+      "message": "No pegues los valores en el SQL con un f-string: usa parámetros ?."
+    }
+  ],
+  "runs": [
+    {
+      "output": "Laura Gil tiene el id 5\n5 contactos guardados"
+    }
+  ]
+}

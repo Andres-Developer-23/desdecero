@@ -1,0 +1,8 @@
+{
+  "requires": [
+    {
+      "pattern": "with\\s+conexion\\s*:|\\.rollback\\(\\)",
+      "message": "Haz la venta dentro de una transacción: with conexion: (o commit() y rollback())."
+    }
+  ]
+}

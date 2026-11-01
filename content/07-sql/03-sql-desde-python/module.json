@@ -1,0 +1,4 @@
+{
+  "title": "SQL desde Python",
+  "description": "Parámetros seguros contra la inyección de SQL y filas a las que se pide cada columna por su nombre."
+}
