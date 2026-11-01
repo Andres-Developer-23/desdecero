@@ -1,0 +1,21 @@
+{
+  "requires": [
+    {
+      "pattern": "[Gg][Rr][Oo][Uu][Pp]\\s+[Bb][Yy]",
+      "message": "Agrupa los libros por categoría con GROUP BY."
+    },
+    {
+      "pattern": "[Hh][Aa][Vv][Ii][Nn][Gg]",
+      "message": "Quédate con las categorías de más de un libro con HAVING."
+    },
+    {
+      "pattern": "[Aa][Vv][Gg]\\(",
+      "message": "Calcula el precio medio con AVG() en la consulta."
+    }
+  ],
+  "runs": [
+    {
+      "output": "Novela: 4 libros, 17 unidades, precio medio $43825\nCiencia ficción: 3 libros, 7 unidades, precio medio $52433\nProgramación: 3 libros, 18 unidades, precio medio $68500\nHistoria: 2 libros, 5 unidades, precio medio $75050\nInfantil: 2 libros, 26 unidades, precio medio $32400\nPoesía: 2 libros, 14 unidades, precio medio $29750"
+    }
+  ]
+}

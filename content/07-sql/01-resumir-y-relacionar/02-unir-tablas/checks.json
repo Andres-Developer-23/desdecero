@@ -1,0 +1,21 @@
+{
+  "requires": [
+    {
+      "pattern": "[Jj][Oo][Ii][Nn]\\s+[Aa][Uu][Tt][Oo][Rr][Ee][Ss]",
+      "message": "Une los libros con sus autores con JOIN autores."
+    },
+    {
+      "pattern": "[Ll][Ee][Ff][Tt]\\s+[Jj][Oo][Ii][Nn]",
+      "message": "Busca los libros sin ventas con LEFT JOIN."
+    },
+    {
+      "pattern": "[Gg][Rr][Oo][Uu][Pp]\\s+[Bb][Yy]",
+      "message": "Suma las unidades de cada libro con GROUP BY."
+    }
+  ],
+  "runs": [
+    {
+      "output": "1. El robot que aprendió a dormir (Sofía Cárdenas): 16 unidades\n2. Python para curiosos (Andrés Quintero): 11 unidades\n3. Algoritmos para la vida diaria (Paula Méndez): 8 unidades\n4. La última estación (Marta Ibáñez): 8 unidades\n5. Breve historia del café en los Andes (Julián Ortega): 7 unidades\nSin ventas:\n- Canciones del río Magdalena\n- Cartas desde el páramo\n- Datos limpios, mentes tranquilas\n- Los puentes de piedra y otras crónicas de viaje por la cordillera\n- Mapas de un planeta sin nombre\n- Señales desde Europa"
+    }
+  ]
+}

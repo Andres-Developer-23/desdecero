@@ -1,0 +1,23 @@
+{
+  "requires": [
+    {
+      "pattern": "[Ww][Hh][Ee][Rr][Ee]",
+      "message": "Filtra los libros con WHERE en la consulta."
+    },
+    {
+      "pattern": "[Oo][Rr][Dd][Ee][Rr]\\s+[Bb][Yy]",
+      "message": "Ordena los libros con ORDER BY en la consulta."
+    }
+  ],
+  "forbids": [
+    {
+      "pattern": "\\bsorted\\(|\\.sort\\(",
+      "message": "Ordena con ORDER BY en la consulta, no en Python."
+    }
+  ],
+  "runs": [
+    {
+      "output": "La ciudad de los relojes parados · $47500\nEl faro de la niebla · $45900\nLa última estación · $42000\nCanciones del río Magdalena · $31000\nVersos para un lunes · $28500"
+    }
+  ]
+}

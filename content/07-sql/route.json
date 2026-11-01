@@ -1,0 +1,7 @@
+{
+  "title": "Bases de datos con SQL",
+  "description": "Guarda y consulta datos con SQL desde Python: SELECT, filtros y orden, agregados y GROUP BY, JOIN, crear tablas, insertar, actualizar y borrar con transacciones, parámetros seguros, filas como objetos y una API de Flask con su base de datos.",
+  "level": "Intermedio",
+  "runtime": "sqlite",
+  "requires": "flask"
+}
