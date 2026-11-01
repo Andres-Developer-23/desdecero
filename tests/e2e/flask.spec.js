@@ -197,3 +197,55 @@ test("las lecciones de Flask abren el servidor del alumno en la pestaña web", a
   await expect(viewer.locator(".web-viewer__source")).toContainText('"titulo": "Compras"');
   await expect(page.locator("#exercise-output")).toContainText('"GET /notas HTTP/1.1" 200 -');
 });
+
+test("g guarda datos durante una petición y teardown_appcontext se llama al terminar", async ({
+  page,
+}) => {
+  await openApp(page);
+  const result = await check(
+    page,
+    `from flask import Flask, g
+
+app = Flask(__name__)
+registro = []
+
+
+def obtener_recurso():
+    if "recurso" not in g:
+        g.recurso = len(registro)
+        registro.append("abre")
+    return g.recurso
+
+
+@app.teardown_appcontext
+def cerrar(error):
+    recurso = g.pop("recurso", None)
+    registro.append(("cierra", recurso, type(error).__name__ if error else None))
+
+
+@app.get("/")
+def inicio():
+    return {"recurso": obtener_recurso(), "otra_vez": obtener_recurso()}
+
+
+@app.get("/falla")
+def falla():
+    obtener_recurso()
+    return 1 / 0
+`,
+    `cliente = app.test_client()
+assert cliente.get("/").get_json() == {"recurso": 0, "otra_vez": 0}
+assert cliente.get("/falla").status_code == 500
+assert registro == ["abre", ("cierra", 0, None), "abre", ("cierra", 2, "ZeroDivisionError")], registro
+with app.app_context():
+    g.valor = 5
+    assert g.get("valor") == 5 and "valor" in g
+try:
+    g.valor
+    assert False, "fuera de una petición, g no existe"
+except RuntimeError:
+    pass
+`,
+  );
+  expect(result.passed, result.log).toBe(true);
+});
