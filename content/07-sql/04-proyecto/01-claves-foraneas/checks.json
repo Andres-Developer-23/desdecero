@@ -1,0 +1,13 @@
+{
+  "requires": [
+    {
+      "pattern": "[Pp][Rr][Aa][Gg][Mm][Aa]\\s+[Ff][Oo][Rr][Ee][Ii][Gg][Nn]_[Kk][Ee][Yy][Ss]\\s+=\\s+[Oo][Nn]",
+      "message": "Activa las claves foráneas con PRAGMA foreign_keys = ON nada más conectar."
+    }
+  ],
+  "runs": [
+    {
+      "output": "Ana: ['Python', 'SQL']\nLuis: ['SQL']"
+    }
+  ]
+}
