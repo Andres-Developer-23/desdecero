@@ -4,6 +4,9 @@ node_modules/
 # Página generada por el build
 dist/
 
+# Pyodide descargado para las pruebas (scripts/download-pyodide.js)
+.cache/
+
 # Resultados de las pruebas
 test-results/
 playwright-report/

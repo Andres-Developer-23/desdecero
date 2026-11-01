@@ -1,13 +1,14 @@
 /*
  * Configuración central de la aplicación.
  *
- * Las versiones de Skulpt, CodeMirror y sql.js se inyectan en el build
+ * Las versiones de Skulpt, CodeMirror, sql.js y Pyodide se inyectan en el build
  * desde package.json, así solo hay un sitio donde cambiarlas.
  */
 
 export const SKULPT_VERSION = __SKULPT_VERSION__;
 export const CODEMIRROR_VERSION = __CODEMIRROR_VERSION__;
 export const SQLJS_VERSION = __SQLJS_VERSION__;
+export const PYODIDE_VERSION = __PYODIDE_VERSION__;
 
 /** URLs de un archivo de Skulpt: CDN principal y alternativo. */
 export function skulptUrls(file) {
@@ -27,6 +28,15 @@ export function sqlJsBaseUrls() {
     `https://unpkg.com/sql.js@${SQLJS_VERSION}/dist/`,
   ];
 }
+
+/**
+ * Carpeta de Pyodide (Python completo compilado a WebAssembly) con sus
+ * paquetes: pandas, numpy y matplotlib solo están en su CDN de jsDelivr.
+ */
+export const pyodideBaseUrl = () => `https://cdn.jsdelivr.net/pyodide/v${PYODIDE_VERSION}/full/`;
+
+/** Los paquetes de Pyodide que pueden importar los programas del curso. */
+export const PYODIDE_PACKAGES = ["numpy", "pandas", "matplotlib"];
 
 /** URLs de una parte de CodeMirror (por ejemplo "mode/python/python"). */
 export function codemirrorUrls(part) {

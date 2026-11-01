@@ -2,7 +2,7 @@ import js from "@eslint/js";
 import globals from "globals";
 
 export default [
-  { ignores: ["dist/", "node_modules/", "test-results/", "playwright-report/"] },
+  { ignores: ["dist/", "node_modules/", "test-results/", "playwright-report/", ".cache/"] },
 
   js.configs.recommended,
 
@@ -25,8 +25,15 @@ export default [
         __SKULPT_VERSION__: "readonly",
         __CODEMIRROR_VERSION__: "readonly",
         __SQLJS_VERSION__: "readonly",
+        __PYODIDE_VERSION__: "readonly",
       },
     },
+  },
+
+  // El Web Worker de Pyodide (se carga como texto, ver src/js/pyodide/worker.js)
+  {
+    files: ["src/js/pyodide/worker.js"],
+    languageOptions: { globals: globals.worker },
   },
 
   // Scripts de build, pruebas y configuración (Node)
