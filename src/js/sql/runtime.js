@@ -165,7 +165,8 @@ function toJs(Sk, value) {
     const big = BigInt(new Sk.builtin.str(value).v);
     return big >= -(2n ** 31n) && big < 2n ** 31n ? Number(big) : big;
   }
-  if (value instanceof Sk.builtin.float_) return value.v;
+  // Los float se marcan para enlazarlos como REAL aunque no tengan decimales (2.0).
+  if (value instanceof Sk.builtin.float_) return { real: value.v };
   if (value instanceof Sk.builtin.str) return value.v;
   if (value instanceof Sk.builtin.bytes) return new Uint8Array(value.v);
   return { unsupported: Sk.abstr.typeName(value) };

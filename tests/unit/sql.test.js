@@ -83,6 +83,20 @@ describe("bases de datos de una ejecución", () => {
     assert.equal(select.rowcount, -1);
   });
 
+  test("los float de Python se enlazan como REAL aunque no tengan decimales", () => {
+    const databases = createDatabases(SQL);
+    const db = databases.connect(":memory:");
+    const named = databases.execute(db, "SELECT :n, typeof(:n), :n / 4", { n: { real: 7 } });
+    assert.deepEqual(named.rows, [[7, "real", 1.75]]);
+    const positional = databases.execute(db, "SELECT ?, typeof(?), ? / 4, typeof(?)", [
+      { real: 2 },
+      { real: 2 },
+      { real: 2 },
+      2,
+    ]);
+    assert.deepEqual(positional.rows, [[2, "real", 0.5, "integer"]]);
+  });
+
   test("da los errores de sqlite3 con sus mensajes", () => {
     const databases = createDatabases(SQL);
     const db = databases.connect(":memory:");
