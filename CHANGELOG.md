@@ -4,6 +4,17 @@ Todos los cambios importantes del proyecto se anotan aquí. El formato sigue [Ke
 
 ## [Sin publicar]
 
+## [1.7.0] - 2026-10-31
+
+### Añadido
+
+- Ruta «Bases de datos con SQL»: 12 lecciones en 5 módulos, de la primera consulta con `SELECT` a una API de Flask que guarda sus datos en SQLite, pasando por `GROUP BY`, `JOIN`, transacciones, parámetros contra la inyección de SQL, claves foráneas y el patrón repositorio.
+- Simulador de sqlite3: el módulo `sqlite3` de Python sobre SQLite de verdad (sql.js, cargado desde un CDN solo cuando un programa lo importa), con cursores, parámetros `?` y `:nombre`, `sqlite3.Row`, transacciones como en Python y los mismos errores y mensajes.
+- Bases de datos de práctica en `content/db/`: `libreria.db` (autores, libros, clientes y ventas) vuelve a su estado inicial en cada ejecución.
+- Pestaña «datos» en las lecciones de SQL y en el playground: las bases del programa y las de práctica, sus tablas, su estructura y sus filas, y una consola para lanzar SQL. Con un servidor de Flask se actualiza después de cada petición.
+- Flask: `g`, `@app.teardown_appcontext` y `app.app_context()`, para abrir una conexión a la base de datos por petición.
+- Explicaciones en español de los errores de SQLite más habituales: tablas o columnas que no existen, errores de sintaxis, restricciones `UNIQUE`, `NOT NULL`, `CHECK` y `FOREIGN KEY`, y parámetros que no cuadran.
+
 ## [1.6.0] - 2026-10-30
 
 ### Añadido
@@ -137,7 +148,8 @@ Todos los cambios importantes del proyecto se anotan aquí. El formato sigue [Ke
 - Consola con `input()` interactivo y errores explicados en español.
 - Playground libre y progreso guardado en el navegador.
 
-[Sin publicar]: https://github.com/Andres-Developer-23/desdecero/compare/v1.6.0...HEAD
+[Sin publicar]: https://github.com/Andres-Developer-23/desdecero/compare/v1.7.0...HEAD
+[1.7.0]: https://github.com/Andres-Developer-23/desdecero/compare/v1.6.0...v1.7.0
 [1.6.0]: https://github.com/Andres-Developer-23/desdecero/compare/v1.5.0...v1.6.0
 [1.5.0]: https://github.com/Andres-Developer-23/desdecero/compare/v1.4.0...v1.5.0
 [1.4.0]: https://github.com/Andres-Developer-23/desdecero/compare/v1.3.0...v1.4.0
