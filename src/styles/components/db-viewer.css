@@ -1,0 +1,227 @@
+/*
+ * Explorador de bases de datos (pestaña «datos»): la base y sus tablas
+ * arriba, las filas en una cuadrícula y una consola para lanzar SQL.
+ */
+
+.db-viewer {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: var(--color-bg);
+  font-family: var(--font-code);
+  font-size: 12px;
+}
+
+.db-viewer__bar {
+  display: flex;
+  flex: none;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.db-viewer__databases {
+  min-width: 0;
+  max-width: 100%;
+  padding: 3px 6px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-raised);
+  color: var(--color-text);
+  font: inherit;
+}
+
+.db-viewer__summary {
+  color: var(--color-text-muted);
+}
+
+.db-viewer__spacer {
+  flex: 1;
+}
+
+.db-viewer__refresh,
+.db-viewer__run {
+  padding: 2px 10px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--color-text-soft);
+  font: inherit;
+  cursor: pointer;
+}
+
+.db-viewer__refresh:hover,
+.db-viewer__run:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+/* ---- Tablas ---- */
+
+.db-viewer__tables {
+  display: flex;
+  flex: none;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.db-viewer__tables:empty {
+  display: none;
+}
+
+.db-viewer__tables button {
+  padding: 2px 8px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--color-text-soft);
+  font: inherit;
+  cursor: pointer;
+}
+
+.db-viewer__tables button span {
+  color: var(--color-text-muted);
+}
+
+.db-viewer__tables button[aria-pressed="true"] {
+  border-color: var(--color-border-strong);
+  background: var(--color-bg-overlay);
+  color: var(--color-accent);
+}
+
+.db-viewer__structure {
+  flex: none;
+  max-height: 35%;
+  overflow-y: auto;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.db-viewer__structure[hidden] {
+  display: none;
+}
+
+.db-viewer__structure summary {
+  padding: 4px 10px;
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+.db-viewer__create {
+  margin: 0;
+  padding: 0 12px 8px;
+  color: var(--color-text-soft);
+  font: inherit;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.db-viewer__column {
+  color: var(--syntax-def);
+}
+
+.db-viewer__marks {
+  color: var(--color-text-muted);
+}
+
+.db-viewer__sql-text {
+  color: var(--syntax-string);
+}
+
+/* ---- Resultado ---- */
+
+.db-viewer__result {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+}
+
+.db-viewer__message {
+  margin: 0;
+  padding: 6px 12px;
+  color: var(--color-text-muted);
+}
+
+.db-viewer__message[hidden] {
+  display: none;
+}
+
+.db-viewer__message[data-state="ok"] {
+  color: var(--color-accent);
+}
+
+.db-viewer__message[data-state="error"] {
+  color: var(--color-danger);
+  overflow-wrap: anywhere;
+}
+
+.db-viewer__grid table {
+  border-collapse: collapse;
+  min-width: 100%;
+}
+
+.db-viewer__grid th,
+.db-viewer__grid td {
+  max-width: 260px;
+  padding: 3px 10px;
+  overflow: hidden;
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text-soft);
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.db-viewer__grid th {
+  position: sticky;
+  top: 0;
+  background: var(--color-bg-raised);
+  color: var(--syntax-def);
+  font-weight: 400;
+}
+
+.db-viewer__grid th.db-viewer__number {
+  text-align: right;
+}
+
+.db-viewer__grid td.db-viewer__number {
+  color: var(--syntax-number);
+  text-align: right;
+}
+
+.db-viewer__grid td.db-viewer__null {
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+/* ---- Consola SQL ---- */
+
+.db-viewer__console {
+  display: flex;
+  flex: none;
+  gap: 6px;
+  align-items: flex-end;
+  padding: 6px 10px;
+  border-top: 1px solid var(--color-border);
+}
+
+.db-viewer__sql {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 4px 8px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-raised);
+  color: var(--color-text);
+  font: inherit;
+  resize: vertical;
+}
+
+.db-viewer__sql:focus,
+.db-viewer__databases:focus {
+  border-color: var(--color-accent);
+  outline: none;
+}

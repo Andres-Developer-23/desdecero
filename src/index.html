@@ -270,6 +270,17 @@
                       class="tabs__tab"
                       type="button"
                       role="tab"
+                      id="exercise-tab-db"
+                      data-tab="db"
+                      aria-controls="exercise-db"
+                      aria-selected="false"
+                    >
+                      datos<span class="tabs__dot" hidden></span>
+                    </button>
+                    <button
+                      class="tabs__tab"
+                      type="button"
+                      role="tab"
                       id="exercise-tab-web"
                       data-tab="web"
                       aria-controls="exercise-web"
@@ -308,6 +319,13 @@
                   aria-labelledby="exercise-tab-web"
                   hidden
                 ></div>
+                <div
+                  class="workbench__preview"
+                  id="exercise-db"
+                  role="tabpanel"
+                  aria-labelledby="exercise-tab-db"
+                  hidden
+                ></div>
                 <pre
                   class="console__output"
                   id="exercise-output"
@@ -336,8 +354,9 @@
             Un editor libre para experimentar. Escribe lo que quieras y pulsa ejecutar: tu código se
             guarda en este navegador. Si importas <code class="inline-code">flet</code>, la app
             aparece en una vista previa; si usas <code class="inline-code">requests</code>, verás
-            las páginas y las APIs que pide tu programa, y si creas un servidor con
-            <code class="inline-code">flask</code>, podrás probarlo desde el navegador.
+            las páginas y las APIs que pide tu programa; si creas un servidor con
+            <code class="inline-code">flask</code>, podrás probarlo desde el navegador, y si usas
+            <code class="inline-code">sqlite3</code>, verás las tablas de tus bases de datos.
           </p>
 
           <div class="playground__grid">
@@ -372,6 +391,7 @@
             <div class="pane console" id="playground-results">
               <div class="flet-preview playground__preview" id="playground-preview" hidden></div>
               <div class="playground__preview" id="playground-web" hidden></div>
+              <div class="playground__preview" id="playground-db" hidden></div>
               <div class="bar bar--plain">
                 <span>salida</span><span class="bar__spacer"></span>
                 <button class="text-button" type="button" data-action="clear-output">

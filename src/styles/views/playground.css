@@ -51,7 +51,8 @@
 }
 
 /* El navegador de la web de prácticas necesita algo más de alto: lleva las peticiones encima. */
-.playground__preview.web-viewer {
+.playground__preview.web-viewer,
+.playground__preview.db-viewer {
   height: 440px;
 }
 
@@ -70,5 +71,35 @@
   .pane--with-preview {
     height: calc(58vh + 104px);
     min-height: 420px;
+  }
+}
+
+/* Con un servidor de Flask y sqlite3 a la vez, el navegador y los datos van uno sobre otro:
+   el panel crece lo que haga falta en lugar de apretarlos. */
+.playground__preview.web-viewer,
+.playground__preview.db-viewer {
+  overflow: hidden;
+}
+
+@media (min-width: 960px) {
+  .pane--with-two-previews {
+    height: auto;
+  }
+
+  .pane--with-two-previews .playground__preview {
+    flex: none;
+  }
+
+  .pane--with-two-previews .playground__preview.web-viewer {
+    height: 480px;
+  }
+
+  .pane--with-two-previews .playground__preview.db-viewer {
+    height: 380px;
+  }
+
+  .pane--with-two-previews .console__output {
+    flex: none;
+    height: 240px;
   }
 }

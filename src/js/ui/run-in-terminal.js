@@ -7,6 +7,7 @@
 import { beginFletSession, usesFlet } from "../flet/runtime.js";
 import { isPythonEngineReady } from "../python/libraries.js";
 import { isRunning, runPython } from "../python/engine.js";
+import { sqlDatabases } from "../sql/runtime.js";
 import { beginWebSession, lastRun } from "../web/runtime.js";
 
 /** Líneas de cada archivo guardado que se enseñan en la consola. */
@@ -100,7 +101,10 @@ export async function runInTerminal(code, terminal, options = {}) {
       }
       break;
   }
-  if (result.status === "ok" || result.status === "error") showSavedFiles(terminal);
+  if (result.status === "ok" || result.status === "error") {
+    showSavedFiles(terminal);
+    showDatabases(terminal);
+  }
   if (preview && !session.rendered && result.status !== "busy") {
     preview.showMessage(
       result.status === "ok"
@@ -109,6 +113,24 @@ export async function runInTerminal(code, terminal, options = {}) {
     );
   }
   return result;
+}
+
+/** Las bases de datos que creó el programa (no las de práctica), con sus tablas y filas. */
+function showDatabases(terminal) {
+  const databases = sqlDatabases();
+  if (!databases) return;
+  for (const { name, kind } of databases.list()) {
+    if (kind !== "file") continue;
+    const tables = databases.describe(name);
+    const detail = tables.length
+      ? tables
+          .map(
+            (table) => `${table.name} (${table.count === 1 ? "1 fila" : `${table.count} filas`})`,
+          )
+          .join(", ")
+      : "sin tablas";
+    terminal.line(`# base de datos: ${name} · ${detail} · míralas en «datos»`, "system");
+  }
 }
 
 /** Enseña los archivos que guardó el programa en el disco simulado, con sus primeras líneas. */
