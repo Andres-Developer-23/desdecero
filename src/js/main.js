@@ -19,12 +19,14 @@ import { createLessonView } from "./views/lesson.js";
 import { createPanelView } from "./views/panel.js";
 import { createPlaygroundView } from "./views/playground.js";
 import { createRouteView } from "./views/route.js";
+import { installSqlRuntime } from "./sql/runtime.js";
 import { installWebRuntime } from "./web/runtime.js";
 
 const courseData = readCourseData($("#course-data"));
 installStandardLibraryExtras();
 installFletRuntime();
 installWebRuntime({ pages: courseData.web ?? {}, apis: courseData.apis ?? {} });
+installSqlRuntime({ databases: courseData.databases ?? {} });
 
 const course = createCourse(courseData);
 const progress = createProgress(course.lessons.map((lesson) => lesson.id));
