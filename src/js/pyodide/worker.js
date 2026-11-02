@@ -21,6 +21,20 @@
 export function pyodideWorker() {
   let pyodide = null;
   let runner = null;
+  /**
+   * Las cargas de paquetes van de una en una: si dos se solapan (la carga
+   * adelantada y la de un programa), Pyodide puede escribir sus mensajes
+   * («Loading numpy...») en la salida del programa.
+   */
+  let loading = Promise.resolve();
+
+  function loadPackages(packages, callback) {
+    const next = loading.then(() =>
+      pyodide.loadPackage(packages, { messageCallback: callback, errorCallback: callback }),
+    );
+    loading = next.catch(() => {});
+    return next;
+  }
 
   const post = (message) => self.postMessage(message);
 
@@ -56,12 +70,7 @@ export function pyodideWorker() {
 
   async function run({ code, files, databases, inputs, packages, modules }) {
     try {
-      if (packages.length) {
-        await pyodide.loadPackage(packages, {
-          messageCallback: (text) => post({ type: "status", text }),
-          errorCallback: (text) => post({ type: "status", text }),
-        });
-      }
+      if (packages.length) await loadPackages(packages, (text) => post({ type: "status", text }));
       runner.prepare(pyodide.toPy(modules));
     } catch (error) {
       post({
@@ -102,7 +111,7 @@ export function pyodideWorker() {
   /** Adelanta la descarga y la importación de los paquetes mientras el alumno lee. */
   async function preload({ packages, modules }) {
     try {
-      await pyodide.loadPackage(packages, { messageCallback: () => {}, errorCallback: () => {} });
+      await loadPackages(packages, () => {});
       runner.prepare(pyodide.toPy(modules));
     } catch {
       // Si falla, se volverá a intentar al ejecutar, y ahí se explica.
