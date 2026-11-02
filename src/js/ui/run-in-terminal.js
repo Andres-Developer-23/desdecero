@@ -11,6 +11,7 @@ import { isPythonEngineReady } from "../python/libraries.js";
 import { isRunning, runPython } from "../python/engine.js";
 import { sqlDatabases } from "../sql/runtime.js";
 import { beginWebSession, lastRun } from "../web/runtime.js";
+import { commandLine } from "./format.js";
 
 /** Líneas de cada archivo guardado que se enseñan en la consola. */
 const FILE_PREVIEW_LINES = 8;
@@ -27,6 +28,8 @@ const FILE_PREVIEW_LINES = 8;
  *   Vista previa donde dibujar la app si el código usa Flet.
  * @param {(error: object) => void} [options.onError] Error al ejecutar o en un manejador de eventos.
  * @param {() => void} [options.onStart]
+ * @param {string[]} [options.argv] Argumentos del programa (con su nombre delante): sys.argv.
+ * @param {boolean} [options.keepFiles] Conserva el disco de la ejecución anterior.
  */
 export async function runInTerminal(code, terminal, options = {}) {
   if (isRunning()) return null;
@@ -51,7 +54,12 @@ export async function runInTerminal(code, terminal, options = {}) {
       options.onError?.(error);
     },
   });
-  if (options.fileName) terminal.line(`$ python ${options.fileName}`, "system");
+  if (options.fileName) {
+    terminal.line(
+      `$ ${options.argv ? commandLine(options.argv) : `python ${options.fileName}`}`,
+      "system",
+    );
+  }
   if (!needsPyodide(code) && isPythonEngineReady() === undefined) {
     terminal.line("# cargando el motor de Python…", "system");
   }
@@ -63,6 +71,8 @@ export async function runInTerminal(code, terminal, options = {}) {
     onPrompt: (prompt) => terminal.prompt(prompt),
     onStatus: (text) => terminal.line(text, "system"),
     onFigure: (image) => terminal.image(image, "gráfico"),
+    argv: options.argv,
+    keepFiles: options.keepFiles,
   });
   terminal.dropPrompts();
 
@@ -97,8 +107,14 @@ export async function runInTerminal(code, terminal, options = {}) {
           `# tu servidor está en marcha en ${lastRun().server.origin}: pruébalo en la pestaña web`,
           "system",
         );
-      } else if (!result.stdout && !result.figures?.length) {
+      } else if (!result.stdout && !result.stderr && !result.figures?.length) {
         terminal.line("(el programa no imprimió nada)", "system");
+      }
+      if (result.exitCode) {
+        terminal.line(
+          `# terminó con sys.exit(): código de salida ${result.exitCode} (error)`,
+          "system",
+        );
       }
       if (options.showDuration) {
         terminal.line(`[terminado en ${(result.durationMs / 1000).toFixed(2)} s]`, "system");
@@ -111,9 +127,11 @@ export async function runInTerminal(code, terminal, options = {}) {
       showSavedFiles(terminal, result.files ?? []);
     }
   } else if (result.status === "ok" || result.status === "error") {
+    // Solo los que escribió esta ejecución: con keepFiles, el disco tiene también los anteriores.
+    const { files, written } = lastRun();
     showSavedFiles(
       terminal,
-      [...lastRun().files].map(([name, text]) => ({ name, text })),
+      [...files].filter(([name]) => written.has(name)).map(([name, text]) => ({ name, text })),
     );
     showDatabases(terminal);
   }

@@ -29,7 +29,8 @@ export function createPanelView({ course, progress, getSyncStatus }) {
   function render() {
     const { isDone } = progress;
     const next = course.suggestNext(isDone);
-    const done = progress.completedCount();
+    // Las lecciones, sin contar los proyectos (que también se guardan en el progreso).
+    const done = course.lessonsDone(isDone);
     const streak = progress.streak();
 
     elements.terminal.innerHTML = terminalHtml({ course, isDone, done, next, streak });
@@ -96,7 +97,7 @@ export function createPanelView({ course, progress, getSyncStatus }) {
 function terminalHtml({ course, isDone, done, next, streak }) {
   const ok = '<span class="terminal__ok">[ok]</span>  ';
   const pending = '<span class="terminal__muted">[..]</span>  ';
-  const nameWidth = Math.max(...course.routes.map((route) => route.id.length));
+  const nameWidth = Math.max(...course.routes.map((route) => route.id.length), "proyectos".length);
   const lines = ['<span class="terminal__prompt">$</span> python3 progreso.py'];
 
   if (done === 0) lines.push(`${ok} entorno listo: python corre en tu navegador`);
@@ -105,6 +106,13 @@ function terminalHtml({ course, isDone, done, next, streak }) {
     const mark = routeDone === route.total ? ok : pending;
     lines.push(
       `${mark} ${route.id.padEnd(nameWidth)} ${asciiBar(routeDone / route.total, 12)} ${routeDone}/${route.total}`,
+    );
+  }
+  if (course.projects.length) {
+    const projectsDone = course.projectsDone(isDone);
+    const mark = projectsDone === course.projects.length ? ok : pending;
+    lines.push(
+      `${mark} ${"proyectos".padEnd(nameWidth)} ${asciiBar(projectsDone / course.projects.length, 12)} ${projectsDone}/${course.projects.length}`,
     );
   }
   if (done > 0) lines.push(`${streak ? ok : pending} racha actual: ${plural(streak, "día")}`);
@@ -127,10 +135,15 @@ function actionsHtml({ next, done }) {
   if (next) {
     return (
       cta(`#l-${next.id}`, `${done ? "continuar" : "empezar"}: ${next.title}`, { primary: true }) +
+      cta("#proyectos", "ver proyectos") +
       cta("#playground", "abrir playground")
     );
   }
-  return cta("#playground", "abrir playground", { primary: true }) + cta("#rutas", "ver rutas");
+  return (
+    cta("#proyectos", "ver proyectos", { primary: true }) +
+    cta("#playground", "abrir playground") +
+    cta("#rutas", "ver rutas")
+  );
 }
 
 function statsHtml({ done, total, streak, minutesLeft, syncStatus }) {

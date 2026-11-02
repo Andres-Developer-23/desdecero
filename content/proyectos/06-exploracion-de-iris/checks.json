@@ -1,0 +1,17 @@
+{
+  "requires": [
+    {
+      "pattern": "def\\s+predecir\\(",
+      "message": "Escribe la función predecir(flores)."
+    },
+    {
+      "pattern": "plt\\.show\\(\\)",
+      "message": "Enseña el gráfico con plt.show()."
+    }
+  ],
+  "runs": [
+    {
+      "output": "Flores: 150 · Medidas: 4\nespecie\nsetosa        50\nversicolor    50\nvirginica     50\n\nMedidas medias por especie (cm):\n            largo_sepalo  ancho_sepalo  largo_petalo  ancho_petalo\nespecie                                                           \nsetosa              5.01          3.43          1.46          0.25\nversicolor          5.94          2.77          4.26          1.33\nvirginica           6.59          2.97          5.55          2.03\n\nLa medida que más cambia entre especies: largo_petalo (4.09 cm)\nLa regla acierta 144 de 150 flores (96.0%)\n     largo_petalo  ancho_petalo     especie  prediccion\n70            4.8           1.8  versicolor   virginica\n106           4.5           1.7   virginica  versicolor\n119           5.0           1.5   virginica  versicolor\n129           5.8           1.6   virginica  versicolor\n133           5.1           1.5   virginica  versicolor\n134           5.6           1.4   virginica  versicolor"
+    }
+  ]
+}

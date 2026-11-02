@@ -7,6 +7,8 @@
  *   #ruta-<id>        página de una ruta
  *   #ruta             primera ruta (enlace de la versión 1.x)
  *   #l-<id>           lección
+ *   #proyectos        catálogo de proyectos
+ *   #p-<id>           un proyecto (en la vista de lección)
  *   #playground       playground
  *
  * "nav" es el enlace de la cabecera que se marca como actual.
@@ -19,6 +21,11 @@ export function parseHash(hash, course) {
     const lesson = course.getLesson(name.slice(2));
     if (lesson) return { view: "lesson", params: { lesson }, nav: "rutas" };
   }
+  if (name.startsWith("p-")) {
+    const project = course.getProject?.(name.slice(2));
+    if (project) return { view: "lesson", params: { lesson: project }, nav: "proyectos" };
+  }
+  if (name === "proyectos") return { view: "projects", params: {}, nav: "proyectos" };
   if (name.startsWith("ruta-")) {
     const route = course.getRoute(name.slice(5));
     if (route) return { view: "route", params: { route }, nav: "rutas" };

@@ -71,4 +71,5 @@ export const STORAGE_KEYS = {
   legacyProgress: "pdc:progreso:v1",
   playground: "pdc:playground",
   draft: (lessonId) => `pdc:codigo:${lessonId}`,
+  projectFilters: "pdc:proyectos:filtros",
 };

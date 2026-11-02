@@ -1,5 +1,5 @@
 /*
- * Cada ejercicio del curso tiene que poder resolverse:
+ * Cada ejercicio y cada proyecto del curso tiene que poder resolverse:
  * la solución supera la comprobación y el código de partida no.
  * Además, los ejemplos de la teoría de todas las rutas salvo la de Python
  * (que tiene ejemplos con input() y errores a propósito) tienen que
@@ -14,6 +14,7 @@ import { expect, openApp, servePage, test } from "./fixtures.js";
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const course = loadCourse(path.join(ROOT, "content"));
 const lessons = course.routes.flatMap((route) => route.modules.flatMap((module) => module.lessons));
+const exercises = [...lessons, ...course.projects];
 
 /**
  * Bloques ```py de la teoría que se comprueban. Los de Flet, además de
@@ -37,7 +38,7 @@ async function check(page, lessonId, field) {
   return page.evaluate(
     async ({ id, field }) => {
       const { course, checkExercise, createTerminal } = window.__desdecero;
-      const lesson = course.getLesson(id);
+      const lesson = course.getLesson(id) ?? course.getProject(id);
       const output = document.createElement("pre");
       const result = await checkExercise(lesson, lesson[field], createTerminal(output));
       return { ...result, log: output.textContent };
@@ -72,7 +73,7 @@ test.describe("ejercicios", () => {
   });
   test.afterAll(() => page.close());
 
-  for (const lesson of lessons) {
+  for (const lesson of exercises) {
     test(`${lesson.id}: la solución pasa y el código de partida no`, async () => {
       const solution = await check(page, lesson.id, "solution");
       expect(solution.passed, `la solución no pasa:\n${solution.log}`).toBe(true);

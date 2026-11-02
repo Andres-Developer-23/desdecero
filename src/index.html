@@ -37,6 +37,7 @@
         <nav class="main-nav" aria-label="Principal">
           <a class="main-nav__link" href="#panel" data-nav="panel">panel</a>
           <a class="main-nav__link" href="#rutas" data-nav="rutas">rutas</a>
+          <a class="main-nav__link" href="#proyectos" data-nav="proyectos">proyectos</a>
           <a class="main-nav__link" href="#playground" data-nav="playground">playground</a>
         </nav>
         <div class="site-header__status">
@@ -170,7 +171,40 @@
         </div>
       </section>
 
-      <!-- Vista: lección -->
+      <!-- Vista: proyectos -->
+      <section class="view" id="view-projects" hidden aria-labelledby="projects-title">
+        <div class="container">
+          <header class="route-header">
+            <p class="eyebrow"><span class="eyebrow__mark">$</span> ls ./proyectos</p>
+            <h1 class="display display--page" id="projects-title">Proyectos</h1>
+            <p class="lede">
+              Ideas de proyectos para pasar de principiante a avanzado con Python. Cada uno es un
+              programa completo, con sus requisitos, y se comprueba solo, como los ejercicios.
+            </p>
+            <p class="route-header__progress" id="projects-progress"></p>
+          </header>
+          <div class="project-filters">
+            <div
+              class="project-filters__group"
+              role="group"
+              aria-label="Nivel"
+              id="projects-levels"
+            ></div>
+            <div
+              class="project-filters__group"
+              role="group"
+              aria-label="Tema"
+              id="projects-tags"
+            ></div>
+          </div>
+          <p class="project-filters__empty" id="projects-empty" hidden>
+            Ningún proyecto cumple los filtros.
+          </p>
+          <div class="project-grid" id="projects-grid"></div>
+        </div>
+      </section>
+
+      <!-- Vista: lección (y proyecto) -->
       <section class="view" id="view-lesson" hidden>
         <div class="container">
           <nav class="breadcrumbs" aria-label="Ubicación">
@@ -183,7 +217,39 @@
               <div class="lesson__meta" id="lesson-meta"></div>
               <h1 class="display display--page" id="lesson-title"></h1>
               <p class="lede lesson__summary" id="lesson-summary"></p>
+              <ol class="project-steps" id="project-steps" hidden></ol>
+              <div
+                class="tabs project-tabs"
+                role="tablist"
+                aria-label="Proyecto"
+                id="project-tabs"
+                hidden
+              >
+                <button
+                  class="tabs__tab"
+                  type="button"
+                  role="tab"
+                  id="project-tab-detail"
+                  data-tab="detail"
+                  aria-controls="lesson-body"
+                  aria-selected="true"
+                >
+                  detalle del proyecto
+                </button>
+                <button
+                  class="tabs__tab"
+                  type="button"
+                  role="tab"
+                  id="project-tab-solutions"
+                  data-tab="solutions"
+                  aria-controls="project-solutions"
+                  aria-selected="false"
+                >
+                  soluciones
+                </button>
+              </div>
               <div class="prose lesson__body" id="lesson-body"></div>
+              <div class="prose lesson__body project-solutions" id="project-solutions" hidden></div>
 
               <div class="lesson__footer">
                 <button
@@ -209,7 +275,7 @@
 
             <aside class="workbench" aria-label="Ejercicio">
               <div class="bar">
-                <span>ejercicio.py</span>
+                <span id="exercise-file">ejercicio.py</span>
                 <span class="badge" id="exercise-badge">pendiente</span>
                 <span class="bar__spacer"></span>
                 <span class="engine-status" data-engine-status>python · cargando…</span>
@@ -217,6 +283,26 @@
               <div class="prose workbench__task" id="exercise-task"></div>
               <p class="workbench__hint" id="exercise-hint" hidden></p>
               <div class="editor" id="exercise-editor"></div>
+              <div class="workbench__args" id="exercise-args" hidden>
+                <label
+                  class="workbench__args-label"
+                  id="exercise-args-label"
+                  for="exercise-args-input"
+                >
+                  $ python <span id="exercise-args-file">programa.py</span>
+                </label>
+                <input
+                  class="workbench__args-input"
+                  id="exercise-args-input"
+                  type="text"
+                  autocomplete="off"
+                  spellcheck="false"
+                  placeholder="argumentos"
+                />
+                <button class="text-button" type="button" data-action="clear-disk">
+                  vaciar disco
+                </button>
+              </div>
               <div class="toolbar">
                 <button
                   class="button button--run"
@@ -334,7 +420,7 @@
                 ></pre>
               </div>
               <div class="workbench__success" id="exercise-success" hidden>
-                <span>✓ ejercicio superado · lección completada</span>
+                <span id="exercise-success-text">✓ ejercicio superado · lección completada</span>
                 <span class="bar__spacer"></span>
                 <a class="cta cta--primary cta--small" id="exercise-success-link" href="#">
                   <span class="cta__label">siguiente lección →</span>

@@ -1,0 +1,305 @@
+/*
+ * Proyectos: el catálogo (filtros y tarjetas) y lo propio de un proyecto en
+ * la vista de lección (pasos, pestañas, soluciones y argumentos).
+ */
+
+/* ---- Nivel y etiquetas ---- */
+
+.level,
+.tag {
+  display: inline-block;
+  padding: 1px 8px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-code);
+  font-size: 11.5px;
+  line-height: 1.6;
+  white-space: nowrap;
+}
+
+.tag {
+  color: var(--color-text-soft);
+}
+
+.level--principiante {
+  border-color: color-mix(in srgb, var(--color-accent) 55%, transparent);
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+}
+
+.level--intermedio {
+  border-color: color-mix(in srgb, var(--color-highlight) 55%, transparent);
+  background: color-mix(in srgb, var(--color-highlight) 12%, var(--color-bg));
+  color: var(--color-highlight);
+}
+
+.level--avanzado {
+  border-color: color-mix(in srgb, var(--color-danger) 55%, transparent);
+  background: var(--color-danger-soft);
+  color: var(--color-danger);
+}
+
+/* ---- Filtros ---- */
+
+.project-filters {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.project-filters__group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.filter {
+  padding: 4px 11px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-raised);
+  color: var(--color-text-soft);
+  font-family: var(--font-code);
+  font-size: 12.5px;
+  cursor: pointer;
+}
+
+.filter:hover:not(:disabled) {
+  border-color: var(--color-accent);
+  color: var(--color-text);
+}
+
+.filter:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.filter--active {
+  border-color: var(--color-accent);
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+}
+
+.filter__count {
+  color: var(--color-text-muted);
+}
+
+.filter--clear {
+  border-color: color-mix(in srgb, var(--color-danger) 50%, transparent);
+  color: var(--color-danger);
+}
+
+.project-filters__empty {
+  color: var(--color-text-muted);
+  font-family: var(--font-code);
+}
+
+/* ---- Tarjetas ---- */
+
+.project-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 290px), 1fr));
+  gap: 12px;
+}
+
+.project-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px 16px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-raised);
+}
+
+.project-card:hover {
+  border-color: var(--color-border-strong);
+}
+
+.project-card--done {
+  border-color: color-mix(in srgb, var(--color-accent) 45%, var(--color-border));
+}
+
+/* El nivel y después las etiquetas, en una fila que se parte si no caben. */
+.project-card__head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.project-card__tags {
+  display: contents;
+}
+
+.project-card__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.project-card__title a {
+  text-decoration: none;
+}
+
+/* Toda la tarjeta se puede pulsar: el enlace del título la cubre. */
+.project-card {
+  position: relative;
+}
+
+.project-card__title a::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+.project-card:hover .project-card__title a {
+  color: var(--color-accent);
+}
+
+.project-card__summary {
+  flex: 1;
+  margin: 0;
+  color: var(--color-text-soft);
+  font-size: 0.93rem;
+}
+
+.project-card__facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  margin: 4px 0 0;
+  color: var(--color-text-muted);
+  font-family: var(--font-code);
+  font-size: 12px;
+}
+
+.project-card__status--done {
+  color: var(--color-accent);
+}
+
+.project-card__status--started {
+  color: var(--color-highlight);
+}
+
+/* ---- Un proyecto: pasos ---- */
+
+.project-steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 22px;
+  margin: 0 0 18px;
+  padding: 12px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-raised);
+  list-style: none;
+  color: var(--color-text-muted);
+  font-family: var(--font-code);
+  font-size: 12.5px;
+}
+
+.project-steps__step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.project-steps__number {
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 50%;
+  font-size: 11.5px;
+}
+
+.project-steps__step--current {
+  color: var(--color-text);
+}
+
+.project-steps__step--current .project-steps__number {
+  border-color: var(--color-highlight);
+  color: var(--color-highlight);
+}
+
+.project-steps__step--done {
+  color: var(--color-accent);
+}
+
+.project-steps__step--done .project-steps__number {
+  border-color: var(--color-accent);
+  background: var(--color-accent-soft);
+}
+
+/* ---- Pestañas y soluciones ---- */
+
+.project-tabs {
+  margin-bottom: 18px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.project-tabs .tabs__tab {
+  padding: 5px 12px;
+  font-size: 13px;
+}
+
+.project-solutions__code {
+  margin: 0 0 18px;
+  padding: 14px 16px;
+  overflow: auto;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+  font-family: var(--font-code);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.project-solutions__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ---- Argumentos de los programas de línea de comandos ---- */
+
+.workbench__args {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+  padding: 8px 12px;
+  border-top: 1px solid var(--color-border);
+  background: var(--color-bg);
+  font-family: var(--font-code);
+  font-size: 13px;
+}
+
+.workbench__args-label {
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+.workbench__args-input {
+  flex: 1 1 180px;
+  min-width: 0;
+  padding: 4px 8px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-overlay);
+  color: var(--color-highlight);
+  font: inherit;
+}
+
+.workbench__args [data-action="clear-disk"] {
+  margin-left: auto;
+}
+
+.workbench__args-input:focus {
+  border-color: var(--color-highlight);
+  outline: 1px solid var(--color-highlight);
+}

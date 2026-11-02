@@ -34,11 +34,19 @@
   color: var(--color-highlight);
 }
 
+/* Si en una pantalla estrecha no caben los enlaces, la fila se desplaza de lado. */
 .main-nav {
   display: flex;
   gap: 4px;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
   font-family: var(--font-code);
   font-size: 14px;
+}
+
+.main-nav::-webkit-scrollbar {
+  display: none;
 }
 
 .main-nav__link {
@@ -88,8 +96,26 @@
 }
 
 @media (max-width: 430px) {
+  .site-header__inner {
+    gap: 8px;
+  }
+
+  /* En un móvil solo caben la marca y los enlaces: la racha y la sincronización se ven en el panel. */
   .brand__prefix,
-  .site-header__streak {
+  .site-header__status {
     display: none;
+  }
+
+  .brand {
+    font-size: 14px;
+  }
+
+  .main-nav {
+    gap: 0;
+  }
+
+  .main-nav__link {
+    padding: 6px 4px;
+    font-size: 12px;
   }
 }

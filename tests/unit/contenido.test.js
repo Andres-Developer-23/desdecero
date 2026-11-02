@@ -49,6 +49,60 @@ function makeCourse(name, lessons, routeJson = ROUTE_JSON, web = {}) {
   return dir;
 }
 
+const VALID_PROJECT = {
+  "proyecto.md": [
+    "---",
+    "title: Gestor de tareas",
+    "level: principiante",
+    "tags: [CLI, Archivos]",
+    "minutes: 60",
+    "runtime: python",
+    "requires: ruta",
+    "file: tareas.py",
+    "cli: true",
+    "summary: Apunta tus tareas",
+    "---",
+    "",
+    "Detalle del proyecto.",
+    "",
+    "### Requisitos",
+    "",
+    "- Agregar tareas.",
+    "",
+    "## Objetivo",
+    "",
+    "Escribe tareas.py.",
+    "",
+    "## Pista",
+    "",
+    "Usa sys.argv.",
+    "",
+    "## Solución",
+    "",
+    "Una función por orden.",
+    "",
+  ].join("\n"),
+  "starter.py": "import sys\n",
+  "solution.py": "import sys\nprint(sys.argv[1:])\n",
+  "checks.json": JSON.stringify({
+    persist: true,
+    runs: [{ args: ["agregar", "Pan"], before: "x = 1", output: "['agregar', 'Pan']" }],
+  }),
+  "test.py": "assert True\n",
+};
+
+/** Añade proyectos (carpeta → archivos) a un curso de prueba. */
+function addProjects(dir, projects) {
+  for (const [folder, files] of Object.entries(projects)) {
+    const projectDir = path.join(dir, "proyectos", folder);
+    mkdirSync(projectDir, { recursive: true });
+    for (const [file, content] of Object.entries(files)) {
+      if (content !== undefined) writeFileSync(path.join(projectDir, file), content);
+    }
+  }
+  return dir;
+}
+
 describe("carga del contenido", () => {
   test("el curso real se carga completo", () => {
     const course = loadCourse(path.join(ROOT, "content"));
@@ -59,6 +113,9 @@ describe("carga del contenido", () => {
     assert.equal(lessons.length, 20);
     assert.equal(lessons[0].id, "hola-mundo");
     assert.equal(lessons.at(-1).id, "adivina");
+    assert.ok(course.projects.length >= 6);
+    assert.equal(course.projects[0].id, "gestor-de-tareas");
+    assert.ok(course.projects.every((project) => project.solution && project.exercise));
   });
 
   test("lee metadatos, secciones, código y comprobaciones de una lección", () => {
@@ -240,6 +297,85 @@ describe("carga del contenido", () => {
     assert.throws(
       () => loadCourse(dir),
       /data\/Ventas Viejas\.xlsx: cada archivo de datos es un \.csv, \.txt o \.json/,
+    );
+  });
+
+  test("lee los proyectos: nivel, etiquetas, programa, secciones y comprobaciones", () => {
+    const dir = addProjects(makeCourse("proyectos", { "01-hola": VALID_LESSON }), {
+      "01-gestor-de-tareas": VALID_PROJECT,
+    });
+    const [project] = loadCourse(dir).projects;
+    assert.deepEqual(
+      {
+        id: project.id,
+        level: project.level,
+        tags: project.tags,
+        runtime: project.runtime,
+        requires: project.requires,
+        file: project.file,
+        cli: project.cli,
+      },
+      {
+        id: "gestor-de-tareas",
+        level: "principiante",
+        tags: ["CLI", "Archivos"],
+        runtime: "python",
+        requires: "ruta",
+        file: "tareas.py",
+        cli: true,
+      },
+    );
+    assert.equal(project.theory, "Detalle del proyecto.\n\n### Requisitos\n\n- Agregar tareas.");
+    assert.equal(project.exercise, "Escribe tareas.py.");
+    assert.equal(project.hint, "Usa sys.argv.");
+    assert.equal(project.explanation, "Una función por orden.");
+    assert.equal(project.test, "assert True");
+    assert.equal(project.checks.persist, true);
+    assert.deepEqual(project.checks.runs[0].args, ["agregar", "Pan"]);
+    assert.equal(project.dir, undefined);
+  });
+
+  test("valida los proyectos: metadatos, secciones, ids y comprobaciones", () => {
+    const meta = VALID_PROJECT["proyecto.md"];
+    const dir = addProjects(makeCourse("proyectos-rotos", { "01-hola": VALID_LESSON }), {
+      "01-roto": {
+        ...VALID_PROJECT,
+        "proyecto.md": meta
+          .replace("level: principiante", "level: experto")
+          .replace("tags: [CLI, Archivos]", "tags: CLI")
+          .replace("requires: ruta", "requires: nada")
+          .replace("file: tareas.py", "file: Tareas.txt")
+          .replace("cli: true", "cli: sí")
+          .replace("## Solución\n\nUna función por orden.\n", ""),
+        "checks.json": JSON.stringify({
+          persist: "sí",
+          runs: [{ args: "agregar", before: 3, output: 1, contains: "Pan" }],
+        }),
+      },
+      "02-hola": VALID_PROJECT,
+    });
+    assert.throws(
+      () => loadCourse(dir),
+      (error) => {
+        const text = error.problems.join("\n");
+        assert.match(
+          text,
+          /01-roto\/proyecto\.md: "level" debe ser uno de: principiante, intermedio, avanzado/,
+        );
+        assert.match(text, /01-roto\/proyecto\.md: "tags" debe ser una lista de etiquetas/);
+        assert.match(text, /01-roto\/proyecto\.md: "file" debe ser el nombre del programa/);
+        assert.match(text, /01-roto\/proyecto\.md: "cli" debe ser true o false/);
+        assert.match(text, /01-roto\/proyecto\.md: falta contenido en la sección "## Solución"/);
+        assert.match(text, /01-roto\/proyecto\.md: "requires" apunta a una ruta que no existe/);
+        assert.match(text, /01-roto\/checks\.json: "persist" debe ser true o false/);
+        assert.match(text, /runs\[0\]\.args debe ser una lista de textos/);
+        assert.match(text, /runs\[0\]\.contains debe ser una lista de textos/);
+        assert.match(text, /runs\[0\]\.output debe ser un texto/);
+        assert.match(text, /runs\[0\]\.before debe ser código de Python/);
+        // Las lecciones y los proyectos comparten los ids: los dos se guardan en el progreso.
+        assert.match(text, /02-hola: el id "hola" ya se usa/);
+        return true;
+      },
     );
   });
 

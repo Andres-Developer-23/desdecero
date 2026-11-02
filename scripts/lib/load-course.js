@@ -13,6 +13,9 @@
  *     solution.py    solución de referencia
  *     checks.json    cómo se comprueba el ejercicio
  *     test.py        asserts extra (opcional)
+ *   content/proyectos/NN-proyecto/
+ *     proyecto.md    metadatos, detalle, ## Objetivo, ## Pista y ## Solución
+ *     starter.py, solution.py, checks.json y test.py, como en las lecciones
  *
  * Cualquier problema se acumula y se informa de una vez, con la ruta del
  * archivo, para que sea fácil de corregir.
@@ -24,8 +27,13 @@ import { parse as parseYaml } from "yaml";
 
 const NUMBERED_DIR = /^(\d{2})-([a-z0-9]+(?:-[a-z0-9]+)*)$/;
 const LESSON_SECTIONS = { Ejercicio: "exercise", Pista: "hint" };
-const CHECK_KEYS = new Set(["requires", "forbids", "ignore", "runs"]);
-const RUN_KEYS = new Set(["inputs", "output", "contains", "test"]);
+const PROJECT_SECTIONS = { Objetivo: "exercise", Pista: "hint", Solución: "explanation" };
+const CHECK_KEYS = new Set(["requires", "forbids", "ignore", "runs", "persist"]);
+const RUN_KEYS = new Set(["inputs", "output", "contains", "test", "args", "before"]);
+/** Niveles de los proyectos, de más fácil a más difícil. */
+export const LEVELS = ["principiante", "intermedio", "avanzado"];
+/** Nombre del programa de un proyecto: tareas.py, gastos.py... */
+const PROGRAM_FILE = /^[a-z0-9_]+\.py$/;
 /** Motores con los que se ejecutan los ejercicios de una ruta. */
 export const RUNTIMES = new Set(["python", "flet", "web", "sqlite", "pandas"]);
 /** Tipos de archivo de la web de prácticas, por extensión. */
@@ -51,14 +59,27 @@ export class CourseError extends Error {
   }
 }
 
-/** Devuelve { routes, web, apis, databases, data } listo para incrustar en la página. */
+/** Devuelve { routes, projects, web, apis, databases, data } listo para incrustar en la página. */
 export function loadCourse(contentDir) {
   const problems = [];
   const seenLessonIds = new Map();
 
-  const routes = numberedDirs(contentDir, problems, { ignore: ["web", "api", "db", "data"] }).map(
-    ({ dir, slug }) => loadRoute(dir, slug, { problems, seenLessonIds }),
-  );
+  const routes = numberedDirs(contentDir, problems, {
+    ignore: ["web", "api", "db", "data", "proyectos"],
+  }).map(({ dir, slug }) => loadRoute(dir, slug, { problems, seenLessonIds }));
+  const projectsDir = path.join(contentDir, "proyectos");
+  // Los proyectos comparten los identificadores con las lecciones: los dos se guardan en el progreso.
+  const projects = existsSync(projectsDir)
+    ? numberedDirs(projectsDir, problems).map(({ dir, slug }) => {
+        if (seenLessonIds.has(slug)) {
+          problems.push(
+            `${rel(dir)}: el id "${slug}" ya se usa en ${rel(seenLessonIds.get(slug))}`,
+          );
+        }
+        seenLessonIds.set(slug, dir);
+        return { ...loadProject(dir, slug, problems), dir };
+      })
+    : [];
   const webDir = path.join(contentDir, "web");
   const web = existsSync(webDir) ? loadWeb(webDir, problems) : {};
   const apiDir = path.join(contentDir, "api");
@@ -78,27 +99,36 @@ export function loadCourse(contentDir) {
 
   // La página inicial de la pestaña «web» de una lección tiene que existir (o ser de una API
   // o del servidor de Flask del alumno, http://127.0.0.1:5000).
+  const checkReferences = (item, file) => {
+    const page = item.web?.endsWith("/") ? `${item.web}index.html` : item.web;
+    const known = web[page] || apiHost(item.web) in apis || isLocalServer(item.web);
+    if (item.web != null && !known) {
+      problems.push(
+        `${rel(item.dir)}/${file}: "web" apunta a una página que no existe: ${item.web}`,
+      );
+    }
+    if (item.db != null && !(item.db in databases)) {
+      problems.push(
+        `${rel(item.dir)}/${file}: "db" apunta a una base de práctica que no existe: ${item.db}`,
+      );
+    }
+    delete item.dir;
+  };
   for (const route of routes) {
     for (const lesson of route.modules.flatMap((module) => module.lessons)) {
-      const page = lesson.web?.endsWith("/") ? `${lesson.web}index.html` : lesson.web;
-      const known = web[page] || apiHost(lesson.web) in apis || isLocalServer(lesson.web);
-      if (lesson.web != null && !known) {
-        problems.push(
-          `${rel(lesson.dir)}/lesson.md: "web" apunta a una página que no existe: ${lesson.web}`,
-        );
-      }
-      if (lesson.db != null && !(lesson.db in databases)) {
-        problems.push(
-          `${rel(lesson.dir)}/lesson.md: "db" apunta a una base de práctica que no existe: ${lesson.db}`,
-        );
-      }
-      delete lesson.dir;
+      checkReferences(lesson, "lesson.md");
     }
     delete route.dir;
   }
+  for (const project of projects) {
+    if (project.requires && !routeIds.has(project.requires)) {
+      problems.push(`${rel(project.dir)}/proyecto.md: "requires" apunta a una ruta que no existe`);
+    }
+    checkReferences(project, "proyecto.md");
+  }
 
   if (problems.length) throw new CourseError(problems);
-  return { routes, web, apis, databases, data };
+  return { routes, projects, web, apis, databases, data };
 }
 
 function isLocalServer(url) {
@@ -287,6 +317,71 @@ function loadLesson(dir, id, problems) {
   };
 }
 
+/**
+ * Un proyecto: como una lección, pero con nivel, etiquetas, el motor con el
+ * que se ejecuta, la explicación de la solución y, si es un programa de
+ * línea de comandos (cli: true), argumentos y un disco que se conserva.
+ */
+function loadProject(dir, id, problems) {
+  const file = (name) => path.join(dir, name);
+  const where = rel(file("proyecto.md"));
+  const markdown = readText(file("proyecto.md"), problems) ?? "";
+  const { meta, body } = splitFrontmatter(markdown, file("proyecto.md"), problems);
+  const sections = splitSections(body, file("proyecto.md"), problems, PROJECT_SECTIONS);
+
+  requireStrings(meta, ["title", "summary"], file("proyecto.md"), problems);
+  if (!Number.isInteger(meta.minutes) || meta.minutes <= 0) {
+    problems.push(`${where}: "minutes" debe ser un número entero positivo`);
+  }
+  if (!LEVELS.includes(meta.level)) {
+    problems.push(`${where}: "level" debe ser uno de: ${LEVELS.join(", ")}`);
+  }
+  const tags = Array.isArray(meta.tags) ? meta.tags : [];
+  if (!tags.length || !tags.every((tag) => typeof tag === "string" && tag.trim())) {
+    problems.push(`${where}: "tags" debe ser una lista de etiquetas, como [CLI, Archivos]`);
+  }
+  if (!RUNTIMES.has(meta.runtime)) {
+    problems.push(`${where}: "runtime" debe ser uno de: ${[...RUNTIMES].join(", ")}`);
+  }
+  if (meta.file !== undefined && !PROGRAM_FILE.test(String(meta.file))) {
+    problems.push(`${where}: "file" debe ser el nombre del programa, como tareas.py`);
+  }
+  if (meta.cli !== undefined && typeof meta.cli !== "boolean") {
+    problems.push(`${where}: "cli" debe ser true o false`);
+  }
+  for (const key of ["web", "db", "requires"]) {
+    if (meta[key] !== undefined && typeof meta[key] !== "string") {
+      problems.push(`${where}: "${key}" debe ser un texto`);
+    }
+  }
+
+  const checks = readJson(file("checks.json"), problems) ?? {};
+  validateChecks(checks, file("checks.json"), problems);
+
+  return {
+    id,
+    title: meta.title,
+    level: meta.level,
+    tags,
+    minutes: meta.minutes,
+    runtime: meta.runtime,
+    requires: meta.requires ?? null,
+    summary: meta.summary,
+    file: meta.file ?? "proyecto.py",
+    cli: meta.cli ?? false,
+    theory: sections.theory,
+    exercise: sections.exercise,
+    hint: sections.hint,
+    explanation: sections.explanation,
+    starter: readText(file("starter.py"), problems) ?? "",
+    solution: readText(file("solution.py"), problems) ?? "",
+    test: existsSync(file("test.py")) ? readText(file("test.py"), problems).trimEnd() : "",
+    checks,
+    web: meta.web ?? null,
+    db: meta.db ?? null,
+  };
+}
+
 /** Separa el bloque YAML inicial (entre líneas ---) del resto del Markdown. */
 function splitFrontmatter(markdown, file, problems) {
   const match = markdown.match(/^---\n([\s\S]*?)\n---\n?([\s\S]*)$/);
@@ -302,25 +397,33 @@ function splitFrontmatter(markdown, file, problems) {
   }
 }
 
-/** Divide el cuerpo en teoría (antes del primer ##), ## Ejercicio y ## Pista. */
-function splitSections(body, file, problems) {
-  const sections = { theory: "", exercise: "", hint: "" };
+/**
+ * Divide el cuerpo en teoría (antes del primer ##) y las secciones con su
+ * título (## Ejercicio y ## Pista en las lecciones). Todas son obligatorias.
+ */
+function splitSections(body, file, problems, names = LESSON_SECTIONS) {
+  const buffer = { theory: [] };
+  for (const key of Object.values(names)) buffer[key] = [];
   let current = "theory";
-  const buffer = { theory: [], exercise: [], hint: [] };
 
   for (const line of body.split("\n")) {
     const heading = line.match(/^## (.+)$/);
     if (heading) {
-      current = LESSON_SECTIONS[heading[1].trim()];
+      current = names[heading[1].trim()];
       if (!current) problems.push(`${rel(file)}: sección desconocida "## ${heading[1]}"`);
       continue;
     }
     if (current) buffer[current].push(line);
   }
-  for (const key of Object.keys(sections)) {
+  const sections = {};
+  for (const key of Object.keys(buffer)) {
     sections[key] = buffer[key].join("\n").trim();
-    if (!sections[key])
-      problems.push(`${rel(file)}: falta contenido en la sección "${sectionName(key)}"`);
+    if (!sections[key]) {
+      const title = Object.keys(names).find((name) => names[name] === key);
+      problems.push(
+        `${rel(file)}: falta contenido en la sección "${title ? `## ${title}` : "teoría"}"`,
+      );
+    }
   }
   return sections;
 }
@@ -342,16 +445,30 @@ function validateChecks(checks, file, problems) {
   if (checks.ignore !== undefined && !isValidRegExp(checks.ignore)) {
     problems.push(`${where}: expresión regular inválida en "ignore"`);
   }
+  if (checks.persist !== undefined && typeof checks.persist !== "boolean") {
+    problems.push(`${where}: "persist" debe ser true o false`);
+  }
   for (const [index, run] of (checks.runs ?? []).entries()) {
     for (const key of Object.keys(run)) {
       if (!RUN_KEYS.has(key))
         problems.push(`${where}: runs[${index}] tiene una clave desconocida "${key}"`);
     }
-    if (run.inputs && !run.inputs.every((value) => typeof value === "string")) {
-      problems.push(`${where}: runs[${index}].inputs debe ser una lista de textos`);
+    for (const key of ["inputs", "args", "contains"]) {
+      const value = run[key];
+      if (value !== undefined && !(Array.isArray(value) && value.every(isString))) {
+        problems.push(`${where}: runs[${index}].${key} debe ser una lista de textos`);
+      }
+    }
+    if (run.output !== undefined && typeof run.output !== "string") {
+      problems.push(`${where}: runs[${index}].output debe ser un texto`);
+    }
+    if (run.before !== undefined && typeof run.before !== "string") {
+      problems.push(`${where}: runs[${index}].before debe ser código de Python (un texto)`);
     }
   }
 }
+
+const isString = (value) => typeof value === "string";
 
 /* ---- Lectura de archivos ---- */
 
@@ -407,8 +524,5 @@ function isValidRegExp(pattern) {
     return false;
   }
 }
-
-const sectionName = (key) =>
-  ({ theory: "teoría", exercise: "## Ejercicio", hint: "## Pista" })[key];
 
 const rel = (file) => path.relative(process.cwd(), file) || ".";

@@ -170,9 +170,14 @@ def run(code, files, databases, inputs, echo, on_figure):
     except _InputsExhausted:
         result = {"status": "inputs-exhausted", "error": None}
     except SystemExit as error:
-        # sys.exit("mensaje") escribe el mensaje en la salida de errores, como en Python.
-        if error.code is not None and not isinstance(error.code, int):
+        # sys.exit("mensaje") escribe el mensaje en la salida de errores y termina con código 1.
+        if error.code is None:
+            result["exit_code"] = 0
+        elif isinstance(error.code, int):
+            result["exit_code"] = int(error.code)
+        else:
             print(error.code, file=sys.stderr)
+            result["exit_code"] = 1
     except BaseException as error:
         result = {"status": "error", "error": _describe(error)}
     finally:

@@ -1,0 +1,79 @@
+{
+  "requires": [
+    {
+      "pattern": "csv\\.Dict(Writer|Reader)",
+      "message": "Guarda y carga los gastos con csv.DictWriter y csv.DictReader."
+    }
+  ],
+  "persist": true,
+  "runs": [
+    {
+      "inputs": ["2", "3", "", "5"],
+      "contains": ["No hay gastos.", "¡Hasta pronto!"]
+    },
+    {
+      "inputs": [
+        "1",
+        "2026-10-03",
+        "Almuerzo",
+        "Comida",
+        "12,50",
+        "1",
+        "3/10/2026",
+        "2026-02-30",
+        "2026-10-05",
+        "Bus al centro",
+        "transporte",
+        "abc",
+        "-2",
+        "2.30",
+        "1",
+        "2026-09-28",
+        "Cine",
+        "ocio",
+        "18",
+        "1",
+        "2026-10-12",
+        "Mercado",
+        "comida",
+        "45.75",
+        "9",
+        "5"
+      ],
+      "contains": [
+        "Gasto añadido (id: 1).",
+        "Fecha no válida",
+        "El importe debe ser un número mayor que 0.",
+        "Gasto añadido (id: 2).",
+        "Gasto añadido (id: 4).",
+        "Opción no válida"
+      ]
+    },
+    {
+      "inputs": ["2", "3", "", "3", "2026-1", "2026-10", "5"],
+      "contains": [
+        "Bus al centro",
+        "45.75",
+        "Resumen de todos los gastos (4 gastos)",
+        "Total: 78.55",
+        "Mes no válido",
+        "Resumen de 2026-10 (3 gastos)",
+        "Total: 60.55"
+      ]
+    },
+    {
+      "inputs": ["4", "dos", "4", "2", "4", "9", "3", "", "5"],
+      "contains": [
+        "Escribe el número del gasto.",
+        "Gasto 2 borrado.",
+        "No existe el gasto 9.",
+        "Resumen de todos los gastos (3 gastos)",
+        "Total: 76.25"
+      ]
+    },
+    {
+      "inputs": ["1", "2026-10-20", "Libro de Python", "Educación", "30", "3", "2026-08", "5"],
+      "contains": ["Gasto añadido (id: 5).", "No hay gastos en 2026-08."]
+    }
+  ]
+}

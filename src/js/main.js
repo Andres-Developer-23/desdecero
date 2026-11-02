@@ -18,6 +18,7 @@ import { createTerminal } from "./ui/terminal.js";
 import { createLessonView } from "./views/lesson.js";
 import { createPanelView } from "./views/panel.js";
 import { createPlaygroundView } from "./views/playground.js";
+import { createProjectsView } from "./views/projects.js";
 import { createRouteView } from "./views/route.js";
 import { installPyodide } from "./pyodide/engine.js";
 import { installSqlRuntime } from "./sql/runtime.js";
@@ -31,7 +32,7 @@ installSqlRuntime({ databases: courseData.databases ?? {} });
 installPyodide({ files: courseData.data ?? {}, databases: courseData.databases ?? {} });
 
 const course = createCourse(courseData);
-const progress = createProgress(course.lessons.map((lesson) => lesson.id));
+const progress = createProgress([...course.lessons, ...course.projects].map((item) => item.id));
 const header = createHeader();
 let syncStatus = "local";
 
@@ -39,6 +40,7 @@ const views = {
   panel: createPanelView({ course, progress, getSyncStatus: () => syncStatus }),
   route: createRouteView({ course, progress }),
   lesson: createLessonView({ course, progress }),
+  projects: createProjectsView({ course, progress }),
   playground: createPlaygroundView({ progress }),
 };
 
