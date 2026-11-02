@@ -1,7 +1,11 @@
-/* Vista de lección: teoría, ejemplos y el ejercicio con su editor y consola. */
+/*
+ * Vista de lección: teoría, ejemplos y el ejercicio con su editor y consola.
+ * Los proyectos (kind: "project") se abren en esta misma vista, con lo que
+ * añade project-panel.js: sus pasos, sus soluciones y los argumentos.
+ */
 
 import { STORAGE_KEYS, TIME_LIMIT_MS } from "../config.js";
-import { lessonPath } from "../course/course.js";
+import { lessonPath, projectPath } from "../course/course.js";
 import { checkExercise } from "../exercises/checker.js";
 import { createFletRenderer } from "../flet/renderer.js";
 import { sendFletEvent } from "../flet/runtime.js";
@@ -13,7 +17,7 @@ import { usesPlots } from "../pyodide/detect.js";
 import { preloadPyodide } from "../pyodide/engine.js";
 import { createDbViewer } from "../sql/db-viewer.js";
 import { loadSqlRuntime, onSqlRun, sqlDatabases } from "../sql/runtime.js";
-import { onWebRun, viewerRequest, virtualInternet } from "../web/runtime.js";
+import { clearFiles, onWebRun, viewerRequest, virtualInternet } from "../web/runtime.js";
 import { createWebViewer } from "../web/web-viewer.js";
 import { createEditor, needsNewEditor, waitForEditorLibrary } from "../ui/editor.js";
 import { highlightExamples } from "../ui/examples.js";
@@ -21,6 +25,8 @@ import { renderInline, renderMarkdown } from "../ui/markdown.js";
 import { runInTerminal } from "../ui/run-in-terminal.js";
 import { createTabs } from "../ui/tabs.js";
 import { createTerminal } from "../ui/terminal.js";
+import { formatDuration } from "../ui/format.js";
+import { createProjectPanel, keepsFiles } from "./project-panel.js";
 
 const DRAFT_SAVE_DELAY_MS = 400;
 const SOLUTION_CONFIRM_MS = 3500;
@@ -53,8 +59,10 @@ export function createLessonView({ course, progress }) {
     preview: $("#exercise-preview"),
     web: $("#exercise-web"),
     db: $("#exercise-db"),
+    file: $("#exercise-file"),
     workbench: $(".workbench"),
     success: $("#exercise-success"),
+    successText: $("#exercise-success-text"),
     successLink: $("#exercise-success-link"),
     solutionButton: $("#exercise-solution"),
   };
@@ -88,6 +96,14 @@ export function createLessonView({ course, progress }) {
   let lesson = null;
   let editor = null;
   let solutionTimer = null;
+  const projectPanel = createProjectPanel({
+    getCode: () => editor?.getValue() ?? lesson?.starter ?? "",
+    isDone: (id) => progress.isDone(id),
+  });
+  projectPanel.onArgsEnter(() => run());
+  const isProject = () => lesson?.kind === "project";
+  /** El motor de la lección: el de su ruta, o el del propio proyecto. */
+  const runtime = () => lesson?.runtime ?? lesson?.route.runtime;
 
   /* ---- Mostrar una lección ---- */
 
@@ -97,10 +113,11 @@ export function createLessonView({ course, progress }) {
     window.scrollTo(0, 0);
 
     renderContent();
+    projectPanel.show(lesson);
     renderStatus();
     resetExercisePanel();
     // Las lecciones de pandas usan Python completo: se carga mientras se lee la teoría.
-    if (lesson.route.runtime === "pandas") {
+    if (runtime() === "pandas") {
       const plots = usesPlots(`${lesson.theory}\n${lesson.starter}\n${lesson.solution}`);
       preloadPyodide(plots ? ["pandas", "matplotlib"] : ["pandas"]);
     }
@@ -115,7 +132,15 @@ export function createLessonView({ course, progress }) {
         value: code,
         label: "Editor del ejercicio",
         onRun: run,
-        onChange: (value) => drafts.schedule(lesson, value),
+        onChange: (value) => {
+          drafts.schedule(lesson, value);
+          if (isProject()) {
+            projectPanel.renderSteps({
+              started: value !== lesson.starter,
+              done: progress.isDone(lesson.id),
+            });
+          }
+        },
       });
     } else {
       editor.setValue(code);
@@ -127,14 +152,18 @@ export function createLessonView({ course, progress }) {
     const previous = course.previous(lesson);
     const next = course.next(lesson);
 
-    elements.back.href = `#ruta-${lesson.route.id}`;
+    const project = isProject();
+    elements.back.href = project ? "#proyectos" : `#ruta-${lesson.route.id}`;
     elements.back.textContent = `← ${lesson.route.title}`;
-    elements.path.innerHTML = `~/rutas/<b>${escapeHtml(lessonPath(lesson))}</b>`;
+    elements.path.innerHTML = project
+      ? `~/<b>${escapeHtml(projectPath(lesson))}</b>`
+      : `~/rutas/<b>${escapeHtml(lessonPath(lesson))}</b>`;
     elements.title.textContent = lesson.title;
     elements.summary.textContent = lesson.summary;
     elements.body.innerHTML = renderMarkdown(lesson.theory);
+    elements.file.textContent = project ? lesson.file : "ejercicio.py";
     elements.task.innerHTML =
-      '<h2 class="workbench__heading">// ejercicio</h2>' +
+      `<h2 class="workbench__heading">// ${project ? "objetivo" : "ejercicio"}</h2>` +
       renderMarkdown(lesson.exercise, { runnableCode: false });
     highlightExamples(elements.body);
 
@@ -145,6 +174,10 @@ export function createLessonView({ course, progress }) {
   function renderStatus() {
     if (!lesson) return;
     const done = progress.isDone(lesson.id);
+    if (isProject()) {
+      renderProjectStatus(done);
+      return;
+    }
 
     elements.meta.innerHTML = [
       `<span>lección ${lesson.number} de ${lesson.route.total}</span>`,
@@ -160,16 +193,36 @@ export function createLessonView({ course, progress }) {
       : "o supera el ejercicio y se marcará sola";
   }
 
+  /** Nivel, etiquetas, duración y la ruta que conviene haber hecho; y los pasos. */
+  function renderProjectStatus(done) {
+    const required = lesson.requires ? course.getRoute(lesson.requires) : null;
+    elements.meta.innerHTML = [
+      `<span class="level level--${lesson.level}">${escapeHtml(lesson.level)}</span>`,
+      ...lesson.tags.map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`),
+      `<span>~${formatDuration(lesson.minutes)}</span>`,
+      required
+        ? `<span>usa: <a href="#ruta-${required.id}">${escapeHtml(required.title)}</a></span>`
+        : "",
+      done ? '<span class="lesson__done">[x] completado</span>' : "",
+    ].join("");
+    elements.badge.textContent = done ? "superado" : "pendiente";
+    elements.badge.classList.toggle("badge--ok", done);
+    elements.toggleDone.textContent = done ? "marcar como pendiente" : "marcar como completado";
+    elements.note.textContent = done
+      ? `completado el ${formatDayKey(progress.completedOn(lesson.id))}`
+      : "o pasa las comprobaciones y se marcará solo";
+    projectPanel.renderSteps({ started: drafts.load(lesson) != null, done });
+  }
+
   /**
    * Las lecciones de Flet tienen la vista previa de la app; las del simulador web,
    * el navegador de la web de prácticas; las de SQL, el explorador de la base de
    * datos (y el navegador, si la lección empieza en una dirección); las de
    * Python, solo la salida.
    */
-  const isFletLesson = () => lesson.route.runtime === "flet";
-  const isSqlLesson = () => lesson?.route.runtime === "sqlite";
-  const isWebLesson = () =>
-    lesson?.route.runtime === "web" || (isSqlLesson() && lesson.web != null);
+  const isFletLesson = () => runtime() === "flet";
+  const isSqlLesson = () => runtime() === "sqlite";
+  const isWebLesson = () => runtime() === "web" || (isSqlLesson() && lesson.web != null);
 
   function resetExercisePanel() {
     const flet = isFletLesson();
@@ -186,6 +239,18 @@ export function createLessonView({ course, progress }) {
       "system",
     );
     if (sql) terminal.line("# en «datos», las tablas de tus bases de datos,", "system");
+    if (lesson.cli) {
+      terminal.line(
+        `# escribe los argumentos después de «$ python ${lesson.file}» (debajo del editor);`,
+        "system",
+      );
+    }
+    if (keepsFiles(lesson)) {
+      terminal.line(
+        "# los archivos que guarda se conservan entre ejecuciones, como en tu ordenador,",
+        "system",
+      );
+    }
     if (web) terminal.line("# en «web», las páginas que pida tu programa o tu servidor,", "system");
     terminal.line("# y ✓ comprobar cuando creas que el ejercicio está resuelto.", "system");
 
@@ -249,7 +314,9 @@ export function createLessonView({ course, progress }) {
     if (flet) tabs.select("preview");
     if (isWebLesson() || isSqlLesson()) tabs.select("output");
     runInTerminal(editor.getValue(), terminal, {
-      fileName: "ejercicio.py",
+      fileName: isProject() ? lesson.file : "ejercicio.py",
+      argv: projectPanel.argv(),
+      keepFiles: keepsFiles(lesson),
       timeLimitMs: TIME_LIMIT_MS.lesson,
       showDuration: true,
       editor,
@@ -277,10 +344,13 @@ export function createLessonView({ course, progress }) {
       return;
     }
 
-    terminal.line("✓ ¡Ejercicio superado!", "pass");
+    terminal.line(
+      current.kind === "project" ? "✓ ¡Proyecto superado!" : "✓ ¡Ejercicio superado!",
+      "pass",
+    );
     progress.setDone(current.id, true);
     showSuccess(current);
-    if (!course.firstPending(current.route, progress.isDone)) {
+    if (current.kind !== "project" && !course.firstPending(current.route, progress.isDone)) {
       terminal.line(`Has completado la ruta «${current.route.title}». ¡Enhorabuena!`, "ok");
     }
   }
@@ -288,10 +358,20 @@ export function createLessonView({ course, progress }) {
   /** Enlaza con la siguiente lección de la ruta o, al terminarla, con la página de la ruta. */
   function showSuccess(current) {
     const next = course.next(current);
-    elements.successLink.href = next ? `#l-${next.id}` : `#ruta-${current.route.id}`;
+    const project = current.kind === "project";
+    elements.successLink.href = next
+      ? itemHref(next)
+      : project
+        ? "#proyectos"
+        : `#ruta-${current.route.id}`;
+    elements.successText.textContent = project
+      ? "✓ proyecto superado · completado"
+      : "✓ ejercicio superado · lección completada";
     elements.successLink.querySelector(".cta__label").textContent = next
       ? `siguiente: ${next.title} →`
-      : "ver la ruta completa →";
+      : project
+        ? "ver todos los proyectos →"
+        : "ver la ruta completa →";
     elements.success.hidden = false;
   }
 
@@ -345,6 +425,10 @@ export function createLessonView({ course, progress }) {
     solution: showSolution,
     reset: resetCode,
     "clear-output": () => terminal.clear(),
+    "clear-disk": () => {
+      clearFiles();
+      terminal.line("# disco vaciado: el programa empieza sin archivos", "system");
+    },
     "toggle-done": toggleDone,
   };
 
@@ -367,10 +451,13 @@ export function createLessonView({ course, progress }) {
 
 /* ---- Auxiliares ---- */
 
+/** El enlace de una lección o de un proyecto. */
+const itemHref = (item) => (item.kind === "project" ? `#p-${item.id}` : `#l-${item.id}`);
+
 function setPagerLink(link, lesson) {
   link.hidden = !lesson;
   if (!lesson) return;
-  link.href = `#l-${lesson.id}`;
+  link.href = itemHref(lesson);
   link.querySelector(".pager__title").textContent = `${pad2(lesson.number)} · ${lesson.title}`;
 }
 

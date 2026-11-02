@@ -144,11 +144,16 @@ test("ninguna página se desborda a lo ancho", async ({ page }) => {
   const routes = await page.evaluate(() =>
     window.__desdecero.course.routes.map((route) => route.id),
   );
+  const projects = await page.evaluate(() =>
+    window.__desdecero.course.projects.map((project) => project.id),
+  );
   const hashes = [
     "#panel",
     "#playground",
+    "#proyectos",
     ...routes.map((id) => `#ruta-${id}`),
     ...lessons.map((id) => `#l-${id}`),
+    ...projects.map((id) => `#p-${id}`),
   ];
   for (const hash of hashes) {
     await page.evaluate((target) => {
