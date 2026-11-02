@@ -1,0 +1,16 @@
+{
+  "requires": [
+    {
+      "pattern": "def\\s+informe\\(\\s*ventas\\s*,\\s*productos\\s*\\)",
+      "message": "Escribe la función informe(ventas, productos)."
+    },
+    {
+      "pattern": "to_csv\\(\\s*[\\\"']informe\\.csv[\\\"']",
+      "message": "Guarda el informe con to_csv(\"informe.csv\")."
+    },
+    {
+      "pattern": "plt\\.show\\(\\)",
+      "message": "Enseña el gráfico con plt.show()."
+    }
+  ]
+}
