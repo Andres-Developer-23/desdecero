@@ -4,7 +4,7 @@
 
 **Pruébalo en [andres-developer-23.github.io/desdecero](https://andres-developer-23.github.io/desdecero/)**
 
-Rutas interactivas para aprender **Python desde cero, en español**, y después **programación orientada a objetos**, apps con interfaz gráfica con **Flet**, extracción de datos de la web con **web scraping**, uso de **APIs y JSON**, creación de **APIs propias con Flask** y **bases de datos con SQL**. Cada ruta se divide en módulos y lecciones cortas: cada lección explica una idea, trae ejemplos que se ejecutan con un clic y termina con un ejercicio que se corrige solo.
+Rutas interactivas para aprender **Python desde cero, en español**, y después **programación orientada a objetos**, apps con interfaz gráfica con **Flet**, extracción de datos de la web con **web scraping**, uso de **APIs y JSON**, creación de **APIs propias con Flask**, **bases de datos con SQL** y **análisis de datos con pandas**. Cada ruta se divide en módulos y lecciones cortas: cada lección explica una idea, trae ejemplos que se ejecutan con un clic y termina con un ejercicio que se corrige solo.
 
 Todo funciona en el navegador. No hace falta instalar Python ni crear una cuenta.
 
@@ -102,6 +102,18 @@ El progreso y el código que escribes se guardan en el navegador.
 | 02 · Crear y modificar    | Crear tablas · Insertar datos · Actualizar, borrar y transacciones                            |
 | 03 · SQL desde Python     | Parámetros e inyección de SQL · Filas como objetos                                            |
 | 04 · Proyecto final       | Relaciones y claves foráneas · Un repositorio con SQL · Proyecto: una API de Flask con SQLite |
+
+### Ruta «Análisis de datos con pandas»
+
+5 módulos y 12 lecciones (unas 3 horas y media) para analizar datos con [pandas](https://pandas.pydata.org) y dibujarlos con [matplotlib](https://matplotlib.org), con las librerías de verdad: estas lecciones se ejecutan con Python completo (Pyodide), que empieza a cargarse al abrir la lección. Conviene haber terminado antes la ruta de Python. Los ejercicios usan tres archivos de práctica de **Café Andino**, una cadena de cafeterías inventada: sus ventas del primer semestre (`ventas.csv`), su catálogo con precios y costos (`productos.csv`) y una encuesta a sus clientes con datos por limpiar (`encuesta.csv`). Las comprobaciones miran la salida, las tablas que crea el alumno y sus gráficos (título, ejes, barras), y prueban sus funciones con otros datos.
+
+| Módulo                     | Lecciones                                                                             |
+| -------------------------- | ------------------------------------------------------------------------------------- |
+| 00 · Primeros pasos        | Series y DataFrame · Leer y explorar un CSV                                           |
+| 01 · Seleccionar y filtrar | Columnas y filas: `loc` e `iloc` · Filtrar con condiciones                            |
+| 02 · Limpiar y transformar | Ordenar y crear columnas · Datos que faltan y tipos · Limpiar textos y fechas         |
+| 03 · Resumir y combinar    | Agrupar y resumir con `groupby` · Combinar tablas: `merge` y `concat`                 |
+| 04 · Visualizar y proyecto | Gráficos con matplotlib · Fechas y series temporales · Proyecto: un informe de ventas |
 
 ## Desarrollo local
 
@@ -264,7 +276,7 @@ Skulpt no puede ejecutar pandas ni numpy: son librerías escritas en buena parte
 - **Detener** o pasarse del tiempo termina el worker: el siguiente programa vuelve a cargar Python, ya desde la caché.
 - Las comprobaciones de los ejercicios funcionan igual que con Skulpt: salida esperada, `test.py` con asserts y patrones.
 
-Diferencias con Python en un ordenador: `input()` no está disponible en estos programas (el worker no puede esperar a que se escriba), y Pyodide es de 32 bits, así que lo que depende del tamaño de los punteros cambia (por ejemplo, la memoria que informa `df.info()`). Las salidas de las lecciones se comprobaron con Python 3.13 y las mismas versiones de pandas, numpy y matplotlib.
+Diferencias con Python en un ordenador: `input()` no está disponible en estos programas (el worker no puede esperar a que se escriba), y Pyodide es de 32 bits, así que lo que depende del tamaño de los punteros cambia: la memoria que informa `df.info()`, `astype(int)` (que da `int32` en lugar de `int64`) o el orden de las filas empatadas al ordenar sin `kind="stable"`. Las salidas de las lecciones se comprobaron con Python 3.13 y las mismas versiones de pandas, numpy y matplotlib.
 
 ## Escribir lecciones
 

@@ -23,7 +23,10 @@ test("el panel muestra las rutas y el siguiente paso", async ({ page }) => {
   const sql = page.getByRole("article", { name: "Bases de datos con SQL" });
   await expect(sql).toContainText("0/12");
   await expect(sql).toContainText("Antes conviene terminar «Crea tu propia API con Flask»");
-  // Las rutas siguen el orden de las carpetas: Python, POO, Flet, scraping, APIs, Flask y SQL.
+  const pandas = page.getByRole("article", { name: "Análisis de datos con pandas" });
+  await expect(pandas).toContainText("0/12");
+  await expect(pandas).toContainText("Antes conviene terminar «Python desde cero»");
+  // Las rutas siguen el orden de las carpetas: Python, POO, Flet, scraping, APIs, Flask, SQL y pandas.
   await expect(page.locator(".route-card h3")).toHaveText([
     /Python desde cero/,
     /Programación orientada a objetos/,
@@ -32,6 +35,7 @@ test("el panel muestra las rutas y el siguiente paso", async ({ page }) => {
     /APIs y JSON/,
     /Crea tu propia API con Flask/,
     /Bases de datos con SQL/,
+    /Análisis de datos con pandas/,
   ]);
   await expect(page.locator("#panel-actions .cta--primary")).toContainText(
     "empezar: Tu primer programa",
