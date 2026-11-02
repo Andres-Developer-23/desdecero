@@ -101,6 +101,8 @@ function newState() {
     requests: [],
     session: internet.newSession(),
     files: new Map(),
+    // Los archivos que escribió la ejecución actual (con keepFiles, files tiene también los anteriores).
+    written: new Set(),
     documents: [],
   };
 }
@@ -142,6 +144,7 @@ export function installWebRuntime(sources) {
     fileRead: (name) => (state.files.has(name) ? state.files.get(name) : null),
     fileWrite: (name, text) => {
       state.files.set(name, String(text));
+      state.written.add(name);
     },
     fileNames: () => [...state.files.keys()],
     logTime,
@@ -172,13 +175,15 @@ export const virtualInternet = () => internet;
  */
 
 /**
- * Peticiones, archivos y servidor de Flask de la última ejecución.
- * @returns {{requests: LoggedRequest[], files: Map<string, string>, server: {origin: string} | null}}
+ * Peticiones, archivos y servidor de Flask de la última ejecución. files tiene
+ * todo el disco; written, los nombres de los archivos que escribió esa ejecución.
+ * @returns {{requests: LoggedRequest[], files: Map<string, string>, written: Set<string>, server: {origin: string} | null}}
  */
 export function lastRun() {
   return {
     requests: state.requests.map((request) => ({ ...request })),
     files: new Map(state.files),
+    written: new Set(state.written),
     server: runningServer(),
   };
 }
@@ -194,12 +199,22 @@ export async function viewerRequest(request, session) {
   return internet.request(request, { session });
 }
 
+/** Vacía el disco simulado (los programas de línea de comandos lo conservan entre usos). */
+export function clearFiles() {
+  state.files = new Map();
+}
+
 /** Avisa al terminar cada ejecución: listener(lastRun()). */
 export const onWebRun = (listener) => emitter.on("run", listener);
 
-/** Antes de cada programa: vacía la web, las APIs y el disco, y pone el open() simulado. */
-async function prepareRun(Sk) {
+/**
+ * Antes de cada programa: vacía la web, las APIs y el disco (salvo con
+ * keepFiles, que conserva los archivos), y pone el open() simulado.
+ */
+async function prepareRun(Sk, code, options = {}) {
+  const files = state.files;
   Object.assign(state, newState());
+  if (options.keepFiles) state.files = files;
   stopServer();
   if (!virtualFileApi) {
     const module = await Sk.misceval.asyncToPromise(() =>

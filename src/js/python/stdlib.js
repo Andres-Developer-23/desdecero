@@ -5,6 +5,9 @@
  *
  * json analiza el texto en JavaScript (json-parse.js) a través del módulo
  * puente _json: hacerlo letra a letra en Skulpt sería muy lento.
+ *
+ * Además, el módulo sys de Skulpt se completa con sys.exit() y sys.stderr,
+ * que usan los programas de línea de comandos.
  */
 
 import abcSource from "../../python/abc.py";
@@ -36,6 +39,35 @@ var $builtinmodule = function (name) {
 };
 `;
 
+/**
+ * El sys de Skulpt (src/builtin/sys.js) con sys.exit() y sys.stderr. sys.exit() lanza
+ * SystemExit, que engine.js trata como el final normal del programa; sys.stderr escribe en
+ * la salida de errores de la ejecución (Sk.desdeceroStderr, lo prepara engine.js).
+ */
+const SYS_SOURCE = `
+var $builtinmodule = function (name) {
+  var original = Sk.builtinFiles.files["src/builtin/sys.js"];
+  var mod = new Function(original + "\\nreturn $builtinmodule;")()(name);
+  mod.exit = new Sk.builtin.func(function (code) {
+    if (code === undefined || code === Sk.builtin.none.none$) throw new Sk.builtin.SystemExit();
+    throw new Sk.builtin.SystemExit(code);
+  });
+  var StandardError = Sk.misceval.buildClass(mod, function ($gbl, $loc) {
+    $loc.write = new Sk.builtin.func(function (self, text) {
+      var value = new Sk.builtin.str(text).v;
+      if (Sk.desdeceroStderr) Sk.desdeceroStderr(value);
+      return new Sk.builtin.int_(value.length);
+    });
+    $loc.flush = new Sk.builtin.func(function (self) {
+      return Sk.builtin.none.none$;
+    });
+  }, "StandardError", []);
+  mod.stderr = Sk.misceval.callsimArray(StandardError, []);
+  mod.__stderr__ = mod.stderr;
+  return mod;
+};
+`;
+
 /** Registra los módulos. Se llama una vez al arrancar. */
 export function installStandardLibraryExtras() {
   registerPythonFiles({
@@ -45,6 +77,7 @@ export function installStandardLibraryExtras() {
     "src/lib/json/__init__.py": jsonSource,
     "src/lib/_json.js": JSON_BRIDGE_SOURCE,
     "src/lib/typing.py": typingSource,
+    "src/builtin/sys.js": SYS_SOURCE,
   });
 
   window.__desdeceroJson = {

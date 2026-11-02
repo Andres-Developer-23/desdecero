@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, test } from "node:test";
 import { normalizeOutput, stripComments } from "../../src/js/exercises/text.js";
+import { commandLine, splitArgs } from "../../src/js/ui/format.js";
 import { renderInline, renderMarkdown } from "../../src/js/ui/markdown.js";
 
 describe("stripComments", () => {
@@ -66,5 +67,28 @@ describe("markdown de las lecciones", () => {
   test("con runnableCode: false, ```py también es un bloque fijo", () => {
     const html = renderMarkdown("```py\nx = 1\n```", { runnableCode: false });
     assert.equal(html, '<pre class="output-block">x = 1</pre>');
+  });
+});
+
+describe("argumentos de la línea de comandos", () => {
+  test("splitArgs separa por espacios y agrupa con comillas, como una terminal", () => {
+    assert.deepEqual(splitArgs('agregar "Comprar pan"'), ["agregar", "Comprar pan"]);
+    assert.deepEqual(splitArgs("  actualizar   1  'Pan  integral' "), [
+      "actualizar",
+      "1",
+      "Pan  integral",
+    ]);
+    assert.deepEqual(splitArgs('nota "" vacia'), ["nota", "", "vacia"]);
+    assert.deepEqual(splitArgs('dijo"hola mundo"ya'), ["dijohola mundoya"]);
+    assert.deepEqual(splitArgs(""), []);
+  });
+
+  test("commandLine escribe la orden con comillas donde hacen falta", () => {
+    assert.equal(commandLine(["tareas.py"]), "python tareas.py");
+    assert.equal(
+      commandLine(["tareas.py", "agregar", "Comprar pan", ""]),
+      'python tareas.py agregar "Comprar pan" ""',
+    );
+    assert.equal(commandLine(["a.py", 'di "hola"']), 'python a.py "di \\"hola\\""');
   });
 });

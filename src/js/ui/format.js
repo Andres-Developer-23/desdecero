@@ -18,3 +18,38 @@ export function formatDuration(totalMinutes) {
 /** "1 día", "3 días" */
 export const plural = (count, singular, pluralForm = `${singular}s`) =>
   `${count} ${count === 1 ? singular : pluralForm}`;
+
+/** Cómo se escribiría la orden en una terminal: python tareas.py agregar "Comprar pan". */
+export function commandLine(argv) {
+  const quote = (arg) => (arg === "" || /[\s"']/.test(arg) ? `"${arg.replace(/"/g, '\\"')}"` : arg);
+  return `python ${argv.map(quote).join(" ")}`;
+}
+
+/**
+ * Separa los argumentos escritos como en una terminal: agregar "Comprar pan" 3
+ * → ["agregar", "Comprar pan", "3"]. Las comillas (dobles o simples) agrupan.
+ */
+export function splitArgs(text) {
+  const args = [];
+  let current = "";
+  let started = false;
+  let quote = null;
+  for (const char of text) {
+    if (quote) {
+      if (char === quote) quote = null;
+      else current += char;
+    } else if (char === '"' || char === "'") {
+      quote = char;
+      started = true;
+    } else if (/\s/.test(char)) {
+      if (started) args.push(current);
+      current = "";
+      started = false;
+    } else {
+      current += char;
+      started = true;
+    }
+  }
+  if (started) args.push(current);
+  return args;
+}

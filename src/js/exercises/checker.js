@@ -4,7 +4,8 @@
  * Cada lección define en checks.json cómo se comprueba (ver README):
  *   requires / forbids  patrones que el código debe tener o no tener
  *   ignore              líneas que se quitan antes de comprobar
- *   runs                ejecuciones con entradas, salida esperada y código extra
+ *   runs                ejecuciones con entradas, argumentos, salida esperada y código extra
+ *   persist             las ejecuciones comparten el disco simulado (programas de línea de comandos)
  * y, opcionalmente, test.py con asserts que se añaden en la última ejecución.
  */
 
@@ -13,13 +14,14 @@ import { beginFletSession } from "../flet/runtime.js";
 import { isSyntaxError } from "../python/errors.js";
 import { runPython } from "../python/engine.js";
 import { beginWebSession } from "../web/runtime.js";
+import { commandLine } from "../ui/format.js";
 import { countLines, indentLines, normalizeOutput, stripComments } from "./text.js";
 
 /**
  * @typedef {object} CheckResult
  * @property {boolean} passed
  * @property {string} [reason] Motivo del fallo: requires, forbids, syntax, error, assertion,
- *   test-error, output, contains, inputs-exhausted, stopped, busy o unavailable.
+ *   test-error, output, contains, exited, inputs-exhausted, stopped, busy o unavailable.
  * @property {number | null} [errorLine] Línea del código del alumno donde falló, si se sabe.
  */
 
@@ -52,16 +54,24 @@ export async function checkExercise(lesson, code, terminal) {
   for (const [index, run] of runs.entries()) {
     const isLast = index === runs.length - 1;
     const extraCode = [run.test, isLast ? lesson.test : ""].filter(Boolean).join("\n");
-    const program = extraCode ? `${studentCode}\n${extraCode}\n` : studentCode;
+    // «before» va delante del código del alumno (por ejemplo, para fijar el número secreto
+    // de un juego): sus líneas se descuentan al decir dónde está un error.
+    const before = run.before ? `${run.before.trimEnd()}\n` : "";
+    const offset = before ? countLines(run.before.trimEnd()) : 0;
+    const program = `${before}${studentCode}${extraCode ? `\n${extraCode}\n` : ""}`;
     const label = runs.length > 1 ? `prueba ${index + 1}/${runs.length}` : "prueba";
     const inputs = run.inputs ?? [];
+    const argv = run.args ? [lesson.file ?? "programa.py", ...run.args] : undefined;
 
     terminal.line(
-      `$ comprobar · ${label}${inputs.length ? ` · entradas: ${inputs.join(" · ")}` : ""}`,
+      `$ comprobar · ${label}${argv ? ` · ${commandLine(argv)}` : ""}${inputs.length ? ` · entradas: ${inputs.join(" · ")}` : ""}`,
       "system",
     );
     const result = await runPython(program, {
       inputs,
+      argv,
+      // Con persist, cada ejecución ve los archivos que dejó la anterior (la primera empieza vacía).
+      keepFiles: Boolean(checks.persist) && index > 0,
       timeLimitMs: TIME_LIMIT_MS.check,
       onOutput: (text, stream) => terminal.write(text, stream === "stderr" ? "warning" : "output"),
       onInputEcho: (prompt, value) => terminal.echoInput(prompt, value),
@@ -70,12 +80,27 @@ export async function checkExercise(lesson, code, terminal) {
     });
     terminal.ensureNewline();
 
-    const failure = evaluateRun(result, run, { studentLines, terminal });
+    const failure = evaluateRun(shiftLines(result, offset), run, {
+      studentLines,
+      terminal,
+      hasTests: Boolean(extraCode),
+    });
     if (failure) return failure;
     terminal.line(`[ok] ${label}`, "ok");
   }
 
   return { passed: true };
+}
+
+/** Las líneas de un error, contadas desde el código del alumno (sin el «before» de la prueba). */
+function shiftLines(result, offset) {
+  if (!offset || !result.error) return result;
+  const shift = (line) => (line == null ? line : line - offset);
+  const error = result.error;
+  return {
+    ...result,
+    error: { ...error, line: shift(error.line), frames: error.frames.map(shift) },
+  };
 }
 
 /** Revisa los patrones obligatorios y prohibidos sin ejecutar nada. */
@@ -95,7 +120,7 @@ function findStaticProblem(checks, code) {
 }
 
 /** Decide si una ejecución falló y lo explica en la terminal. Devuelve null si fue bien. */
-function evaluateRun(result, run, { studentLines, terminal }) {
+function evaluateRun(result, run, { studentLines, terminal, hasTests }) {
   switch (result.status) {
     case "busy":
       return fail("busy");
@@ -115,6 +140,15 @@ function evaluateRun(result, run, { studentLines, terminal }) {
       return explainError(result.error, { studentLines, terminal });
   }
 
+  // Con sys.exit() las comprobaciones que van detrás del programa no llegan a ejecutarse.
+  if (hasTests && result.exitCode !== undefined) {
+    terminal.line(
+      "✗ Tu programa terminó con sys.exit() antes de llegar a las comprobaciones: en esta prueba debería terminar normalmente.",
+      "fail",
+    );
+    return fail("exited");
+  }
+
   if (run.output != null && normalizeOutput(result.stdout) !== normalizeOutput(run.output)) {
     terminal.line("✗ La salida no coincide.", "fail");
     terminal.line("  esperaba:", "system");
@@ -124,8 +158,10 @@ function evaluateRun(result, run, { studentLines, terminal }) {
     return fail("output");
   }
 
+  // Los mensajes de error pueden ir a la salida normal o a la de errores (sys.stderr).
+  const printed = `${result.stdout}${result.stderr ?? ""}`;
   for (const expected of run.contains ?? []) {
-    if (!result.stdout.includes(expected)) {
+    if (!printed.includes(expected)) {
       terminal.line(`✗ La salida debería incluir: ${expected}`, "fail");
       return fail("contains");
     }
@@ -151,7 +187,7 @@ function explainError(error, { studentLines, terminal }) {
     return fail("assertion");
   }
 
-  const studentLine = error.frames.find((line) => line <= studentLines) ?? null;
+  const studentLine = error.frames.find((line) => line >= 1 && line <= studentLines) ?? null;
   if (inTests(error.line) && studentLine == null) {
     terminal.line(
       `✗ La comprobación no pudo ejecutarse: ${error.type}${error.message ? `: ${error.message}` : ""}`,

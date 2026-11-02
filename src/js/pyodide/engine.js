@@ -93,6 +93,7 @@ export function startPyodideRun(code, options = {}) {
   let finish;
   let timer = null;
   let stdout = "";
+  let stderr = "";
   let startedAt = 0;
   let done = false;
   const promise = new Promise((resolve) => (finish = resolve));
@@ -102,7 +103,7 @@ export function startPyodideRun(code, options = {}) {
     done = true;
     clearTimeout(timer);
     handlers = null;
-    finish({ stdout, figures: [], files: [], unshown: 0, ...result });
+    finish({ stdout, stderr, figures: [], files: [], unshown: 0, ...result });
   }
 
   const stop = () => {
@@ -152,7 +153,10 @@ export function startPyodideRun(code, options = {}) {
         stdout += text;
         options.onOutput?.(text);
       },
-      stderr: ({ text }) => options.onOutput?.(text, "stderr"),
+      stderr: ({ text }) => {
+        stderr += text;
+        options.onOutput?.(text, "stderr");
+      },
       echo: ({ prompt, value }) => options.onInputEcho?.(prompt, value),
       figure: ({ image }) => options.onFigure?.(image),
       done: ({ result }) => {
@@ -167,6 +171,7 @@ export function startPyodideRun(code, options = {}) {
           figures: result.figures ?? [],
           files: result.files ?? [],
           unshown: result.unshown ?? 0,
+          exitCode: result.exit_code ?? undefined,
           durationMs: performance.now() - startedAt,
         });
       },
