@@ -113,6 +113,9 @@ describe("carga del contenido", () => {
     assert.equal(lessons.length, 20);
     assert.equal(lessons[0].id, "hola-mundo");
     assert.equal(lessons.at(-1).id, "adivina");
+    assert.ok(course.projects.length >= 6);
+    assert.equal(course.projects[0].id, "gestor-de-tareas");
+    assert.ok(course.projects.every((project) => project.solution && project.exercise));
   });
 
   test("lee metadatos, secciones, código y comprobaciones de una lección", () => {

@@ -1,0 +1,17 @@
+{
+  "requires": [
+    {
+      "pattern": "RobotFileParser\\(",
+      "message": "Lee el robots.txt con RobotFileParser."
+    },
+    {
+      "pattern": "timeout\\s*=",
+      "message": "Pon un timeout en cada petición: requests.get(url, headers=CABECERAS, timeout=10)."
+    }
+  ],
+  "runs": [
+    {
+      "output": "Boletín de La Gaceta de Ejemplo · 6 noticias\n\nBarrio (1)\n  2026-10-24 · El parque central estrena huerta comunitaria · Redacción · 35 palabras\n\nCultura (3)\n  2026-10-26 · La biblioteca municipal abrirá también de noche · Redacción · 48 palabras\n  2026-10-23 · Vuelve la feria del libro con 120 expositores · Carlos Ruiz · 46 palabras\n  2026-10-21 · La orquesta juvenil gana un concurso nacional · Carlos Ruiz · 37 palabras\n\nMovilidad (1)\n  2026-10-22 · Nuevo carril para bicicletas en la avenida principal · Laura Gómez · 34 palabras\n\nTecnología (1)\n  2026-10-25 · Estudiantes crean una app para separar la basura · Laura Gómez · 44 palabras\n\nPalabras en total: 244\nLa más larga: La biblioteca municipal abrirá también de noche (48 palabras)"
+    }
+  ]
+}

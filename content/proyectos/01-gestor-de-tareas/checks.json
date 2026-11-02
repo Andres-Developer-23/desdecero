@@ -1,0 +1,38 @@
+{
+  "requires": [
+    {
+      "pattern": "sys\\.argv",
+      "message": "Lee las órdenes de la terminal con sys.argv."
+    },
+    {
+      "pattern": "json\\.(dump|load)",
+      "message": "Guarda y carga las tareas con json.dump y json.load."
+    }
+  ],
+  "persist": true,
+  "runs": [
+    { "args": [], "contains": ["Uso:"] },
+    { "args": ["listar"], "output": "No hay tareas." },
+    { "args": ["agregar", "Comprar pan"], "output": "Tarea agregada (id: 1)" },
+    { "args": ["agregar", "Llamar a la abuela"], "output": "Tarea agregada (id: 2)" },
+    { "args": ["agregar", "Estudiar Python"], "output": "Tarea agregada (id: 3)" },
+    { "args": ["actualizar", "1", "Comprar pan integral"], "output": "Tarea 1 actualizada" },
+    { "args": ["en-curso", "1"], "output": "Tarea 1: en curso" },
+    { "args": ["hecha", "3"], "output": "Tarea 3: hecha" },
+    {
+      "args": ["listar"],
+      "output": "[~] 1 · Comprar pan integral\n[ ] 2 · Llamar a la abuela\n[x] 3 · Estudiar Python"
+    },
+    { "args": ["listar", "hechas"], "output": "[x] 3 · Estudiar Python" },
+    { "args": ["listar", "pendientes"], "output": "[ ] 2 · Llamar a la abuela" },
+    { "args": ["listar", "en-curso"], "output": "[~] 1 · Comprar pan integral" },
+    { "args": ["eliminar", "2"], "output": "Tarea 2 eliminada" },
+    { "args": ["listar", "pendientes"], "output": "No hay tareas." },
+    { "args": ["eliminar", "2"], "contains": ["No existe la tarea 2"] },
+    { "args": ["hecha", "abc"], "contains": ["El id debe ser un número: abc"] },
+    { "args": ["volar"], "contains": ["Orden desconocida: volar"] },
+    { "args": ["agregar"], "contains": ["Falta la descripción de la tarea"] },
+    { "args": ["listar", "todas"], "contains": ["Filtro desconocido: todas"] },
+    { "args": ["agregar", "Regar las plantas"], "output": "Tarea agregada (id: 4)" }
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "requires": [
+    {
+      "pattern": "randint\\(",
+      "message": "Elige el número secreto con random.randint(1, 100)."
+    }
+  ],
+  "runs": [
+    {
+      "before": "import random\nrandom.randint = lambda a, b: 42",
+      "inputs": ["2", "50", "25", "hola", "42", "n"],
+      "contains": [
+        "Dificultad media: tienes 5 intentos.",
+        "Incorrecto: el número es menor que 50.",
+        "Incorrecto: el número es mayor que 25.",
+        "Escribe un número del 1 al 100",
+        "¡Correcto! Lo adivinaste en 3 intentos.",
+        "Nuevo récord en dificultad media: 3 intentos.",
+        "¡Gracias por jugar!"
+      ]
+    },
+    {
+      "before": "import random\nrandom.randint = lambda a, b: 7",
+      "inputs": ["4", "3", "pista", "pista", "10", "90", "0", "50", "n"],
+      "contains": [
+        "Elige 1, 2 o 3.",
+        "Dificultad difícil: tienes 3 intentos.",
+        "Pista: es un número impar.",
+        "Ya usaste tu pista en esta partida.",
+        "Incorrecto: el número es menor que 90.",
+        "Te quedaste sin intentos. El número era 7.",
+        "¡Gracias por jugar!"
+      ]
+    },
+    {
+      "before": "import random\n_secretos = [42, 30, 30]\nrandom.randint = lambda a, b: _secretos.pop(0)",
+      "inputs": ["1", "42", "s", "1", "50", "30", "s", "3", "30", "n"],
+      "contains": [
+        "Dificultad fácil: tienes 10 intentos.",
+        "¡Correcto! Lo adivinaste en 1 intento.",
+        "Nuevo récord en dificultad fácil: 1 intento.",
+        "¡Correcto! Lo adivinaste en 2 intentos.",
+        "Nuevo récord en dificultad difícil: 1 intento."
+      ]
+    }
+  ]
+}
