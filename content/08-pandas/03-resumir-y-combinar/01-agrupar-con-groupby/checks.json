@@ -1,0 +1,19 @@
+{
+  "requires": [
+    {
+      "pattern": "groupby\\(",
+      "message": "Agrupa las ventas por tienda con groupby()."
+    }
+  ],
+  "forbids": [
+    {
+      "pattern": "\\bfor\\b",
+      "message": "No hace falta un for: groupby() resume todas las tiendas a la vez."
+    }
+  ],
+  "runs": [
+    {
+      "output": "              ventas  unidades  ingresos  ticket_medio\ntienda                                                \nBogotá           111       273   1457300         13129\nMedellín          93       245   1366700         14696\nCali              64       165    981600         15338\nBarranquilla      52       131    864600         16627"
+    }
+  ]
+}

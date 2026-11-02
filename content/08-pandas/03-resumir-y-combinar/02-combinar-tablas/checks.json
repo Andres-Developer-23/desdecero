@@ -1,0 +1,13 @@
+{
+  "requires": [
+    {
+      "pattern": "merge\\(",
+      "message": "Combina las ventas con los productos con merge()."
+    }
+  ],
+  "runs": [
+    {
+      "output": "                   ingresos   costo  ganancia  margen\ncategoria                                            \nBebidas frías       1743500  674000   1069500    61.3\nBebidas calientes   1422300  453000    969300    68.2\nPostres             1074000  414200    659800    61.4\nPanadería            430400  159200    271200    63.0"
+    }
+  ]
+}
