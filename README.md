@@ -4,7 +4,7 @@
 
 **Pruébalo en [andres-developer-23.github.io/desdecero](https://andres-developer-23.github.io/desdecero/)**
 
-Rutas interactivas para aprender **Python desde cero, en español**, y después **programación orientada a objetos**, apps con interfaz gráfica con **Flet**, extracción de datos de la web con **web scraping**, uso de **APIs y JSON**, creación de **APIs propias con Flask**, **bases de datos con SQL** y **análisis de datos con pandas**. Cada ruta se divide en módulos y lecciones cortas: cada lección explica una idea, trae ejemplos que se ejecutan con un clic y termina con un ejercicio que se corrige solo.
+Rutas interactivas para aprender **Python desde cero, en español**, y después **programación orientada a objetos**, apps con interfaz gráfica con **Flet**, extracción de datos de la web con **web scraping**, uso de **APIs y JSON**, creación de **APIs propias con Flask**, **bases de datos con SQL** y **análisis de datos con pandas**. Cada ruta se divide en módulos y lecciones cortas: cada lección explica una idea, trae ejemplos que se ejecutan con un clic y termina con un ejercicio que se corrige solo. Y para practicar por tu cuenta, una sección de **proyectos**: programas completos, de principiante a avanzado, que también se comprueban solos.
 
 Todo funciona en el navegador. No hace falta instalar Python ni crear una cuenta.
 
@@ -13,6 +13,7 @@ Todo funciona en el navegador. No hace falta instalar Python ni crear una cuenta
 - **Panel**: tu progreso en cada ruta, la siguiente lección, tu racha de días seguidos y la actividad de las últimas cuatro semanas.
 - **Rutas**: cada una con su página de módulos y lecciones, y su propio progreso.
 - **Lecciones**: teoría breve, ejemplos ejecutables y un ejercicio con editor, consola, pista, solución y comprobación automática. Si el código falla, la consola explica el error en español y marca la línea en el editor.
+- **Proyectos**: un catálogo de programas completos para practicar lo aprendido, con filtros por nivel y por tema. Cada proyecto tiene su detalle (requisitos, ejemplo, restricciones y cómo empezar), pasos, comprobación automática y una pestaña de soluciones con la de referencia y la tuya, para copiarla o descargarla y publicarla en tu GitHub.
 - **Playground**: un editor libre para experimentar, con `input()` interactivo.
 
 El progreso y el código que escribes se guardan en el navegador.
@@ -115,6 +116,21 @@ El progreso y el código que escribes se guardan en el navegador.
 | 03 · Resumir y combinar    | Agrupar y resumir con `groupby` · Combinar tablas: `merge` y `concat`                 |
 | 04 · Visualizar y proyecto | Gráficos con matplotlib · Fechas y series temporales · Proyecto: un informe de ventas |
 
+### Proyectos
+
+Cada proyecto pide un programa completo a partir de sus requisitos, como un encargo de verdad, y usa lo aprendido en una ruta (aparece como «usa: …» en su tarjeta). Las comprobaciones lo usan como lo haría una persona: lo ejecutan varias veces con distintas entradas o argumentos, pulsan los botones de la app o revisan los archivos que guarda.
+
+| Proyecto              | Nivel        | Ruta     | Qué practica                                                                       |
+| --------------------- | ------------ | -------- | ---------------------------------------------------------------------------------- |
+| Gestor de tareas      | principiante | Python   | Un programa de terminal con órdenes y argumentos (`sys.argv`) que guarda en JSON.  |
+| Adivina el número     | principiante | Python   | Un juego con dificultades, pistas, varias partidas y récords.                      |
+| Control de gastos     | principiante | Python   | Un menú que valida los datos y guarda los gastos en un CSV, con resúmenes por mes. |
+| Conversor de unidades | principiante | Flet     | Una app que convierte longitudes, pesos y temperaturas mientras escribes.          |
+| Boletín de noticias   | principiante | Scraping | Un scraper que recorre un periódico con buenos modales y prepara un boletín.       |
+| Las flores de iris    | principiante | pandas   | Explorar el conjunto de datos de Fisher y escribir un primer clasificador.         |
+
+Los programas de línea de comandos se ejecutan como en una terminal: los argumentos se escriben en la línea `$ python tareas.py …` de debajo del editor y llegan en `sys.argv`, `sys.exit()` termina el programa con su código de salida y los archivos que guarda el programa siguen en el disco simulado en la siguiente ejecución (el botón **vaciar disco** los borra).
+
 ## Desarrollo local
 
 Necesitas [Node.js](https://nodejs.org) 20 o superior.
@@ -172,6 +188,10 @@ content/                      contenido del curso: rutas, módulos y lecciones
   db/
     libreria.sql              script que crea la base de datos de práctica libreria.db
   data/                       datos de práctica de pandas (CSV): están en el disco de cada programa
+  proyectos/
+    01-gestor-de-tareas/
+      proyecto.md             metadatos, detalle, objetivo, pista y explicación de la solución
+      starter.py, solution.py, checks.json y test.py, como en las lecciones
   01-python/
     route.json                título, descripción, nivel y motor de la ruta
     00-primeros-pasos/
@@ -199,9 +219,9 @@ scripts/
 | `main.js`         | Punto de entrada: crea el curso, el progreso y las vistas, y los conecta.                |
 | `config.js`       | Versiones, URLs de CDN, límites de tiempo y claves de guardado.                          |
 | `router.js`       | Cambia de vista según el hash de la URL.                                                 |
-| `hash-routes.js`  | Traduce el hash a una vista: `#panel`, `#rutas`, `#ruta-<id>`, `#l-<id>`, `#playground`. |
+| `hash-routes.js`  | Traduce el hash a una vista: `#panel`, `#ruta-<id>`, `#l-<id>`, `#proyectos`, `#p-<id>`… |
 | `lib/`            | Utilidades sin estado: DOM, fechas, eventos, `localStorage` y carga de scripts.          |
-| `course/`         | Modelo del curso: rutas, módulos, numeración y navegación entre lecciones.               |
+| `course/`         | Modelo del curso: rutas, módulos, proyectos, numeración y navegación entre lecciones.    |
 | `progress/`       | Lecciones completadas, racha y sincronización opcional con la cuenta.                    |
 | `python/`         | Carga de Skulpt y CodeMirror, ejecución de Python y explicación de errores.              |
 | `exercises/`      | Comprobación automática de los ejercicios.                                               |
@@ -210,7 +230,7 @@ scripts/
 | `sql/`            | Simulador de sqlite3: SQLite (sql.js), puente con Python y explorador de «datos».        |
 | `pyodide/`        | Python completo (Pyodide) en un Web Worker para pandas, numpy y matplotlib.              |
 | `ui/`             | Piezas de interfaz: terminal, editor, Markdown, ejemplos y cabecera.                     |
-| `views/`          | Las pantallas: panel, ruta, lección y playground.                                        |
+| `views/`          | Las pantallas: panel, ruta, lección (y proyecto), proyectos y playground.                |
 
 Las dependencias van en un solo sentido: `views` usa `ui`, `exercises`, `flet`, `web`, `sql`, `pyodide`, `python`, `progress` y `course`, y todos ellos pueden usar `lib` y `config`. Ningún módulo de `python/` o `progress/` toca el DOM.
 
@@ -322,16 +342,51 @@ En las rutas del simulador web, la clave opcional `web` de los metadatos indica 
 
 En las rutas de SQLite, la clave opcional `db` indica la base de práctica que enseña la pestaña **datos** al entrar en la lección (`db: libreria.db`).
 
+### `proyecto.md`
+
+Los proyectos van en `content/proyectos/NN-id/`, con los mismos archivos que una lección salvo `lesson.md`, que se llama `proyecto.md`. Su identificador aparece en la URL (`#p-gestor-de-tareas`) y no puede repetirse con el de ninguna lección.
+
+```markdown
+---
+title: Gestor de tareas
+level: principiante # principiante, intermedio o avanzado
+tags: [CLI, Archivos, JSON] # temas para los filtros del catálogo
+minutes: 60
+runtime: python # como en route.json
+requires: python # la ruta que conviene haber hecho (opcional)
+file: tareas.py # el nombre del programa (por defecto, proyecto.py)
+cli: true # programa de línea de comandos (opcional)
+summary: Un programa de terminal para apuntar tus tareas.
+---
+
+El detalle del proyecto: requisitos, ejemplo, restricciones, cómo empezar…
+
+## Objetivo
+
+Lo que revisan las comprobaciones.
+
+## Pista
+
+Una pista.
+
+## Solución
+
+Explicación de la solución de referencia (se ve en la pestaña de soluciones).
+```
+
+`web` y `db` funcionan como en las lecciones. Con `cli: true`, la lección tiene la línea de argumentos y el disco se conserva entre ejecuciones.
+
 ### `checks.json`
 
 Todas las claves son opcionales:
 
-| Clave      | Qué hace                                                                                                                                                                                                          |
-| ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `runs`     | Lista de ejecuciones. Cada una puede tener `inputs` (respuestas para `input()`), `output` (salida exacta esperada), `contains` (textos que deben aparecer) y `test` (código Python extra que se ejecuta después). |
-| `requires` | Lista de `{ "pattern": "...", "message": "..." }`: expresiones regulares que el código tiene que contener, sin contar los comentarios.                                                                            |
-| `forbids`  | Igual que `requires`, pero el código no puede contenerlas. Sirve, por ejemplo, para evitar que se escriba el resultado a mano.                                                                                    |
-| `ignore`   | Expresión regular de líneas que se quitan antes de comprobar, como la llamada final que lanza un juego.                                                                                                           |
+| Clave      | Qué hace                                                                                                                                                                                                                                                                                                                                                                                           |
+| ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `runs`     | Lista de ejecuciones. Cada una puede tener `inputs` (respuestas para `input()`), `args` (argumentos de `sys.argv`), `before` (código que va delante del programa, por ejemplo para fijar el número que sale de `random`), `output` (salida exacta esperada), `contains` (textos que deben aparecer, en la salida normal o en la de errores) y `test` (código Python extra que se ejecuta después). |
+| `persist`  | `true` para que cada ejecución vea los archivos que guardó la anterior, como en un ordenador (la primera empieza con el disco vacío). Para los programas que guardan datos entre usos.                                                                                                                                                                                                             |
+| `requires` | Lista de `{ "pattern": "...", "message": "..." }`: expresiones regulares que el código tiene que contener, sin contar los comentarios.                                                                                                                                                                                                                                                             |
+| `forbids`  | Igual que `requires`, pero el código no puede contenerlas. Sirve, por ejemplo, para evitar que se escriba el resultado a mano.                                                                                                                                                                                                                                                                     |
+| `ignore`   | Expresión regular de líneas que se quitan antes de comprobar, como la llamada final que lanza un juego.                                                                                                                                                                                                                                                                                            |
 
 ```json
 {
@@ -339,6 +394,21 @@ Todas las claves son opcionales:
   "runs": [{ "inputs": ["3"], "output": "3\n2\n1\n¡Despegue!" }]
 }
 ```
+
+Un programa de línea de comandos que guarda sus datos se comprueba con varias ejecuciones seguidas:
+
+```json
+{
+  "persist": true,
+  "runs": [
+    { "args": ["agregar", "Comprar pan"], "output": "Tarea agregada (id: 1)" },
+    { "args": ["listar"], "output": "[ ] 1 · Comprar pan" },
+    { "args": ["eliminar", "9"], "contains": ["No existe la tarea 9"] }
+  ]
+}
+```
+
+Si el programa termina con `sys.exit()` antes de llegar al código de `test`, la comprobación falla y lo explica.
 
 ### `test.py`
 
