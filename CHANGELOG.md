@@ -4,6 +4,20 @@ Todos los cambios importantes del proyecto se anotan aquí. El formato sigue [Ke
 
 ## [Sin publicar]
 
+## [1.8.0] - 2026-11-01
+
+### Añadido
+
+- Ruta «Análisis de datos con pandas»: 12 lecciones en 5 módulos, de las primeras Series y DataFrame a un informe de ventas completo, pasando por filtros, limpieza de datos, textos y fechas, `groupby`, `merge`, gráficos con matplotlib y series temporales.
+- Python completo en el navegador con Pyodide (CPython 3.14): los programas que importan pandas, numpy o matplotlib se ejecutan con las librerías de verdad (pandas 3.0, numpy 2.4 y matplotlib 3.10) en un Web Worker que se carga solo cuando hace falta. El resto del curso sigue con Skulpt.
+- Los gráficos de `plt.show()` aparecen dentro de la salida, en su sitio entre lo que imprime el programa, y la consola avisa si un gráfico no se llega a enseñar. Los avisos de Python salen en amarillo y se resumen los archivos guardados, también las imágenes.
+- Datos de práctica en `content/data/`, disponibles en el disco de cada programa con pandas: las ventas, el catálogo y una encuesta de Café Andino, una cadena de cafeterías inventada.
+- Explicaciones en español de los errores típicos de pandas: una columna que no existe, `and` entre condiciones, un archivo que no está o un atributo que no es una columna.
+
+### Corregido
+
+- Una prueba de la vista previa de Flet fallaba de vez en cuando porque medía la vista previa mientras se volvía a dibujar.
+
 ## [1.7.0] - 2026-10-31
 
 ### Añadido
@@ -148,7 +162,8 @@ Todos los cambios importantes del proyecto se anotan aquí. El formato sigue [Ke
 - Consola con `input()` interactivo y errores explicados en español.
 - Playground libre y progreso guardado en el navegador.
 
-[Sin publicar]: https://github.com/Andres-Developer-23/desdecero/compare/v1.7.0...HEAD
+[Sin publicar]: https://github.com/Andres-Developer-23/desdecero/compare/v1.8.0...HEAD
+[1.8.0]: https://github.com/Andres-Developer-23/desdecero/compare/v1.7.0...v1.8.0
 [1.7.0]: https://github.com/Andres-Developer-23/desdecero/compare/v1.6.0...v1.7.0
 [1.6.0]: https://github.com/Andres-Developer-23/desdecero/compare/v1.5.0...v1.6.0
 [1.5.0]: https://github.com/Andres-Developer-23/desdecero/compare/v1.4.0...v1.5.0
