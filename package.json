@@ -24,7 +24,7 @@
     "prettier": "3.9.10",
     "pyodide": "314.0.7",
     "skulpt": "1.2.0",
-    "sql.js": "1.14.2",
+    "sql.js": "1.15.2",
     "yaml": "2.9.1"
   },
   "engines": {
