@@ -52,6 +52,10 @@ async function build() {
     const lessons = route.modules.reduce((sum, module) => sum + module.lessons.length, 0);
     console.log(`  ${route.id}: ${route.modules.length} módulos · ${lessons} lecciones`);
   }
+  const levels = new Map();
+  for (const { level } of course.projects) levels.set(level, (levels.get(level) ?? 0) + 1);
+  const byLevel = [...levels].map(([level, count]) => `${count} ${level}`).join(", ");
+  console.log(`  proyectos: ${course.projects.length} (${byLevel})`);
 }
 
 /** Empaqueta un punto de entrada con esbuild y devuelve el código resultante. */
