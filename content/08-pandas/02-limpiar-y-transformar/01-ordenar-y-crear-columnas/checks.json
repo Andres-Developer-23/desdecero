@@ -1,0 +1,7 @@
+{
+  "runs": [
+    {
+      "output": "          fecha        tienda          producto  total\n44   2026-01-26  Barranquilla       Café frappé  57000\n84   2026-02-18      Medellín       Café frappé  57000\n315  2026-06-25      Medellín       Café frappé  57000\n50   2026-01-28          Cali  Limonada de coco  48000\n117  2026-03-12      Medellín  Limonada de coco  48000\ntamano\nnormal    282\ngrande     38\nName: count, dtype: int64"
+    }
+  ]
+}

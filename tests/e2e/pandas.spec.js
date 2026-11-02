@@ -177,3 +177,23 @@ test("detener y el límite de tiempo cortan un programa de Pyodide, que vuelve a
   await runInPlayground(page, `import pandas as pd\nnombre = input("¿Nombre? ")\n`);
   await expect(output).toContainText("input() no funciona en los programas que usan pandas", LOAD);
 });
+
+test("las lecciones de pandas cargan Python completo al abrirse y enseñan los gráficos", async ({
+  page,
+}) => {
+  await openApp(page, "#l-graficos-con-matplotlib");
+  await page.evaluate(() => {
+    const { course } = window.__desdecero;
+    document
+      .querySelector("#exercise-editor .CodeMirror")
+      .CodeMirror.setValue(course.getLesson("graficos-con-matplotlib").solution);
+  });
+  await page.locator("#view-lesson [data-action='check']").click();
+  const output = page.locator("#exercise-output");
+  await expect(output).toContainText("✓ ¡Ejercicio superado!", LOAD);
+  await expect(output.locator("img.console__figure")).toHaveCount(1);
+  // Pyodide ya se estaba cargando: la comprobación no lo empezó, y los mensajes de la carga
+  // adelantada no se cuelan en la salida del programa.
+  await expect(output).not.toContainText("la primera vez tarda un poco");
+  await expect(output).not.toContainText("Loading");
+});

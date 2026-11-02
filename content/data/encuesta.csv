@@ -1,0 +1,52 @@
+id,fecha,ciudad,edad,puntuacion,recomienda,comentario
+1,02/05/2026, Bogotá ,20,5,Sí,El pandebono estaba frío
+2,08/03/2026,Bogotá,44,2,sí,Muy buen café
+3,22/04/2026,barranquilla,,3,si,Muy buen café
+4,08/01/2026,Barranquilla,38,2,si,
+5,07/06/2026, CALI,40,5,Sí,Volveré
+5,07/06/2026, CALI,40,5,Sí,Volveré
+6,10/06/2026,Cali,41,3,si,"El tinto, perfecto"
+7,18/05/2026,BOGOTÁ,23,5,no,
+8,14/06/2026,Medellín,48,3,Sí,Mucha fila
+9,31/01/2026,barranquilla,32,5,sí,Muy buen café
+10,02/05/2026,Bogota,43,5,sí,Precios altos
+11,15/02/2026,cali,45,4,si,Precios altos
+12,05/04/2026,BOGOTÁ,56,4,no,Volveré
+13,03/03/2026, Bogotá ,69,5,si,Precios altos
+14,21/01/2026,Cali,32,5,sí,
+15,11/01/2026,MEDELLÍN,64,5,sí,Muy buen café
+16,28/03/2026,BOGOTÁ,22,5,si,Mucha fila
+17,28/06/2026,Medellín,25,5,sí,Mucha fila
+18,27/02/2026,cali,61,4,no,Faltaba azúcar
+18,27/02/2026,cali,61,4,no,Faltaba azúcar
+19,13/03/2026,barranquilla,51,5,sí,"El tinto, perfecto"
+20,12/04/2026, Bogotá ,,4 estrellas,Sí,"El tinto, perfecto"
+21,24/05/2026, CALI,,,si,Atención rápida
+22,14/01/2026,BOGOTÁ,55,5,sí,Faltaba azúcar
+23,26/02/2026,bogota,,4,sí,"El tinto, perfecto"
+24,18/04/2026,Medellín,43,5,sí,Precios altos
+25,02/01/2026,Medellín,33,4,sí,Me encantó la torta
+26,01/01/2026,bogota,37,3,Sí,El pandebono estaba frío
+27,26/01/2026,barranquilla,40,3,no,El pandebono estaba frío
+28,18/04/2026,Barranquilla,50,5,no,Volveré
+29,08/05/2026,Medellin ,29,4,sí,"El tinto, perfecto"
+30,20/02/2026,bogota,26,5,sí,
+31,31/01/2026,Bogota,,4,si,Me encantó la torta
+31,31/01/2026,Bogota,,4,si,Me encantó la torta
+32,20/06/2026,Barranquilla,39,4,sí,
+33,26/03/2026,medellin,,4,si,Mucha fila
+34,07/03/2026,medellin,23,3,no,Atención rápida
+35,15/04/2026,medellin,27,4,sí,Faltaba azúcar
+36,04/01/2026,Cali,63,5,sí,Atención rápida
+37,04/02/2026, Bogotá ,51,3,No,Faltaba azúcar
+38,12/01/2026,cali,59,3,si,"El tinto, perfecto"
+39,01/02/2026,Medellin ,47,,sí,Atención rápida
+40,09/04/2026,bogota,65,4,No,Volveré
+41,30/04/2026,medellin,20,5,SI,Faltaba azúcar
+42,14/02/2026,Medellín,,4,sí,Muy buen café
+43,24/02/2026,bogota,66,5,no,Precios altos
+44,06/05/2026,bogota,43,5,sí,Precios altos
+45,03/04/2026,B/quilla,,5,sí,Precios altos
+46,05/05/2026,B/quilla,64,5,Sí,El pandebono estaba frío
+47,27/02/2026, Bogotá ,41,2,Sí,Faltaba azúcar
+48,15/04/2026,B/quilla,19,5,sí,

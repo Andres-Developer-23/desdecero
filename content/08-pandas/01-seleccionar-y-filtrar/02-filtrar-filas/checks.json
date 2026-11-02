@@ -1,0 +1,13 @@
+{
+  "forbids": [
+    {
+      "pattern": "\\bfor\\b",
+      "message": "Filtra con una máscara de pandas, sin recorrer las filas con un for."
+    }
+  ],
+  "runs": [
+    {
+      "output": "          fecha            producto  unidades\n102  2026-03-04  Torta de zanahoria         3\n121  2026-03-15             Brownie         3\n162  2026-04-08  Torta de zanahoria         4\n186  2026-04-22             Brownie         4\n207  2026-05-02  Torta de zanahoria         5\n219  2026-05-10  Torta de zanahoria         3\n272  2026-06-02  Torta de zanahoria         5\n278  2026-06-05  Torta de zanahoria         3\n292  2026-06-12  Torta de zanahoria         3\n9 ventas, 33 unidades"
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "requires": [
+    {
+      "pattern": "to_datetime\\(",
+      "message": "Convierte las fechas con pd.to_datetime()."
+    },
+    {
+      "pattern": "\\.str\\.",
+      "message": "Limpia los textos con los métodos .str (strip, lower...)."
+    }
+  ],
+  "runs": [
+    {
+      "output": "ciudad\nBogotá          18\nMedellín        12\nBarranquilla    10\nCali             8\nName: count, dtype: int64\nRecomendarían Café Andino: 81.2 %\nfecha\nenero      11\nfebrero     9\nmarzo       6\nabril      10\nmayo        7\njunio       5\nName: count, dtype: int64"
+    }
+  ]
+}

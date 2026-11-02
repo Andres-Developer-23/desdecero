@@ -1,0 +1,13 @@
+{
+  "requires": [
+    {
+      "pattern": "resample\\(",
+      "message": "Resume los ingresos por mes con resample()."
+    }
+  ],
+  "runs": [
+    {
+      "output": "enero: 775200 pesos\nfebrero: 624900 pesos (-19.4 %)\nmarzo: 715900 pesos (+14.6 %)\nabril: 839400 pesos (+17.3 %)\nmayo: 908700 pesos (+8.3 %)\njunio: 806100 pesos (-11.3 %)\nMejor mes: mayo"
+    }
+  ]
+}

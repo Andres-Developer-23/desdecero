@@ -1,0 +1,12 @@
+{
+  "requires": [
+    {
+      "pattern": "barh\\(",
+      "message": "Dibuja barras horizontales con .plot.barh()."
+    },
+    {
+      "pattern": "plt\\.show\\(\\)",
+      "message": "Enseña el gráfico con plt.show()."
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "requires": [
+    {
+      "pattern": "pd\\.DataFrame\\(",
+      "message": "Crea la tabla con pd.DataFrame()."
+    }
+  ],
+  "forbids": [
+    {
+      "pattern": "\\bfor\\b",
+      "message": "No hace falta ningún for: en pandas las operaciones se aplican a la columna entera."
+    }
+  ],
+  "runs": [
+    {
+      "output": "    producto  precio  unidades   valor\n0      Tinto    2500        40  100000\n1  Capuchino    6500        12   78000\n2  Pandebono    3000        30   90000\n3    Brownie    6000         8   48000\nUnidades: 90\nValor total: 316000\nPrecio medio: 4500.0"
+    }
+  ]
+}

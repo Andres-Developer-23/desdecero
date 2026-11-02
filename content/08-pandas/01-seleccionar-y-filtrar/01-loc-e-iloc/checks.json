@@ -1,0 +1,21 @@
+{
+  "requires": [
+    {
+      "pattern": "set_index\\(\\s*[\\\"']producto[\\\"']\\s*\\)",
+      "message": "Pon el nombre del producto como índice con set_index(\"producto\")."
+    },
+    {
+      "pattern": "\\.loc\\[",
+      "message": "Elige por etiqueta con .loc[...]."
+    },
+    {
+      "pattern": "\\.iloc\\[",
+      "message": "Elige por posición con .iloc[...]."
+    }
+  ],
+  "runs": [
+    {
+      "output": "Precio del capuchino: 6500\n            precio  costo\nproducto                 \nPandebono     3000   1100\nAlmojábana    3200   1200\nBrownie       6000   2300\n                   categoria  precio  costo\nproducto                                   \nTinto      Bebidas calientes    2500    700\nCapuchino  Bebidas calientes    6500   2100\nChocolate  Bebidas calientes    5500   1900\nCategoría del último: Postres"
+    }
+  ]
+}

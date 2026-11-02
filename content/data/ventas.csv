@@ -1,0 +1,321 @@
+fecha,tienda,producto,categoria,unidades,precio_unitario
+2026-01-03,Cali,Pandebono,Panadería,3,3000
+2026-01-03,Medellín,Limonada de coco,Bebidas frías,1,8000
+2026-01-03,Medellín,Pandebono,Panadería,1,3000
+2026-01-05,Bogotá,Almojábana,Panadería,1,3200
+2026-01-05,Medellín,Capuchino,Bebidas calientes,3,6500
+2026-01-06,Barranquilla,Chocolate,Bebidas calientes,6,5500
+2026-01-06,Bogotá,Tinto,Bebidas calientes,2,2500
+2026-01-06,Medellín,Capuchino,Bebidas calientes,2,6500
+2026-01-07,Bogotá,Limonada de coco,Bebidas frías,3,8000
+2026-01-07,Cali,Brownie,Postres,2,6000
+2026-01-07,Medellín,Almojábana,Panadería,4,3200
+2026-01-08,Bogotá,Capuchino,Bebidas calientes,2,6500
+2026-01-08,Medellín,Tinto,Bebidas calientes,2,2500
+2026-01-08,Medellín,Tinto,Bebidas calientes,5,2500
+2026-01-09,Bogotá,Brownie,Postres,6,6000
+2026-01-10,Bogotá,Brownie,Postres,4,6000
+2026-01-10,Bogotá,Torta de zanahoria,Postres,2,7500
+2026-01-10,Cali,Tinto,Bebidas calientes,2,2500
+2026-01-13,Medellín,Almojábana,Panadería,1,3200
+2026-01-14,Barranquilla,Café frappé,Bebidas frías,5,9500
+2026-01-14,Bogotá,Capuchino,Bebidas calientes,1,6500
+2026-01-14,Bogotá,Tinto,Bebidas calientes,2,2500
+2026-01-14,Medellín,Capuchino,Bebidas calientes,2,6500
+2026-01-14,Medellín,Tinto,Bebidas calientes,3,2500
+2026-01-15,Bogotá,Pandebono,Panadería,3,3000
+2026-01-17,Cali,Pandebono,Panadería,2,3000
+2026-01-17,Medellín,Tinto,Bebidas calientes,2,2500
+2026-01-18,Bogotá,Café frappé,Bebidas frías,1,9500
+2026-01-18,Cali,Tinto,Bebidas calientes,2,2500
+2026-01-19,Barranquilla,Brownie,Postres,3,6000
+2026-01-19,Barranquilla,Pandebono,Panadería,1,3000
+2026-01-19,Cali,Café frappé,Bebidas frías,3,9500
+2026-01-20,Cali,Tinto,Bebidas calientes,2,2500
+2026-01-20,Medellín,Limonada de coco,Bebidas frías,4,8000
+2026-01-20,Medellín,Pandebono,Panadería,2,3000
+2026-01-21,Medellín,Tinto,Bebidas calientes,1,2500
+2026-01-21,Medellín,Tinto,Bebidas calientes,5,2500
+2026-01-22,Bogotá,Café frappé,Bebidas frías,1,9500
+2026-01-23,Bogotá,Tinto,Bebidas calientes,2,2500
+2026-01-23,Bogotá,Tinto,Bebidas calientes,2,2500
+2026-01-23,Medellín,Pandebono,Panadería,1,3000
+2026-01-24,Bogotá,Tinto,Bebidas calientes,1,2500
+2026-01-24,Medellín,Chocolate,Bebidas calientes,4,5500
+2026-01-25,Cali,Limonada de coco,Bebidas frías,1,8000
+2026-01-26,Barranquilla,Café frappé,Bebidas frías,6,9500
+2026-01-26,Barranquilla,Limonada de coco,Bebidas frías,2,8000
+2026-01-26,Barranquilla,Tinto,Bebidas calientes,1,2500
+2026-01-26,Bogotá,Tinto,Bebidas calientes,2,2500
+2026-01-27,Barranquilla,Brownie,Postres,3,6000
+2026-01-27,Cali,Café frappé,Bebidas frías,3,9500
+2026-01-28,Cali,Limonada de coco,Bebidas frías,6,8000
+2026-01-28,Medellín,Tinto,Bebidas calientes,4,2500
+2026-01-29,Bogotá,Tinto,Bebidas calientes,1,2500
+2026-01-29,Cali,Chocolate,Bebidas calientes,3,5500
+2026-01-30,Bogotá,Tinto,Bebidas calientes,3,2500
+2026-01-30,Cali,Tinto,Bebidas calientes,1,2500
+2026-01-30,Medellín,Pandebono,Panadería,2,3000
+2026-01-31,Bogotá,Torta de zanahoria,Postres,3,7500
+2026-02-01,Bogotá,Chocolate,Bebidas calientes,3,5500
+2026-02-01,Cali,Limonada de coco,Bebidas frías,2,8000
+2026-02-02,Bogotá,Tinto,Bebidas calientes,3,2500
+2026-02-02,Medellín,Tinto,Bebidas calientes,1,2500
+2026-02-03,Bogotá,Capuchino,Bebidas calientes,6,6500
+2026-02-03,Bogotá,Pandebono,Panadería,2,3000
+2026-02-03,Cali,Almojábana,Panadería,2,3200
+2026-02-04,Cali,Brownie,Postres,2,6000
+2026-02-07,Bogotá,Tinto,Bebidas calientes,2,2500
+2026-02-08,Barranquilla,Brownie,Postres,2,6000
+2026-02-09,Medellín,Pandebono,Panadería,3,3000
+2026-02-12,Medellín,Café frappé,Bebidas frías,2,9500
+2026-02-13,Bogotá,Café frappé,Bebidas frías,3,9500
+2026-02-13,Bogotá,Pandebono,Panadería,2,3000
+2026-02-13,Bogotá,Tinto,Bebidas calientes,2,2500
+2026-02-14,Cali,Café frappé,Bebidas frías,1,9500
+2026-02-14,Cali,Torta de zanahoria,Postres,6,7500
+2026-02-14,Medellín,Tinto,Bebidas calientes,1,2500
+2026-02-15,Bogotá,Torta de zanahoria,Postres,3,7500
+2026-02-16,Medellín,Capuchino,Bebidas calientes,2,6500
+2026-02-17,Cali,Limonada de coco,Bebidas frías,3,8000
+2026-02-17,Cali,Tinto,Bebidas calientes,2,2500
+2026-02-17,Medellín,Chocolate,Bebidas calientes,2,5500
+2026-02-18,Barranquilla,Café frappé,Bebidas frías,4,9500
+2026-02-18,Cali,Torta de zanahoria,Postres,1,7500
+2026-02-18,Cali,Torta de zanahoria,Postres,2,7500
+2026-02-18,Medellín,Café frappé,Bebidas frías,6,9500
+2026-02-18,Medellín,Tinto,Bebidas calientes,1,2500
+2026-02-20,Bogotá,Pandebono,Panadería,3,3000
+2026-02-20,Bogotá,Tinto,Bebidas calientes,3,2500
+2026-02-20,Cali,Chocolate,Bebidas calientes,2,5500
+2026-02-22,Bogotá,Tinto,Bebidas calientes,1,2500
+2026-02-22,Medellín,Capuchino,Bebidas calientes,3,6500
+2026-02-23,Medellín,Chocolate,Bebidas calientes,6,5500
+2026-02-23,Medellín,Pandebono,Panadería,1,3000
+2026-02-24,Bogotá,Torta de zanahoria,Postres,5,7500
+2026-02-24,Medellín,Pandebono,Panadería,3,3000
+2026-02-26,Bogotá,Capuchino,Bebidas calientes,2,6500
+2026-02-26,Cali,Pandebono,Panadería,6,3000
+2026-02-27,Barranquilla,Café frappé,Bebidas frías,2,9500
+2026-03-02,Bogotá,Brownie,Postres,1,6000
+2026-03-03,Medellín,Brownie,Postres,2,6000
+2026-03-04,Bogotá,Capuchino,Bebidas calientes,4,6500
+2026-03-04,Medellín,Chocolate,Bebidas calientes,5,5500
+2026-03-04,Medellín,Torta de zanahoria,Postres,3,7500
+2026-03-06,Bogotá,Café frappé,Bebidas frías,3,9500
+2026-03-06,Medellín,Capuchino,Bebidas calientes,3,6500
+2026-03-06,Medellín,Torta de zanahoria,Postres,2,7500
+2026-03-07,Bogotá,Tinto,Bebidas calientes,2,2500
+2026-03-07,Medellín,Tinto,Bebidas calientes,1,2500
+2026-03-08,Bogotá,Tinto,Bebidas calientes,5,2500
+2026-03-08,Bogotá,Torta de zanahoria,Postres,3,7500
+2026-03-09,Bogotá,Brownie,Postres,1,6000
+2026-03-09,Cali,Café frappé,Bebidas frías,2,9500
+2026-03-10,Barranquilla,Limonada de coco,Bebidas frías,1,8000
+2026-03-10,Cali,Café frappé,Bebidas frías,1,9500
+2026-03-11,Barranquilla,Tinto,Bebidas calientes,2,2500
+2026-03-11,Cali,Pandebono,Panadería,1,3000
+2026-03-12,Cali,Limonada de coco,Bebidas frías,2,8000
+2026-03-12,Medellín,Limonada de coco,Bebidas frías,6,8000
+2026-03-12,Medellín,Pandebono,Panadería,2,3000
+2026-03-13,Barranquilla,Café frappé,Bebidas frías,2,9500
+2026-03-15,Cali,Tinto,Bebidas calientes,5,2500
+2026-03-15,Medellín,Brownie,Postres,3,6000
+2026-03-17,Barranquilla,Almojábana,Panadería,1,3200
+2026-03-17,Medellín,Chocolate,Bebidas calientes,6,5500
+2026-03-17,Medellín,Pandebono,Panadería,2,3000
+2026-03-18,Barranquilla,Café frappé,Bebidas frías,4,9500
+2026-03-18,Barranquilla,Torta de zanahoria,Postres,1,7500
+2026-03-18,Bogotá,Almojábana,Panadería,2,3200
+2026-03-21,Bogotá,Pandebono,Panadería,1,3000
+2026-03-21,Cali,Limonada de coco,Bebidas frías,6,8000
+2026-03-22,Cali,Café frappé,Bebidas frías,5,9500
+2026-03-23,Bogotá,Brownie,Postres,3,6000
+2026-03-23,Bogotá,Tinto,Bebidas calientes,1,2500
+2026-03-23,Medellín,Almojábana,Panadería,2,3200
+2026-03-24,Cali,Limonada de coco,Bebidas frías,1,8000
+2026-03-25,Bogotá,Café frappé,Bebidas frías,2,9500
+2026-03-25,Bogotá,Capuchino,Bebidas calientes,2,6500
+2026-03-25,Cali,Torta de zanahoria,Postres,1,7500
+2026-03-25,Medellín,Tinto,Bebidas calientes,2,2500
+2026-03-26,Barranquilla,Café frappé,Bebidas frías,1,9500
+2026-03-26,Barranquilla,Torta de zanahoria,Postres,1,7500
+2026-03-27,Cali,Chocolate,Bebidas calientes,2,5500
+2026-03-29,Barranquilla,Limonada de coco,Bebidas frías,2,8000
+2026-03-31,Bogotá,Limonada de coco,Bebidas frías,3,8000
+2026-03-31,Medellín,Almojábana,Panadería,2,3200
+2026-04-01,Medellín,Café frappé,Bebidas frías,2,9500
+2026-04-01,Medellín,Tinto,Bebidas calientes,4,2500
+2026-04-02,Barranquilla,Torta de zanahoria,Postres,3,7500
+2026-04-02,Cali,Torta de zanahoria,Postres,2,7500
+2026-04-02,Medellín,Chocolate,Bebidas calientes,1,5500
+2026-04-03,Barranquilla,Capuchino,Bebidas calientes,4,6500
+2026-04-03,Bogotá,Torta de zanahoria,Postres,5,7500
+2026-04-04,Barranquilla,Torta de zanahoria,Postres,2,7500
+2026-04-04,Bogotá,Almojábana,Panadería,1,3200
+2026-04-05,Medellín,Brownie,Postres,2,6000
+2026-04-06,Barranquilla,Torta de zanahoria,Postres,3,7500
+2026-04-06,Bogotá,Capuchino,Bebidas calientes,2,6500
+2026-04-06,Bogotá,Torta de zanahoria,Postres,2,7500
+2026-04-07,Barranquilla,Torta de zanahoria,Postres,3,7500
+2026-04-07,Bogotá,Limonada de coco,Bebidas frías,1,8000
+2026-04-07,Bogotá,Tinto,Bebidas calientes,5,2500
+2026-04-08,Bogotá,Pandebono,Panadería,3,3000
+2026-04-08,Medellín,Torta de zanahoria,Postres,4,7500
+2026-04-09,Bogotá,Chocolate,Bebidas calientes,1,5500
+2026-04-10,Bogotá,Capuchino,Bebidas calientes,1,6500
+2026-04-10,Bogotá,Pandebono,Panadería,2,3000
+2026-04-11,Medellín,Almojábana,Panadería,2,3200
+2026-04-11,Medellín,Pandebono,Panadería,1,3000
+2026-04-13,Cali,Tinto,Bebidas calientes,2,2500
+2026-04-13,Medellín,Capuchino,Bebidas calientes,1,6500
+2026-04-14,Bogotá,Pandebono,Panadería,2,3000
+2026-04-16,Bogotá,Tinto,Bebidas calientes,4,2500
+2026-04-16,Bogotá,Torta de zanahoria,Postres,1,7500
+2026-04-16,Medellín,Tinto,Bebidas calientes,4,2500
+2026-04-17,Bogotá,Capuchino,Bebidas calientes,6,6500
+2026-04-18,Cali,Café frappé,Bebidas frías,3,9500
+2026-04-18,Medellín,Torta de zanahoria,Postres,2,7500
+2026-04-19,Barranquilla,Limonada de coco,Bebidas frías,1,8000
+2026-04-19,Medellín,Chocolate,Bebidas calientes,1,5500
+2026-04-20,Medellín,Café frappé,Bebidas frías,2,9500
+2026-04-20,Medellín,Limonada de coco,Bebidas frías,1,8000
+2026-04-21,Bogotá,Brownie,Postres,2,6000
+2026-04-21,Bogotá,Torta de zanahoria,Postres,6,7500
+2026-04-21,Medellín,Chocolate,Bebidas calientes,5,5500
+2026-04-22,Barranquilla,Chocolate,Bebidas calientes,2,5500
+2026-04-22,Cali,Pandebono,Panadería,2,3000
+2026-04-22,Medellín,Brownie,Postres,4,6000
+2026-04-24,Bogotá,Almojábana,Panadería,2,3200
+2026-04-24,Bogotá,Café frappé,Bebidas frías,1,9500
+2026-04-24,Cali,Torta de zanahoria,Postres,2,7500
+2026-04-26,Bogotá,Café frappé,Bebidas frías,1,9500
+2026-04-26,Bogotá,Tinto,Bebidas calientes,6,2500
+2026-04-26,Medellín,Café frappé,Bebidas frías,2,9500
+2026-04-26,Medellín,Torta de zanahoria,Postres,1,7500
+2026-04-27,Barranquilla,Limonada de coco,Bebidas frías,2,8000
+2026-04-27,Cali,Café frappé,Bebidas frías,1,9500
+2026-04-28,Medellín,Limonada de coco,Bebidas frías,4,8000
+2026-04-29,Bogotá,Pandebono,Panadería,2,3000
+2026-04-29,Medellín,Almojábana,Panadería,2,3200
+2026-04-29,Medellín,Almojábana,Panadería,5,3200
+2026-04-29,Medellín,Chocolate,Bebidas calientes,3,5500
+2026-04-29,Medellín,Tinto,Bebidas calientes,2,2500
+2026-04-30,Bogotá,Brownie,Postres,2,6000
+2026-04-30,Bogotá,Café frappé,Bebidas frías,2,9500
+2026-05-01,Cali,Capuchino,Bebidas calientes,6,6500
+2026-05-02,Barranquilla,Limonada de coco,Bebidas frías,1,8000
+2026-05-02,Barranquilla,Tinto,Bebidas calientes,4,2800
+2026-05-02,Medellín,Torta de zanahoria,Postres,5,7500
+2026-05-03,Bogotá,Brownie,Postres,4,6000
+2026-05-03,Bogotá,Chocolate,Bebidas calientes,1,5500
+2026-05-05,Barranquilla,Torta de zanahoria,Postres,4,7500
+2026-05-05,Bogotá,Brownie,Postres,1,6000
+2026-05-06,Bogotá,Tinto,Bebidas calientes,1,2800
+2026-05-06,Cali,Café frappé,Bebidas frías,1,9500
+2026-05-06,Cali,Torta de zanahoria,Postres,2,7500
+2026-05-08,Barranquilla,Limonada de coco,Bebidas frías,4,8000
+2026-05-08,Bogotá,Café frappé,Bebidas frías,4,9500
+2026-05-08,Cali,Café frappé,Bebidas frías,3,9500
+2026-05-10,Bogotá,Chocolate,Bebidas calientes,1,5500
+2026-05-10,Medellín,Torta de zanahoria,Postres,3,7500
+2026-05-11,Bogotá,Pandebono,Panadería,6,3000
+2026-05-12,Barranquilla,Torta de zanahoria,Postres,5,7500
+2026-05-12,Bogotá,Torta de zanahoria,Postres,1,7500
+2026-05-12,Cali,Chocolate,Bebidas calientes,2,5500
+2026-05-12,Cali,Tinto,Bebidas calientes,5,2800
+2026-05-13,Barranquilla,Tinto,Bebidas calientes,3,2800
+2026-05-14,Barranquilla,Limonada de coco,Bebidas frías,1,8000
+2026-05-14,Bogotá,Almojábana,Panadería,5,3200
+2026-05-14,Cali,Almojábana,Panadería,3,3200
+2026-05-14,Cali,Café frappé,Bebidas frías,1,9500
+2026-05-14,Medellín,Limonada de coco,Bebidas frías,3,8000
+2026-05-14,Medellín,Pandebono,Panadería,3,3000
+2026-05-15,Bogotá,Chocolate,Bebidas calientes,1,5500
+2026-05-15,Bogotá,Chocolate,Bebidas calientes,2,5500
+2026-05-15,Cali,Almojábana,Panadería,4,3200
+2026-05-16,Barranquilla,Almojábana,Panadería,1,3200
+2026-05-16,Bogotá,Chocolate,Bebidas calientes,1,5500
+2026-05-16,Bogotá,Chocolate,Bebidas calientes,1,5500
+2026-05-16,Medellín,Chocolate,Bebidas calientes,1,5500
+2026-05-16,Medellín,Tinto,Bebidas calientes,1,2800
+2026-05-17,Barranquilla,Tinto,Bebidas calientes,1,2800
+2026-05-17,Bogotá,Café frappé,Bebidas frías,4,9500
+2026-05-17,Bogotá,Tinto,Bebidas calientes,5,2800
+2026-05-18,Bogotá,Café frappé,Bebidas frías,1,9500
+2026-05-18,Bogotá,Chocolate,Bebidas calientes,1,5500
+2026-05-18,Medellín,Pandebono,Panadería,2,3000
+2026-05-19,Bogotá,Pandebono,Panadería,2,3000
+2026-05-19,Bogotá,Tinto,Bebidas calientes,1,2800
+2026-05-19,Cali,Limonada de coco,Bebidas frías,1,8000
+2026-05-19,Medellín,Chocolate,Bebidas calientes,1,5500
+2026-05-20,Barranquilla,Chocolate,Bebidas calientes,2,5500
+2026-05-20,Bogotá,Chocolate,Bebidas calientes,6,5500
+2026-05-21,Bogotá,Capuchino,Bebidas calientes,3,6500
+2026-05-21,Cali,Café frappé,Bebidas frías,2,9500
+2026-05-21,Cali,Pandebono,Panadería,2,3000
+2026-05-22,Barranquilla,Chocolate,Bebidas calientes,1,5500
+2026-05-24,Bogotá,Café frappé,Bebidas frías,3,9500
+2026-05-24,Bogotá,Chocolate,Bebidas calientes,2,5500
+2026-05-24,Bogotá,Limonada de coco,Bebidas frías,3,8000
+2026-05-25,Bogotá,Almojábana,Panadería,4,3200
+2026-05-26,Barranquilla,Almojábana,Panadería,4,3200
+2026-05-27,Cali,Capuchino,Bebidas calientes,3,6500
+2026-05-28,Bogotá,Brownie,Postres,2,6000
+2026-05-28,Cali,Café frappé,Bebidas frías,2,9500
+2026-05-29,Bogotá,Almojábana,Panadería,3,3200
+2026-05-29,Bogotá,Chocolate,Bebidas calientes,1,5500
+2026-05-29,Bogotá,Pandebono,Panadería,2,3000
+2026-05-29,Bogotá,Tinto,Bebidas calientes,2,2800
+2026-05-31,Barranquilla,Chocolate,Bebidas calientes,2,5500
+2026-06-01,Bogotá,Tinto,Bebidas calientes,1,2800
+2026-06-01,Cali,Capuchino,Bebidas calientes,5,6500
+2026-06-02,Medellín,Café frappé,Bebidas frías,4,9500
+2026-06-02,Medellín,Torta de zanahoria,Postres,5,7500
+2026-06-03,Barranquilla,Limonada de coco,Bebidas frías,2,8000
+2026-06-03,Cali,Tinto,Bebidas calientes,6,2800
+2026-06-04,Cali,Chocolate,Bebidas calientes,4,5500
+2026-06-05,Barranquilla,Tinto,Bebidas calientes,1,2800
+2026-06-05,Medellín,Brownie,Postres,1,6000
+2026-06-05,Medellín,Torta de zanahoria,Postres,3,7500
+2026-06-06,Medellín,Chocolate,Bebidas calientes,1,5500
+2026-06-07,Bogotá,Capuchino,Bebidas calientes,1,6500
+2026-06-07,Bogotá,Chocolate,Bebidas calientes,3,5500
+2026-06-08,Bogotá,Chocolate,Bebidas calientes,3,5500
+2026-06-09,Barranquilla,Chocolate,Bebidas calientes,4,5500
+2026-06-09,Barranquilla,Limonada de coco,Bebidas frías,6,8000
+2026-06-09,Cali,Tinto,Bebidas calientes,1,2800
+2026-06-10,Bogotá,Pandebono,Panadería,1,3000
+2026-06-12,Barranquilla,Pandebono,Panadería,2,3000
+2026-06-12,Cali,Almojábana,Panadería,1,3200
+2026-06-12,Cali,Chocolate,Bebidas calientes,2,5500
+2026-06-12,Medellín,Brownie,Postres,1,6000
+2026-06-12,Medellín,Café frappé,Bebidas frías,2,9500
+2026-06-12,Medellín,Torta de zanahoria,Postres,3,7500
+2026-06-13,Bogotá,Capuchino,Bebidas calientes,3,6500
+2026-06-13,Medellín,Pandebono,Panadería,1,3000
+2026-06-15,Barranquilla,Tinto,Bebidas calientes,2,2800
+2026-06-15,Bogotá,Café frappé,Bebidas frías,4,9500
+2026-06-15,Cali,Pandebono,Panadería,4,3000
+2026-06-15,Medellín,Chocolate,Bebidas calientes,4,5500
+2026-06-18,Barranquilla,Limonada de coco,Bebidas frías,1,8000
+2026-06-18,Cali,Chocolate,Bebidas calientes,2,5500
+2026-06-19,Bogotá,Café frappé,Bebidas frías,1,9500
+2026-06-19,Medellín,Tinto,Bebidas calientes,1,2800
+2026-06-20,Barranquilla,Café frappé,Bebidas frías,1,9500
+2026-06-20,Barranquilla,Chocolate,Bebidas calientes,1,5500
+2026-06-21,Bogotá,Tinto,Bebidas calientes,4,2800
+2026-06-21,Medellín,Café frappé,Bebidas frías,2,9500
+2026-06-21,Medellín,Limonada de coco,Bebidas frías,2,8000
+2026-06-22,Bogotá,Capuchino,Bebidas calientes,2,6500
+2026-06-23,Barranquilla,Chocolate,Bebidas calientes,6,5500
+2026-06-23,Barranquilla,Tinto,Bebidas calientes,2,2800
+2026-06-23,Cali,Café frappé,Bebidas frías,1,9500
+2026-06-23,Cali,Limonada de coco,Bebidas frías,3,8000
+2026-06-24,Cali,Brownie,Postres,2,6000
+2026-06-24,Medellín,Pandebono,Panadería,1,3000
+2026-06-25,Medellín,Café frappé,Bebidas frías,6,9500
+2026-06-26,Bogotá,Brownie,Postres,1,6000
+2026-06-27,Medellín,Café frappé,Bebidas frías,4,9500
+2026-06-28,Medellín,Pandebono,Panadería,6,3000
+2026-06-30,Medellín,Pandebono,Panadería,3,3000

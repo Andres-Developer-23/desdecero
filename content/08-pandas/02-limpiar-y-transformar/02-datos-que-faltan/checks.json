@@ -1,0 +1,17 @@
+{
+  "requires": [
+    {
+      "pattern": "to_numeric\\(",
+      "message": "Convierte la puntuación con pd.to_numeric(..., errors=\"coerce\")."
+    },
+    {
+      "pattern": "fillna\\(",
+      "message": "Rellena las edades que faltan con fillna()."
+    }
+  ],
+  "runs": [
+    {
+      "output": "Repetidas: 3\nEdades rellenadas: 8 (mediana: 42)\nRespuestas válidas: 45\nPuntuación media: 4.18"
+    }
+  ]
+}
