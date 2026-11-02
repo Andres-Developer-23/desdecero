@@ -59,6 +59,10 @@
 .out--explanation {
   color: var(--color-text-soft);
 }
+/* Avisos de Python (FutureWarning, UserWarning...): no son errores, pero conviene leerlos. */
+.out--warning {
+  color: var(--color-highlight);
+}
 .out--ok {
   color: var(--color-accent);
 }
@@ -69,4 +73,15 @@
 .out--fail {
   color: var(--color-danger);
   font-weight: 700;
+}
+
+/* Gráficos de matplotlib (Pyodide): fondo blanco, como los guarda matplotlib. */
+.console__figure {
+  display: block;
+  width: 100%;
+  max-width: 640px;
+  height: auto;
+  margin: 6px 0 10px;
+  border-radius: var(--radius-sm, 4px);
+  background: #fff;
 }

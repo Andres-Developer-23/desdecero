@@ -109,9 +109,14 @@ ft.run(main)
   const preview = page.locator("#playground-preview");
   const rightText = preview.locator(".flet-text", { hasText: "derecha" });
   await expect(rightText).toBeVisible();
-  const body = await preview.locator(".flet-page").boundingBox();
-  const right = await rightText.boundingBox();
-  expect(body.x + body.width - (right.x + right.width)).toBeLessThan(40);
+  // La vista previa se vuelve a dibujar al terminar main(): se mide cuando ya está quieta.
+  await expect
+    .poll(async () => {
+      const body = await preview.locator(".flet-page").boundingBox();
+      const right = await rightText.boundingBox();
+      return body && right ? body.x + body.width - (right.x + right.width) : Infinity;
+    })
+    .toBeLessThan(40);
 });
 
 test("la vista previa se detiene al ejecutar otro programa", async ({ page }) => {

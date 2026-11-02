@@ -117,8 +117,9 @@ npm run build    # genera dist/index.html
 ## Pruebas y calidad
 
 ```bash
-npx playwright install chromium   # solo la primera vez
-npm run check                     # formato + lint + todas las pruebas
+npx playwright install chromium     # solo la primera vez
+node scripts/download-pyodide.js    # solo la primera vez: Pyodide para las pruebas (unos 30 MB)
+npm run check                       # formato + lint + todas las pruebas
 ```
 
 | Comando             | Qué hace                                                                                    |
@@ -129,7 +130,7 @@ npm run check                     # formato + lint + todas las pruebas
 | `npm run test:e2e`  | Genera la página y la prueba en Chromium con Playwright, en escritorio y en móvil.          |
 | `npm test`          | Las dos anteriores.                                                                         |
 
-Las pruebas en navegador comprueban que **cada ejercicio se puede resolver** (la solución pasa y el código de partida no), que cada ejemplo de la teoría se ejecuta sin errores (salvo en la ruta de Python, que tiene errores a propósito) y los recorridos principales: ejecutar con `input()`, completar una lección, errores marcados en el editor, ejemplos, botón de detener, la vista previa de Flet y que ninguna página se desborde en móvil. Skulpt y CodeMirror se sirven desde `node_modules`, así que no dependen de la red.
+Las pruebas en navegador comprueban que **cada ejercicio se puede resolver** (la solución pasa y el código de partida no), que cada ejemplo de la teoría se ejecuta sin errores (salvo en la ruta de Python, que tiene errores a propósito) y los recorridos principales: ejecutar con `input()`, completar una lección, errores marcados en el editor, ejemplos, botón de detener, la vista previa de Flet y que ninguna página se desborde en móvil. Skulpt, CodeMirror y sql.js se sirven desde `node_modules`, y Pyodide desde `.cache/pyodide` (lo descarga `scripts/download-pyodide.js` de las releases de GitHub, con pandas, numpy y matplotlib), así que no dependen de la red.
 
 ```
 tests/
@@ -141,7 +142,7 @@ tests/
 
 El workflow [`.github/workflows/ci.yml`](.github/workflows/ci.yml) se ejecuta en cada pull request y en cada cambio en `main`:
 
-1. **Verificar**: formato, lint, pruebas unitarias y pruebas en navegador. Si algo falla, guarda el informe de Playwright como artefacto durante 7 días.
+1. **Verificar**: formato, lint, pruebas unitarias y pruebas en navegador. Pyodide se descarga una vez por versión y queda en la caché de GitHub Actions. Si algo falla, guarda el informe de Playwright como artefacto durante 7 días.
 2. **Publicar**: solo en `main` y solo si la verificación pasa. Genera `dist/` y lo despliega en GitHub Pages.
 
 Para que la publicación funcione, en el repositorio ve a **Settings → Pages** y en **Source** elige **GitHub Actions** (solo hay que hacerlo una vez).
@@ -158,6 +159,7 @@ content/                      contenido del curso: rutas, módulos y lecciones
     api.libreria.example.json datos de las APIs de práctica (su código está en src/js/web/apis/)
   db/
     libreria.sql              script que crea la base de datos de práctica libreria.db
+  data/                       datos de práctica de pandas (CSV): están en el disco de cada programa
   01-python/
     route.json                título, descripción, nivel y motor de la ruta
     00-primeros-pasos/
@@ -194,10 +196,11 @@ scripts/
 | `flet/`           | Simulador de Flet: sesiones y eventos, dibujo de la vista previa y colores de Material.  |
 | `web/`            | Simulador web: web de prácticas, APIs, puente con Python y navegador de la pestaña web.  |
 | `sql/`            | Simulador de sqlite3: SQLite (sql.js), puente con Python y explorador de «datos».        |
+| `pyodide/`        | Python completo (Pyodide) en un Web Worker para pandas, numpy y matplotlib.              |
 | `ui/`             | Piezas de interfaz: terminal, editor, Markdown, ejemplos y cabecera.                     |
 | `views/`          | Las pantallas: panel, ruta, lección y playground.                                        |
 
-Las dependencias van en un solo sentido: `views` usa `ui`, `exercises`, `flet`, `web`, `sql`, `python`, `progress` y `course`, y todos ellos pueden usar `lib` y `config`. Ningún módulo de `python/` o `progress/` toca el DOM.
+Las dependencias van en un solo sentido: `views` usa `ui`, `exercises`, `flet`, `web`, `sql`, `pyodide`, `python`, `progress` y `course`, y todos ellos pueden usar `lib` y `config`. Ningún módulo de `python/` o `progress/` toca el DOM.
 
 ### Simulador de Flet
 
@@ -250,6 +253,19 @@ Para las bases de datos no hace falta imitar nada: [sql.js](https://sql.js.org) 
 
 Diferencias con Python: dos conexiones al mismo archivo comparten la base, así que una ve los cambios de la otra antes del `commit()` (lo que no se confirma se deshace igual al cerrar); los enteros de más de 32 bits que se pasan como parámetro se guardan bien en las columnas `INTEGER`, pero en una expresión sin tipo (`SELECT ?`) vuelven como texto; `create_function`, `detect_types` y los adaptadores no están, y los `float` se escriben con la precisión de Skulpt (`50366.66666666666` en lugar de `50366.666666666664`), por eso las lecciones redondean los resultados con decimales.
 
+### Python completo con Pyodide: pandas, numpy y matplotlib
+
+Skulpt no puede ejecutar pandas ni numpy: son librerías escritas en buena parte en C. Los programas que los importan (o `matplotlib`) se ejecutan con [Pyodide](https://pyodide.org), que es CPython 3.14 compilado a WebAssembly, con pandas 3.0, numpy 2.4 y matplotlib 3.10 de verdad. El resto del curso sigue con Skulpt, que arranca al instante.
+
+- `src/js/pyodide/engine.js` crea un **Web Worker** con Pyodide la primera vez que hace falta (en las lecciones de pandas, al abrir la lección). La primera carga descarga unos 20 MB del CDN de jsDelivr (Python, numpy y pandas; matplotlib, unos 7 MB más), que luego quedan en la caché del navegador. Solo se cargan los paquetes que importa el programa.
+- Cada ejecución empieza como un proceso nuevo de Python (`src/python/pyodide_runner.py`): un `__main__` nuevo, el disco con solo los datos de práctica de `content/data/`, y las opciones de pandas y el estilo de matplotlib de fábrica. Al terminar, la consola enseña los archivos que guardó el programa.
+- `plt.show()` (y `df.plot()` seguido de `plt.show()`) enseña los gráficos **dentro de la salida**, en su sitio entre lo que imprime el programa, como en un cuaderno de Jupyter. Si el programa crea un gráfico y no lo enseña, la consola lo avisa.
+- Los errores se explican en español con la línea del alumno, también los que saltan dentro de pandas (una columna que no existe, `and` entre condiciones, un archivo que no está…), y los avisos de Python (`FutureWarning`…) salen en amarillo.
+- **Detener** o pasarse del tiempo termina el worker: el siguiente programa vuelve a cargar Python, ya desde la caché.
+- Las comprobaciones de los ejercicios funcionan igual que con Skulpt: salida esperada, `test.py` con asserts y patrones.
+
+Diferencias con Python en un ordenador: `input()` no está disponible en estos programas (el worker no puede esperar a que se escriba), y Pyodide es de 32 bits, así que lo que depende del tamaño de los punteros cambia (por ejemplo, la memoria que informa `df.info()`). Las salidas de las lecciones se comprobaron con Python 3.13 y las mismas versiones de pandas, numpy y matplotlib.
+
 ## Escribir lecciones
 
 El contenido se organiza en tres niveles de carpetas `NN-id`: rutas, módulos y lecciones. El número da el orden y el resto es el identificador. El de la ruta aparece en su URL (`#ruta-python`) y el de la lección en la suya (`#l-hola-mundo`); los identificadores de lección no se pueden repetir, tampoco entre rutas. El build se detiene con un mensaje claro si falta un archivo o algo no es válido.
@@ -266,7 +282,7 @@ El contenido se organiza en tres niveles de carpetas `NN-id`: rutas, módulos y 
 }
 ```
 
-`runtime` indica con qué se ejecutan los ejercicios de la ruta y qué pestañas tienen sus lecciones: `python` (solo la consola), `flet` (la vista previa), `web` (el navegador de la pestaña **web**) o `sqlite` (la pestaña **datos**, y también **web** en las lecciones con `web`). `requires` es opcional: el identificador de una ruta que conviene terminar antes, y aparece como recomendación en el panel.
+`runtime` indica con qué se ejecutan los ejercicios de la ruta y qué pestañas tienen sus lecciones: `python` (solo la consola), `flet` (la vista previa), `web` (el navegador de la pestaña **web**) `sqlite` (la pestaña **datos**, y también **web** en las lecciones con `web`) o `pandas` (solo la consola, con los gráficos dentro; al abrir la lección se empieza a cargar Pyodide). `requires` es opcional: el identificador de una ruta que conviene terminar antes, y aparece como recomendación en el panel.
 
 ### `lesson.md`
 
@@ -365,6 +381,7 @@ Cada cambio empieza con un issue, se hace en su propia rama y entra en `main` co
 - [Skulpt](https://skulpt.org) 1.2 ejecuta Python 3 dentro del navegador, sin servidor.
 - [CodeMirror](https://codemirror.net/5/) 5 es el editor con resaltado de sintaxis.
 - [sql.js](https://sql.js.org) 1.14 es SQLite compilado a WebAssembly, para el módulo `sqlite3`.
+- [Pyodide](https://pyodide.org) 314 es CPython 3.14 compilado a WebAssembly, con pandas, numpy y matplotlib.
 - La vista previa de Flet usa Roboto y Material Icons de Google Fonts.
 - [esbuild](https://esbuild.github.io) empaqueta el JavaScript y los estilos.
 - Tipografías de Google Fonts: Martian Mono, IBM Plex Sans y JetBrains Mono.

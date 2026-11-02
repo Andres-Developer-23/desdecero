@@ -90,6 +90,7 @@ describe("carga del contenido", () => {
     assert.deepEqual(course.web, {});
     assert.deepEqual(course.apis, {});
     assert.deepEqual(course.databases, {});
+    assert.deepEqual(course.data, {});
   });
 
   test("lee la web de prácticas: cada archivo en su URL", () => {
@@ -229,6 +230,19 @@ describe("carga del contenido", () => {
     );
   });
 
+  test("lee los datos de práctica de pandas y valida sus nombres", () => {
+    const dir = makeCourse("datos", { "01-hola": VALID_LESSON });
+    mkdirSync(path.join(dir, "data"));
+    writeFileSync(path.join(dir, "data", "ventas.csv"), "fecha,unidades\n2026-01-01,3\n");
+    assert.deepEqual(loadCourse(dir).data, { "ventas.csv": "fecha,unidades\n2026-01-01,3\n" });
+
+    writeFileSync(path.join(dir, "data", "Ventas Viejas.xlsx"), "");
+    assert.throws(
+      () => loadCourse(dir),
+      /data\/Ventas Viejas\.xlsx: cada archivo de datos es un \.csv, \.txt o \.json/,
+    );
+  });
+
   test("informa de todos los problemas a la vez, con la ruta del archivo", () => {
     const dir = makeCourse("roto", {
       "01-hola": { ...VALID_LESSON, "checks.json": '{ "runs": [{ "salida": "x" }] }' },
@@ -263,7 +277,10 @@ describe("carga del contenido", () => {
       () => loadCourse(dir),
       (error) => {
         const text = error.problems.join("\n");
-        assert.match(text, /route\.json: "runtime" debe ser uno de: python, flet, web, sqlite/);
+        assert.match(
+          text,
+          /route\.json: "runtime" debe ser uno de: python, flet, web, sqlite, pandas/,
+        );
         assert.match(text, /route\.json: "requires" apunta a una ruta que no existe/);
         return true;
       },

@@ -63,8 +63,10 @@ export async function checkExercise(lesson, code, terminal) {
     const result = await runPython(program, {
       inputs,
       timeLimitMs: TIME_LIMIT_MS.check,
-      onOutput: (text) => terminal.write(text),
+      onOutput: (text, stream) => terminal.write(text, stream === "stderr" ? "warning" : "output"),
       onInputEcho: (prompt, value) => terminal.echoInput(prompt, value),
+      onStatus: (text) => terminal.line(text, "system"),
+      onFigure: (image) => terminal.image(image, "gráfico"),
     });
     terminal.ensureNewline();
 

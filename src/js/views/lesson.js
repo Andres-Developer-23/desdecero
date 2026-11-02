@@ -9,6 +9,8 @@ import { $, escapeHtml } from "../lib/dom.js";
 import { formatDayKey, pad2 } from "../lib/dates.js";
 import { storage } from "../lib/storage.js";
 import { isRunning, stopPython } from "../python/engine.js";
+import { usesPlots } from "../pyodide/detect.js";
+import { preloadPyodide } from "../pyodide/engine.js";
 import { createDbViewer } from "../sql/db-viewer.js";
 import { loadSqlRuntime, onSqlRun, sqlDatabases } from "../sql/runtime.js";
 import { onWebRun, viewerRequest, virtualInternet } from "../web/runtime.js";
@@ -97,6 +99,11 @@ export function createLessonView({ course, progress }) {
     renderContent();
     renderStatus();
     resetExercisePanel();
+    // Las lecciones de pandas usan Python completo: se carga mientras se lee la teoría.
+    if (lesson.route.runtime === "pandas") {
+      const plots = usesPlots(`${lesson.theory}\n${lesson.starter}\n${lesson.solution}`);
+      preloadPyodide(plots ? ["pandas", "matplotlib"] : ["pandas"]);
+    }
 
     const code = drafts.load(lesson) ?? lesson.starter;
     await waitForEditorLibrary();

@@ -4,6 +4,7 @@
  *   content/web/<sitio>.example/...            web de prácticas del simulador web (opcional)
  *   content/api/<api>.example.json             datos de las APIs de práctica (opcional)
  *   content/db/<base>.sql                      bases de datos de práctica de sqlite3 (opcional)
+ *   content/data/<archivo>.csv                 datos de práctica de pandas (opcional)
  *   content/NN-ruta/route.json                 título, descripción, nivel y motor
  *   content/NN-ruta/NN-modulo/module.json      título y descripción del módulo
  *   content/NN-ruta/NN-modulo/NN-leccion/
@@ -26,7 +27,7 @@ const LESSON_SECTIONS = { Ejercicio: "exercise", Pista: "hint" };
 const CHECK_KEYS = new Set(["requires", "forbids", "ignore", "runs"]);
 const RUN_KEYS = new Set(["inputs", "output", "contains", "test"]);
 /** Motores con los que se ejecutan los ejercicios de una ruta. */
-export const RUNTIMES = new Set(["python", "flet", "web", "sqlite"]);
+export const RUNTIMES = new Set(["python", "flet", "web", "sqlite", "pandas"]);
 /** Tipos de archivo de la web de prácticas, por extensión. */
 const WEB_TYPES = {
   ".html": "text/html; charset=utf-8",
@@ -39,6 +40,7 @@ const WEB_TYPES = {
 const WEB_HOST = /^[a-z0-9]+(?:-[a-z0-9]+)*\.example$/;
 const API_FILE = /^(api\.[a-z0-9]+(?:-[a-z0-9]+)*\.example)\.json$/;
 const DB_FILE = /^([a-z0-9]+(?:-[a-z0-9]+)*)\.sql$/;
+const DATA_FILE = /^[a-z0-9]+(?:[-_][a-z0-9]+)*\.(?:csv|txt|json)$/;
 
 export class CourseError extends Error {
   constructor(problems) {
@@ -49,12 +51,12 @@ export class CourseError extends Error {
   }
 }
 
-/** Devuelve { routes, web, apis, databases } listo para incrustar en la página. */
+/** Devuelve { routes, web, apis, databases, data } listo para incrustar en la página. */
 export function loadCourse(contentDir) {
   const problems = [];
   const seenLessonIds = new Map();
 
-  const routes = numberedDirs(contentDir, problems, { ignore: ["web", "api", "db"] }).map(
+  const routes = numberedDirs(contentDir, problems, { ignore: ["web", "api", "db", "data"] }).map(
     ({ dir, slug }) => loadRoute(dir, slug, { problems, seenLessonIds }),
   );
   const webDir = path.join(contentDir, "web");
@@ -63,6 +65,8 @@ export function loadCourse(contentDir) {
   const apis = existsSync(apiDir) ? loadApis(apiDir, problems) : {};
   const dbDir = path.join(contentDir, "db");
   const databases = existsSync(dbDir) ? loadDatabases(dbDir, problems) : {};
+  const dataDir = path.join(contentDir, "data");
+  const data = existsSync(dataDir) ? loadDataFiles(dataDir, problems) : {};
 
   if (!routes.length) problems.push(`${rel(contentDir)}: no hay rutas`);
   const routeIds = new Set(routes.map((route) => route.id));
@@ -94,7 +98,7 @@ export function loadCourse(contentDir) {
   }
 
   if (problems.length) throw new CourseError(problems);
-  return { routes, web, apis, databases };
+  return { routes, web, apis, databases, data };
 }
 
 function isLocalServer(url) {
@@ -200,6 +204,25 @@ function loadDatabases(dir, problems) {
     databases[`${name}.db`] = readFileSync(file, "utf8");
   }
   return databases;
+}
+
+/**
+ * Lee los datos de práctica: cada archivo de content/data/ está en la carpeta
+ * de trabajo de los programas con pandas (pd.read_csv("ventas.csv")).
+ */
+function loadDataFiles(dir, problems) {
+  const files = {};
+  for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    const file = path.join(dir, entry.name);
+    if (!entry.isFile() || !DATA_FILE.test(entry.name)) {
+      problems.push(
+        `${rel(file)}: cada archivo de datos es un .csv, .txt o .json con nombre en minúsculas`,
+      );
+      continue;
+    }
+    files[entry.name] = readFileSync(file, "utf8");
+  }
+  return files;
 }
 
 function listFiles(dir) {

@@ -1,10 +1,12 @@
 /*
- * Ejecución de código Python con Skulpt.
+ * Ejecución de código Python con Skulpt, o con Pyodide (Python completo) si
+ * el programa usa pandas, numpy o matplotlib.
  * Solo puede haber un programa en marcha a la vez en toda la página.
  */
 
 import { TIME_LIMIT_MS } from "../config.js";
 import { createEmitter } from "../lib/events.js";
+import { needsPyodide, startPyodideRun } from "../pyodide/engine.js";
 import { loadPythonEngine } from "./libraries.js";
 import { parseSkulptError } from "./errors.js";
 
@@ -26,7 +28,11 @@ export function stopPython() {
  * @typedef {object} RunOptions
  * @property {string[]} [inputs] Respuestas fijas para input(). Si se acaban, termina con "inputs-exhausted".
  * @property {(prompt: string) => Promise<string>} [onPrompt] Pide la respuesta al usuario (modo interactivo).
- * @property {(text: string) => void} [onOutput] Recibe lo que el programa imprime.
+ * @property {(text: string, stream?: "stderr") => void} [onOutput] Recibe lo que el programa
+ *   imprime (y, con Pyodide, los avisos de la salida de errores, con stream "stderr").
+ * @property {(text: string) => void} [onStatus] Mensajes mientras se carga Python completo.
+ * @property {(png: string) => void} [onFigure] Con Pyodide: cada gráfico que enseña plt.show(),
+ *   en PNG (base64), en el momento en que lo enseña.
  * @property {(prompt: string, value: string) => void} [onInputEcho] Muestra cada respuesta fija usada.
  * @property {number} [timeLimitMs]
  *
@@ -35,6 +41,11 @@ export function stopPython() {
  * @property {string} stdout
  * @property {ReturnType<typeof parseSkulptError>} [error]
  * @property {number} [durationMs]
+ * @property {"skulpt" | "pyodide"} [engine]
+ * @property {string[]} [figures] Con Pyodide: los gráficos que enseñó, en PNG (base64).
+ * @property {number} [unshown] Con Pyodide: figuras que se crearon y no se enseñaron.
+ * @property {Array<{name: string, size: number, text: string | null, image: string | null}>} [files]
+ *   Con Pyodide: los archivos que guardó.
  */
 
 /**
@@ -43,6 +54,7 @@ export function stopPython() {
  * @returns {Promise<RunResult>}
  */
 export async function runPython(code, options = {}) {
+  if (needsPyodide(code)) return runWithPyodide(code, options);
   const ready = await loadPythonEngine();
   if (!ready) return { status: "unavailable", stdout: "" };
   if (running) return { status: "busy", stdout: "" };
@@ -110,7 +122,7 @@ export async function runPython(code, options = {}) {
   try {
     for (const setup of runSetups) await setup(Sk, code);
     await Sk.misceval.asyncToPromise(() => Sk.importMainWithBody("<stdin>", false, code, true));
-    return { status: "ok", stdout, durationMs: performance.now() - startedAt };
+    return { status: "ok", stdout, durationMs: performance.now() - startedAt, engine: "skulpt" };
   } catch (error) {
     if (stopped) return { status: "stopped", stdout };
     if (inputsExhausted) return { status: "inputs-exhausted", stdout };
@@ -120,6 +132,20 @@ export async function runPython(code, options = {}) {
       error: parseSkulptError(error),
       durationMs: performance.now() - startedAt,
     };
+  } finally {
+    stopCurrent = null;
+    setRunning(false);
+  }
+}
+
+/** Los programas con pandas, numpy o matplotlib van a Pyodide (ver pyodide/engine.js). */
+async function runWithPyodide(code, options) {
+  if (running) return { status: "busy", stdout: "" };
+  setRunning(true);
+  const run = startPyodideRun(code, options);
+  stopCurrent = run.stop;
+  try {
+    return { ...(await run.promise), engine: "pyodide" };
   } finally {
     stopCurrent = null;
     setRunning(false);

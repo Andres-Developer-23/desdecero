@@ -173,7 +173,35 @@ export const isSyntaxError = (error) =>
 
 /** Mensajes de error que ya se explican solos (los escribe el simulador de Flet en español). */
 const SELF_EXPLANATORY =
-  /Flet 1\.0|simulador del curso|necesita content o icon|solo acepta controles|todavía no está en la página|no llamó a ft\.run|motor de SQLite/;
+  /Flet 1\.0|simulador del curso|necesita content o icon|solo acepta controles|todavía no está en la página|no llamó a ft\.run|motor de SQLite|input\(\) no funciona/;
+
+/**
+ * Errores típicos con pandas y numpy (con Pyodide, el error dice de qué
+ * librería viene: error.library). Devuelve null si no es uno de ellos.
+ */
+function explainPandasError(error) {
+  const message = error.message ?? "";
+  if (/truth value of a (Series|DataFrame) is ambiguous/.test(message)) {
+    return 'Para combinar condiciones de pandas usa & (y), | (o) y ~ (no), con cada condición entre paréntesis: df[(df["precio"] > 10) & (df["ciudad"] == "Cali")]. and, or y not no funcionan con columnas enteras.';
+  }
+  if (error.type === "KeyError" && error.library === "pandas") {
+    return "Esa columna (o esa etiqueta de fila) no existe. Mira los nombres exactos con print(df.columns): distinguen mayúsculas, tildes y espacios.";
+  }
+  if (/'(DataFrame|Series)' object has no attribute/.test(message)) {
+    return 'Ese nombre no es un método ni una columna. Revisa cómo se escribe; y si es una columna con espacios o tildes, pídela con corchetes: df["nombre de la columna"].';
+  }
+  if (/'(DataFrame|Series)' object is not callable/.test(message)) {
+    return 'Los DataFrame y las columnas no se llaman con paréntesis: para elegir una columna, usa corchetes: df["precio"].';
+  }
+  if (error.type === "FileNotFoundError" && Array.isArray(error.available)) {
+    const files = error.available.length ? error.available.join(", ") : "ninguno";
+    return `Ese archivo no existe. Los archivos que hay son: ${files}. Revisa el nombre exacto, con su extensión.`;
+  }
+  if (error.type === "ModuleNotFoundError" && error.engine === "pyodide") {
+    return "Ese módulo no está en el curso. Con Python completo puedes usar la librería estándar, pandas, numpy y matplotlib.";
+  }
+  return null;
+}
 
 /** Explicación para principiantes de un error, o null si el mensaje ya basta. */
 export function explainError(error) {
@@ -193,6 +221,8 @@ export function explainError(error) {
   if (/module 'flet' has no attribute/.test(error.message)) {
     return "Ese nombre no existe en Flet 1.0 o el simulador del curso no lo incluye. Revisa las mayúsculas: los controles empiezan por mayúscula (ft.Text, ft.Button) y las constantes van en mayúsculas (ft.Colors.BLUE).";
   }
+  const pandasExplanation = explainPandasError(error);
+  if (pandasExplanation) return pandasExplanation;
   if (SQL_ERRORS.has(error.type)) {
     const found = SQL_EXPLANATIONS.find(([pattern]) => pattern.test(error.message));
     if (found) return found[1];

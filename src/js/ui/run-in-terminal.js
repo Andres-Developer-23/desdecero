@@ -1,10 +1,12 @@
 /*
  * Ejecución interactiva con la salida en una terminal y, si el código usa
  * Flet, la app en una vista previa. La comparten los ejemplos de las
- * lecciones, el ejercicio y el playground.
+ * lecciones, el ejercicio y el playground. Con pandas, numpy o matplotlib
+ * (Pyodide), los gráficos aparecen dentro de la salida.
  */
 
 import { beginFletSession, usesFlet } from "../flet/runtime.js";
+import { needsPyodide } from "../pyodide/engine.js";
 import { isPythonEngineReady } from "../python/libraries.js";
 import { isRunning, runPython } from "../python/engine.js";
 import { sqlDatabases } from "../sql/runtime.js";
@@ -50,15 +52,17 @@ export async function runInTerminal(code, terminal, options = {}) {
     },
   });
   if (options.fileName) terminal.line(`$ python ${options.fileName}`, "system");
-  if (isPythonEngineReady() === undefined) {
+  if (!needsPyodide(code) && isPythonEngineReady() === undefined) {
     terminal.line("# cargando el motor de Python…", "system");
   }
   options.onStart?.();
 
   const result = await runPython(code, {
     timeLimitMs: options.timeLimitMs,
-    onOutput: (text) => terminal.write(text),
+    onOutput: (text, stream) => terminal.write(text, stream === "stderr" ? "warning" : "output"),
     onPrompt: (prompt) => terminal.prompt(prompt),
+    onStatus: (text) => terminal.line(text, "system"),
+    onFigure: (image) => terminal.image(image, "gráfico"),
   });
   terminal.dropPrompts();
 
@@ -93,7 +97,7 @@ export async function runInTerminal(code, terminal, options = {}) {
           `# tu servidor está en marcha en ${lastRun().server.origin}: pruébalo en la pestaña web`,
           "system",
         );
-      } else if (!result.stdout) {
+      } else if (!result.stdout && !result.figures?.length) {
         terminal.line("(el programa no imprimió nada)", "system");
       }
       if (options.showDuration) {
@@ -101,8 +105,16 @@ export async function runInTerminal(code, terminal, options = {}) {
       }
       break;
   }
-  if (result.status === "ok" || result.status === "error") {
-    showSavedFiles(terminal);
+  if (result.engine === "pyodide") {
+    showUnshownFigures(terminal, result);
+    if (result.status === "ok" || result.status === "error") {
+      showSavedFiles(terminal, result.files ?? []);
+    }
+  } else if (result.status === "ok" || result.status === "error") {
+    showSavedFiles(
+      terminal,
+      [...lastRun().files].map(([name, text]) => ({ name, text })),
+    );
     showDatabases(terminal);
   }
   if (preview && !session.rendered && result.status !== "busy") {
@@ -133,9 +145,32 @@ function showDatabases(terminal) {
   }
 }
 
-/** Enseña los archivos que guardó el programa en el disco simulado, con sus primeras líneas. */
-function showSavedFiles(terminal) {
-  for (const [name, text] of lastRun().files) {
+/** Un aviso si el programa creó un gráfico sin llamar a plt.show(). */
+function showUnshownFigures(terminal, result) {
+  if (result.status === "ok" && result.unshown > 0) {
+    terminal.line(
+      "# creaste un gráfico, pero no se ve hasta que llamas a plt.show() al final",
+      "system",
+    );
+  }
+}
+
+/**
+ * Enseña los archivos que guardó el programa en el disco: las primeras líneas
+ * de los de texto y las imágenes PNG (por ejemplo, un gráfico con savefig()).
+ * @param {Array<{name: string, text?: string | null, image?: string | null, size?: number}>} files
+ */
+function showSavedFiles(terminal, files) {
+  for (const { name, text, image, size } of files) {
+    if (image) {
+      terminal.line(`# imagen guardada: ${name}`, "system");
+      terminal.image(image, name);
+      continue;
+    }
+    if (text == null) {
+      terminal.line(`# archivo guardado: ${name} · ${size} bytes`, "system");
+      continue;
+    }
     const lines = text.replace(/\r\n?/g, "\n").replace(/\n$/, "").split("\n");
     const count = text ? lines.length : 0;
     terminal.line(

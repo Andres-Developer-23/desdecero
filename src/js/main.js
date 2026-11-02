@@ -19,6 +19,7 @@ import { createLessonView } from "./views/lesson.js";
 import { createPanelView } from "./views/panel.js";
 import { createPlaygroundView } from "./views/playground.js";
 import { createRouteView } from "./views/route.js";
+import { installPyodide } from "./pyodide/engine.js";
 import { installSqlRuntime } from "./sql/runtime.js";
 import { installWebRuntime } from "./web/runtime.js";
 
@@ -27,6 +28,7 @@ installStandardLibraryExtras();
 installFletRuntime();
 installWebRuntime({ pages: courseData.web ?? {}, apis: courseData.apis ?? {} });
 installSqlRuntime({ databases: courseData.databases ?? {} });
+installPyodide({ files: courseData.data ?? {}, databases: courseData.databases ?? {} });
 
 const course = createCourse(courseData);
 const progress = createProgress(course.lessons.map((lesson) => lesson.id));
