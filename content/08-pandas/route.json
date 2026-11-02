@@ -1,0 +1,7 @@
+{
+  "title": "Análisis de datos con pandas",
+  "description": "Analiza datos con pandas y Python completo en el navegador: Series y DataFrame, leer CSV, seleccionar y filtrar, limpiar textos, fechas y datos que faltan, agrupar, combinar tablas, gráficos con matplotlib y series temporales, hasta un informe de ventas completo.",
+  "level": "Intermedio",
+  "runtime": "pandas",
+  "requires": "python"
+}

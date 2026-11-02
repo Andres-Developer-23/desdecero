@@ -1,0 +1,17 @@
+{
+  "requires": [
+    {
+      "pattern": "read_csv\\(\\s*[\\\"']ventas\\.csv[\\\"']",
+      "message": "Lee los datos con pd.read_csv(\"ventas.csv\")."
+    },
+    {
+      "pattern": "value_counts\\(",
+      "message": "Cuenta las ventas de cada categoría con value_counts()."
+    }
+  ],
+  "runs": [
+    {
+      "output": "320 ventas y 6 columnas\nCategorías: Bebidas calientes, Bebidas frías, Panadería, Postres\ncategoria\nBebidas calientes    126\nBebidas frías         77\nPanadería             59\nPostres               58\nName: count, dtype: int64\nUnidades vendidas: 814"
+    }
+  ]
+}
